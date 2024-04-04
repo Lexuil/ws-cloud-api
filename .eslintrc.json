@@ -10,5 +10,5 @@
     },
     "rules": {
     },
-    "ignorePatterns": ["dist", "test", "node_modules", "vite.config.js"]
+    "ignorePatterns": ["dist", "node_modules", "vite.config.js"]
 }
