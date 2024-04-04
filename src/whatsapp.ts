@@ -1,5 +1,9 @@
 import { InteractiveTypes } from './types/enums'
-import type { ListInteractive, Button, ReplyButton } from './types/messages'
+import type {
+  ListInteractive,
+  Button,
+  ButtonInteractive
+} from './types/messages'
 
 // TODO: Remove any type in body
 export async function sendMessageRequest (
@@ -85,15 +89,18 @@ export async function sendButtonMessage (
     buttons: Button[]
   }
 ): Promise<void> {
-  const body = {
+  const body: {
+    type: string
+    interactive: ButtonInteractive
+  } = {
     type: 'interactive',
     interactive: {
-      type: 'button',
+      type: InteractiveTypes.Button,
       body: {
         text: message.text
       },
       action: {
-        buttons: [] as ReplyButton[]
+        buttons: []
       }
     }
   }

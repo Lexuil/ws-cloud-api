@@ -92,6 +92,14 @@ interface Action {
   sections: Section[]
 }
 
+export interface ButtonInteractive {
+  type: InteractiveTypes.Button
+  body: SimpleText
+  footer?: SimpleText
+  header?: Header
+  action: Pick<Action, 'buttons'>
+}
+
 export interface ListInteractive {
   type: InteractiveTypes.List
   body: SimpleText
