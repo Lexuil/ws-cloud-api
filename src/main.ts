@@ -1,3 +1,11 @@
-import { whatsapp } from './whatsapp'
+import {
+  sendImage,
+  sendText,
+  sendVideo
+} from './whatsapp'
 
-export { whatsapp }
+export {
+  sendImage,
+  sendText,
+  sendVideo
+}
