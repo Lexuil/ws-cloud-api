@@ -1,3 +1,3 @@
-import { whatsapp } from "./whatsapp";
+import { whatsapp } from './whatsapp'
 
 export { whatsapp }

@@ -1,3 +1,3 @@
-export function whatsapp() {
+export function whatsapp (): string {
   return 'whatsapp'
 }
