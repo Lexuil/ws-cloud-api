@@ -9,5 +9,6 @@
         "sourceType": "module"
     },
     "rules": {
-    }
+    },
+    "ignorePatterns": ["dist", "node_modules", "vite.config.js"]
 }
