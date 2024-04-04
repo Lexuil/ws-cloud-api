@@ -2,12 +2,14 @@ import {
   sendImage,
   sendText,
   sendVideo,
-  sendButtonMessage
+  sendButtonMessage,
+  sendInteractiveListMessage
 } from './whatsapp'
 
 export {
   sendImage,
   sendText,
   sendVideo,
-  sendButtonMessage
+  sendButtonMessage,
+  sendInteractiveListMessage
 }

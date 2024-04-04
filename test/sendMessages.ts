@@ -3,7 +3,8 @@ import {
   sendImage,
   sendText,
   sendVideo,
-  sendButtonMessage
+  sendButtonMessage,
+  sendInteractiveListMessage
 } from '../dist/index'
 
 const phoneNumberToTest = '573202601178'
@@ -24,6 +25,7 @@ sendVideo(
 ).catch(console.error)
 
 sendButtonMessage(
+  phoneNumberToTest,
   {
     text: 'Botón de prueba',
     buttons: [
@@ -36,6 +38,23 @@ sendButtonMessage(
         id: '2'
       }
     ]
-  },
-  phoneNumberToTest
+  }
 ).catch(console.error)
+
+sendInteractiveListMessage(
+  phoneNumberToTest,
+  {
+    text: 'Lista de prueba',
+    buttonText: 'Botón de lista',
+    list: [
+      {
+        title: 'Elemento 1',
+        description: 'Descripción 1'
+      },
+      {
+        title: 'Elemento 2',
+        description: 'Descripción 2'
+      }
+    ]
+  }
+)

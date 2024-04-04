@@ -1,4 +1,5 @@
-import { type Button, type ReplyButton } from './types/messages'
+import { InteractiveTypes } from './types/enums'
+import type { ListInteractive, Button, ReplyButton } from './types/messages'
 
 // TODO: Remove any type in body
 export async function sendMessageRequest (
@@ -78,11 +79,11 @@ export async function sendVideo (
 }
 
 export async function sendButtonMessage (
+  to: string,
   message: {
     text: string
     buttons: Button[]
-  },
-  to: string
+  }
 ): Promise<void> {
   const body = {
     type: 'interactive',
@@ -101,6 +102,49 @@ export async function sendButtonMessage (
     body.interactive.action.buttons.push({
       type: 'reply',
       reply: message.buttons[i]
+    })
+  }
+
+  await sendMessageRequest(to, body)
+}
+
+export async function sendInteractiveListMessage (
+  to: string,
+  interactive: {
+    text: string
+    buttonText: string
+    list: Array<{
+      title: string
+      description: string
+    }>
+  }
+): Promise<void> {
+  const body: {
+    type: string
+    interactive: ListInteractive
+  } = {
+    type: 'interactive',
+    interactive: {
+      type: InteractiveTypes.List,
+      body: {
+        text: interactive.text
+      },
+      action: {
+        button: interactive.buttonText,
+        sections: [
+          {
+            title: interactive.buttonText,
+            rows: []
+          }
+        ]
+      }
+    }
+  }
+
+  for (let i = 0; i < interactive.list.length; i++) {
+    body.interactive.action.sections[0].rows.push({
+      id: interactive.list[i].description,
+      ...interactive.list[i]
     })
   }
 
