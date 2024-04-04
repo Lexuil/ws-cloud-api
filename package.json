@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:messages": "node --env-file=.env test/sendMessages.js"
   },
   "devDependencies": {
     "@types/node": "^20.12.4",
