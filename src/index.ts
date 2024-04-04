@@ -1,11 +1,13 @@
 import {
   sendImage,
   sendText,
-  sendVideo
+  sendVideo,
+  sendButtonMessage
 } from './whatsapp'
 
 export {
   sendImage,
   sendText,
-  sendVideo
+  sendVideo,
+  sendButtonMessage
 }

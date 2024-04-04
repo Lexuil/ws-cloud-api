@@ -1,3 +1,5 @@
+import { type Button, type ReplyButton } from './types/messages'
+
 // TODO: Remove any type in body
 export async function sendMessageRequest (
   to: string,
@@ -73,4 +75,34 @@ export async function sendVideo (
       }
     }
   )
+}
+
+export async function sendButtonMessage (
+  message: {
+    text: string
+    buttons: Button[]
+  },
+  to: string
+): Promise<void> {
+  const body = {
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      body: {
+        text: message.text
+      },
+      action: {
+        buttons: [] as ReplyButton[]
+      }
+    }
+  }
+
+  for (let i = 0; i < message.buttons.length; i++) {
+    body.interactive.action.buttons.push({
+      type: 'reply',
+      reply: message.buttons[i]
+    })
+  }
+
+  await sendMessageRequest(to, body)
 }
