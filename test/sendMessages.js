@@ -1,4 +1,4 @@
-import { sendImage, sendText, sendVideo } from '../dist/my-lib.js'
+import { sendImage, sendText, sendVideo } from '../dist/index.mjs'
 
 const phoneNumberToTest = '573202601178'
 
