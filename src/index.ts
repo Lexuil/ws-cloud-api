@@ -5,6 +5,7 @@ import {
   sendDocument,
   sendAudio,
   sendButtonMessage,
+  sendCTAButtonMessage,
   sendInteractiveListMessage
 } from './whatsapp'
 
@@ -15,5 +16,6 @@ export {
   sendDocument,
   sendAudio,
   sendButtonMessage,
+  sendCTAButtonMessage,
   sendInteractiveListMessage
 }

@@ -6,6 +6,7 @@ import {
   sendDocument,
   sendAudio,
   sendButtonMessage,
+  sendCTAButtonMessage,
   sendInteractiveListMessage
 } from '../dist/index'
 
@@ -68,5 +69,14 @@ sendInteractiveListMessage(
         description: 'Descripción 2'
       }
     ]
+  }
+).catch(console.error)
+
+sendCTAButtonMessage(
+  phoneNumberToTest,
+  {
+    text: 'Botón CTA',
+    buttonText: 'Botón CTA',
+    url: 'https://www.google.com'
   }
 ).catch(console.error)

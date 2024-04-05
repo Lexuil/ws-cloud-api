@@ -90,7 +90,10 @@ interface Action {
   sections: Section[]
 }
 
-export type Interactive = ButtonInteractive | ListInteractive
+export type Interactive =
+ButtonInteractive |
+ListInteractive |
+CTAButtonInteractive
 
 export interface ButtonInteractive {
   type: InteractiveTypes.Button
@@ -98,6 +101,20 @@ export interface ButtonInteractive {
   footer?: SimpleText
   header?: Header
   action: Pick<Action, 'buttons'>
+}
+
+export interface CTAButtonInteractive {
+  type: InteractiveTypes.CTAButton
+  body: SimpleText
+  footer?: SimpleText
+  header?: Header
+  action: {
+    name: InteractiveTypes.CTAButton
+    parameters: {
+      display_text: string
+      url: string
+    }
+  }
 }
 
 export interface ListInteractive {

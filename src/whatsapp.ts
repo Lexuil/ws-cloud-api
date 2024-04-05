@@ -6,7 +6,8 @@ import type {
   Interactive,
   InteractiveBody,
   WSBody,
-  MediaBody
+  MediaBody,
+  CTAButtonInteractive
 } from './types/messages'
 
 async function sendMessageRequest (
@@ -119,6 +120,30 @@ export async function sendButtonMessage (
     })
   }
 
+  await sendMessageRequest(to, generateInteractiveBody(body))
+}
+
+export async function sendCTAButtonMessage (
+  to: string,
+  message: {
+    text: string
+    buttonText: string
+    url: string
+  }
+): Promise<void> {
+  const body: CTAButtonInteractive = {
+    type: InteractiveTypes.CTAButton,
+    body: {
+      text: message.text
+    },
+    action: {
+      name: InteractiveTypes.CTAButton,
+      parameters: {
+        display_text: message.buttonText,
+        url: message.url
+      }
+    }
+  }
   await sendMessageRequest(to, generateInteractiveBody(body))
 }
 
