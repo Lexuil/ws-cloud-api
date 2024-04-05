@@ -3,6 +3,7 @@ import {
   sendText,
   sendVideo,
   sendDocument,
+  sendAudio,
   sendButtonMessage,
   sendInteractiveListMessage
 } from './whatsapp'
@@ -12,6 +13,7 @@ export {
   sendText,
   sendVideo,
   sendDocument,
+  sendAudio,
   sendButtonMessage,
   sendInteractiveListMessage
 }

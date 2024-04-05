@@ -97,6 +97,21 @@ export async function sendDocument (
   )
 }
 
+export async function sendAudio (
+  to: string,
+  link: string
+): Promise<void> {
+  await sendMessageRequest(
+    to,
+    {
+      type: 'audio',
+      audio: {
+        link
+      }
+    }
+  )
+}
+
 export async function sendButtonMessage (
   to: string,
   message: {

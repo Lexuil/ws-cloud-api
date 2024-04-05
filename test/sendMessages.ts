@@ -4,6 +4,7 @@ import {
   sendText,
   sendVideo,
   sendDocument,
+  sendAudio,
   sendButtonMessage,
   sendInteractiveListMessage
 } from '../dist/index'
@@ -28,6 +29,11 @@ sendVideo(
 sendDocument(
   phoneNumberToTest,
   'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+).catch(console.error)
+
+sendAudio(
+  phoneNumberToTest,
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 ).catch(console.error)
 
 sendButtonMessage(
