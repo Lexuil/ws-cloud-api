@@ -1,4 +1,4 @@
-import { InteractiveTypes } from './types/enums'
+import { InteractiveTypes, MessageTypesEnum } from './types/enums'
 import type {
   ListInteractive,
   Button,
@@ -6,7 +6,7 @@ import type {
 } from './types/messages'
 
 // TODO: Remove any type in body
-export async function sendMessageRequest (
+async function sendMessageRequest (
   to: string,
   body: any
 ): Promise<void> {
@@ -44,72 +44,44 @@ export async function sendText (
   await sendMessageRequest(
     to,
     {
-      type: 'text',
-      text: {
+      type: MessageTypesEnum.Text,
+      [MessageTypesEnum.Text]: {
         body: message
       }
     }
   )
 }
 
-export async function sendImage (
+async function sendSimpleMedia (
   to: string,
+  type: MessageTypesEnum,
   link: string
 ): Promise<void> {
   await sendMessageRequest(
     to,
     {
-      type: 'image',
-      image: {
+      type,
+      [type]: {
         link
       }
     }
   )
 }
 
-export async function sendVideo (
-  to: string,
-  link: string
-): Promise<void> {
-  await sendMessageRequest(
-    to,
-    {
-      type: 'video',
-      video: {
-        link
-      }
-    }
-  )
+export async function sendImage (to: string, link: string): Promise<void> {
+  await sendSimpleMedia(to, MessageTypesEnum.Image, link)
 }
 
-export async function sendDocument (
-  to: string,
-  link: string
-): Promise<void> {
-  await sendMessageRequest(
-    to,
-    {
-      type: 'document',
-      document: {
-        link
-      }
-    }
-  )
+export async function sendVideo (to: string, link: string): Promise<void> {
+  await sendSimpleMedia(to, MessageTypesEnum.Video, link)
 }
 
-export async function sendAudio (
-  to: string,
-  link: string
-): Promise<void> {
-  await sendMessageRequest(
-    to,
-    {
-      type: 'audio',
-      audio: {
-        link
-      }
-    }
-  )
+export async function sendDocument (to: string, link: string): Promise<void> {
+  await sendSimpleMedia(to, MessageTypesEnum.Document, link)
+}
+
+export async function sendAudio (to: string, link: string): Promise<void> {
+  await sendSimpleMedia(to, MessageTypesEnum.Audio, link)
 }
 
 export async function sendButtonMessage (
