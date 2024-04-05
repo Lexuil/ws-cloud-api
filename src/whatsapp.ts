@@ -1,8 +1,10 @@
-import { InteractiveTypes, MessageTypesEnum } from './types/enums'
+import { InteractiveTypes, MessageTypes } from './types/enums'
 import type {
   ListInteractive,
   Button,
-  ButtonInteractive
+  ButtonInteractive,
+  Interactive,
+  InteractiveBody
 } from './types/messages'
 
 // TODO: Remove any type in body
@@ -44,8 +46,8 @@ export async function sendText (
   await sendMessageRequest(
     to,
     {
-      type: MessageTypesEnum.Text,
-      [MessageTypesEnum.Text]: {
+      type: MessageTypes.Text,
+      [MessageTypes.Text]: {
         body: message
       }
     }
@@ -54,7 +56,7 @@ export async function sendText (
 
 async function sendSimpleMedia (
   to: string,
-  type: MessageTypesEnum,
+  type: MessageTypes,
   link: string
 ): Promise<void> {
   await sendMessageRequest(
@@ -69,19 +71,26 @@ async function sendSimpleMedia (
 }
 
 export async function sendImage (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypesEnum.Image, link)
+  await sendSimpleMedia(to, MessageTypes.Image, link)
 }
 
 export async function sendVideo (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypesEnum.Video, link)
+  await sendSimpleMedia(to, MessageTypes.Video, link)
 }
 
 export async function sendDocument (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypesEnum.Document, link)
+  await sendSimpleMedia(to, MessageTypes.Document, link)
 }
 
 export async function sendAudio (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypesEnum.Audio, link)
+  await sendSimpleMedia(to, MessageTypes.Audio, link)
+}
+
+function generateInteractiveBody (input: Interactive): InteractiveBody {
+  return {
+    type: MessageTypes.Interactive,
+    interactive: input
+  }
 }
 
 export async function sendButtonMessage (
@@ -91,30 +100,24 @@ export async function sendButtonMessage (
     buttons: Button[]
   }
 ): Promise<void> {
-  const body: {
-    type: string
-    interactive: ButtonInteractive
-  } = {
-    type: 'interactive',
-    interactive: {
-      type: InteractiveTypes.Button,
-      body: {
-        text: message.text
-      },
-      action: {
-        buttons: []
-      }
+  const body: ButtonInteractive = {
+    type: InteractiveTypes.Button,
+    body: {
+      text: message.text
+    },
+    action: {
+      buttons: []
     }
   }
 
   for (let i = 0; i < message.buttons.length; i++) {
-    body.interactive.action.buttons.push({
+    body.action.buttons.push({
       type: 'reply',
       reply: message.buttons[i]
     })
   }
 
-  await sendMessageRequest(to, body)
+  await sendMessageRequest(to, generateInteractiveBody(body))
 }
 
 export async function sendInteractiveListMessage (
@@ -128,34 +131,28 @@ export async function sendInteractiveListMessage (
     }>
   }
 ): Promise<void> {
-  const body: {
-    type: string
-    interactive: ListInteractive
-  } = {
-    type: 'interactive',
-    interactive: {
-      type: InteractiveTypes.List,
-      body: {
-        text: interactive.text
-      },
-      action: {
-        button: interactive.buttonText,
-        sections: [
-          {
-            title: interactive.buttonText,
-            rows: []
-          }
-        ]
-      }
+  const body: ListInteractive = {
+    type: InteractiveTypes.List,
+    body: {
+      text: interactive.text
+    },
+    action: {
+      button: interactive.buttonText,
+      sections: [
+        {
+          title: interactive.buttonText,
+          rows: []
+        }
+      ]
     }
   }
 
   for (let i = 0; i < interactive.list.length; i++) {
-    body.interactive.action.sections[0].rows.push({
+    body.action.sections[0].rows.push({
       id: interactive.list[i].description,
       ...interactive.list[i]
     })
   }
 
-  await sendMessageRequest(to, body)
+  await sendMessageRequest(to, generateInteractiveBody(body))
 }

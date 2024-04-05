@@ -1,11 +1,11 @@
 export const enum InteractiveTypes {
   Button = 'button',
-  List = 'list',
-  Product = 'product',
-  ProductList = 'product_list'
+  List = 'list'
+  // Product = 'product',
+  // ProductList = 'product_list'
 }
 
-export const enum MessageTypesEnum {
+export const enum MessageTypes {
   Audio = 'audio',
   Contacts = 'contacts',
   Document = 'document',

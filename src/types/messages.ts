@@ -1,4 +1,4 @@
-import { type InteractiveTypes } from './enums'
+import type { MessageTypes, InteractiveTypes } from './enums'
 
 interface SimpleText {
   text: string
@@ -87,10 +87,10 @@ export interface ReplyButton {
 interface Action {
   button: string
   buttons: ReplyButton[]
-  catalog_id: string
-  product_retailer_id?: string
   sections: Section[]
 }
+
+export type Interactive = ButtonInteractive | ListInteractive
 
 export interface ButtonInteractive {
   type: InteractiveTypes.Button
@@ -106,4 +106,9 @@ export interface ListInteractive {
   footer?: SimpleText
   header?: Header
   action: Pick<Action, 'button' | 'sections'>
+}
+
+export interface InteractiveBody {
+  type: MessageTypes.Interactive
+  interactive: Interactive
 }
