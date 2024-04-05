@@ -4,13 +4,14 @@ import type {
   Button,
   ButtonInteractive,
   Interactive,
-  InteractiveBody
+  InteractiveBody,
+  WSBody,
+  MediaBody
 } from './types/messages'
 
-// TODO: Remove any type in body
 async function sendMessageRequest (
   to: string,
-  body: any
+  body: WSBody
 ): Promise<void> {
   const postBody = JSON.stringify({
     messaging_product: 'whatsapp',
@@ -30,12 +31,11 @@ async function sendMessageRequest (
     }
   )
 
-  console.log(JSON.stringify(await response.json(), null, 2))
-
   if (!response.ok) {
-    console.error('Failed to send message')
+    console.error(`Failed to send ${body.type} message`)
+    console.error(JSON.stringify(await response.json(), null, 2))
   } else {
-    console.log('Message sent successfully to user')
+    console.log(`${body.type} message sent successfully to user`)
   }
 }
 
@@ -56,11 +56,13 @@ export async function sendText (
 
 async function sendSimpleMedia (
   to: string,
-  type: MessageTypes,
+  type: MediaBody['type'],
   link: string
 ): Promise<void> {
   await sendMessageRequest(
     to,
+    // FIXME: Typescript not identifying the type
+    // @ts-expect-error Typescript not identifying the type
     {
       type,
       [type]: {

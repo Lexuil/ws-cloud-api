@@ -108,7 +108,46 @@ export interface ListInteractive {
   action: Pick<Action, 'button' | 'sections'>
 }
 
+export interface TextBody {
+  type: MessageTypes.Text
+  [MessageTypes.Text]: {
+    body: string
+  }
+}
+
+export interface ImageBody {
+  type: MessageTypes.Image
+  [MessageTypes.Image]: {
+    link: string
+  }
+}
+
+export interface VideoBody {
+  type: MessageTypes.Video
+  [MessageTypes.Video]: {
+    link: string
+  }
+}
+
+export interface AudioBody {
+  type: MessageTypes.Audio
+  [MessageTypes.Audio]: {
+    link: string
+  }
+}
+
+export interface DocumentBody {
+  type: MessageTypes.Document
+  [MessageTypes.Document]: {
+    link: string
+  }
+}
+
+export type MediaBody = ImageBody | VideoBody | AudioBody | DocumentBody
+
 export interface InteractiveBody {
   type: MessageTypes.Interactive
-  interactive: Interactive
+  [MessageTypes.Interactive]: Interactive
 }
+
+export type WSBody = InteractiveBody | TextBody | MediaBody
