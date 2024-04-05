@@ -3,6 +3,7 @@ import {
   sendImage,
   sendText,
   sendVideo,
+  sendDocument,
   sendButtonMessage,
   sendInteractiveListMessage
 } from '../dist/index'
@@ -22,6 +23,11 @@ sendImage(
 sendVideo(
   phoneNumberToTest,
   'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+).catch(console.error)
+
+sendDocument(
+  phoneNumberToTest,
+  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
 ).catch(console.error)
 
 sendButtonMessage(
@@ -57,4 +63,4 @@ sendInteractiveListMessage(
       }
     ]
   }
-)
+).catch(console.error)

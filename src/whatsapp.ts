@@ -82,6 +82,21 @@ export async function sendVideo (
   )
 }
 
+export async function sendDocument (
+  to: string,
+  link: string
+): Promise<void> {
+  await sendMessageRequest(
+    to,
+    {
+      type: 'document',
+      document: {
+        link
+      }
+    }
+  )
+}
+
 export async function sendButtonMessage (
   to: string,
   message: {
