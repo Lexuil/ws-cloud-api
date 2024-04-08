@@ -1,6 +1,5 @@
 {
   "name": "ws-cloud-api",
-  "private": true,
   "version": "0.0.1-alpha",
   "description": "WhatsApp Cloud API for NodeJS",
   "author": {
