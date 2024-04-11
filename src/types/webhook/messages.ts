@@ -1,7 +1,6 @@
-import { type ValueBase } from '.'
 import { type MediaMessage } from './media'
 
-export interface MessageValue extends ValueBase {
+export interface MessageValue {
   contacts: Contact[]
   messages: Message[]
 }

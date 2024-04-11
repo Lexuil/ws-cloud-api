@@ -1,4 +1,5 @@
 import type { MessageValue } from './messages'
+import type { StatusValue } from './statuses'
 
 export interface WebhookSubscribeQuery {
   'hub.mode': 'subscribe'
@@ -21,7 +22,7 @@ export interface Change {
   field: 'messages'
 }
 
-export type Value = MessageValue
+export type Value = ValueBase & (StatusValue | MessageValue)
 
 export interface ValueBase {
   messaging_product: 'whatsapp'
