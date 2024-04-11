@@ -9,6 +9,8 @@ import {
   sendInteractiveListMessage
 } from './whatsapp'
 
+import { verifyWebhook, handleWebhook } from './webhook'
+
 export {
   sendImage,
   sendText,
@@ -17,5 +19,7 @@ export {
   sendAudio,
   sendButtonMessage,
   sendCTAButtonMessage,
-  sendInteractiveListMessage
+  sendInteractiveListMessage,
+  verifyWebhook,
+  handleWebhook
 }
