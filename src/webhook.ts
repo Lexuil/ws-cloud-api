@@ -19,16 +19,14 @@ export function verifyWebhook (input: WebhookSubscribeQuery): {
 }
 
 export function handleWebhook (input: WsRequest): {
-  statusCode: 200
+  type: 'statusUpdate'
 } | {
-  statusCode: 200
+  type: 'message'
   from: string
   message: string
-} {
+} | undefined {
   if (input.object === undefined) {
-    return {
-      statusCode: 200
-    }
+    return
   }
 
   const webhookValue = input.entry[0].changes[0].value
@@ -37,7 +35,7 @@ export function handleWebhook (input: WsRequest): {
   if ('statuses' in webhookValue) {
     // TODO: Handle status updates
     return {
-      statusCode: 200
+      type: 'statusUpdate'
     }
   }
 
@@ -45,13 +43,11 @@ export function handleWebhook (input: WsRequest): {
 
   // TODO: Add support for messages different than interactive and text
   if (messageObject.type !== 'interactive' && messageObject.type !== 'text') {
-    return {
-      statusCode: 200
-    }
+    return
   }
 
   return {
-    statusCode: 200,
+    type: 'message',
     from: messageObject.from,
     message: getMessageText(messageObject)
   }
