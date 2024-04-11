@@ -13,7 +13,7 @@ import type {
 async function sendMessageRequest (
   to: string,
   body: WSBody
-): Promise<void> {
+): Promise<boolean> {
   const postBody = JSON.stringify({
     messaging_product: 'whatsapp',
     to,
@@ -35,16 +35,17 @@ async function sendMessageRequest (
   if (!response.ok) {
     console.error(`Failed to send ${body.type} message`)
     console.error(JSON.stringify(await response.json(), null, 2))
+    return false
   } else {
-    console.log(`${body.type} message sent successfully to user`)
+    return true
   }
 }
 
 export async function sendText (
   to: string,
   message: string
-): Promise<void> {
-  await sendMessageRequest(
+): Promise<boolean> {
+  return await sendMessageRequest(
     to,
     {
       type: MessageTypes.Text,
@@ -59,8 +60,8 @@ async function sendSimpleMedia (
   to: string,
   type: MediaBody['type'],
   link: string
-): Promise<void> {
-  await sendMessageRequest(
+): Promise<boolean> {
+  return await sendMessageRequest(
     to,
     // FIXME: Typescript not identifying the type
     // @ts-expect-error Typescript not identifying the type
@@ -73,20 +74,20 @@ async function sendSimpleMedia (
   )
 }
 
-export async function sendImage (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypes.Image, link)
+export async function sendImage (to: string, link: string): Promise<boolean> {
+  return await sendSimpleMedia(to, MessageTypes.Image, link)
 }
 
-export async function sendVideo (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypes.Video, link)
+export async function sendVideo (to: string, link: string): Promise<boolean> {
+  return await sendSimpleMedia(to, MessageTypes.Video, link)
 }
 
-export async function sendDocument (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypes.Document, link)
+export async function sendDocument (to: string, link: string): Promise<boolean> {
+  return await sendSimpleMedia(to, MessageTypes.Document, link)
 }
 
-export async function sendAudio (to: string, link: string): Promise<void> {
-  await sendSimpleMedia(to, MessageTypes.Audio, link)
+export async function sendAudio (to: string, link: string): Promise<boolean> {
+  return await sendSimpleMedia(to, MessageTypes.Audio, link)
 }
 
 function generateInteractiveBody (input: Interactive): InteractiveBody {
@@ -102,7 +103,7 @@ export async function sendButtonMessage (
     text: string
     buttons: Button[]
   }
-): Promise<void> {
+): Promise<boolean> {
   const body: ButtonInteractive = {
     type: InteractiveTypes.Button,
     body: {
@@ -120,7 +121,7 @@ export async function sendButtonMessage (
     })
   }
 
-  await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest(to, generateInteractiveBody(body))
 }
 
 export async function sendCTAButtonMessage (
@@ -130,7 +131,7 @@ export async function sendCTAButtonMessage (
     buttonText: string
     url: string
   }
-): Promise<void> {
+): Promise<boolean> {
   const body: CTAButtonInteractive = {
     type: InteractiveTypes.CTAButton,
     body: {
@@ -144,7 +145,7 @@ export async function sendCTAButtonMessage (
       }
     }
   }
-  await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest(to, generateInteractiveBody(body))
 }
 
 export async function sendInteractiveListMessage (
@@ -157,7 +158,7 @@ export async function sendInteractiveListMessage (
       description: string
     }>
   }
-): Promise<void> {
+): Promise<boolean> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
@@ -181,5 +182,5 @@ export async function sendInteractiveListMessage (
     })
   }
 
-  await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest(to, generateInteractiveBody(body))
 }
