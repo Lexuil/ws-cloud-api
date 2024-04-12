@@ -1,4 +1,4 @@
-import type { MessageTypes, InteractiveTypes } from './enums'
+import type { MessageTypes, InteractiveTypes, ParametersTypes } from './enums'
 
 interface SimpleText {
   text: string
@@ -125,6 +125,77 @@ export interface ListInteractive {
   action: Pick<Action, 'button' | 'sections'>
 }
 
+export interface TemplateLanguage {
+  code: string
+  policy: 'deterministic'
+}
+
+export type TemplateComponent = TemplateComponentBase | TemplateComponentButton
+
+export interface TemplateComponentBase {
+  type: 'body' | 'header' | 'button'
+  parameters?: TemplateParameter[]
+}
+
+export interface TemplateComponentButton extends TemplateComponentBase {
+  type: 'button'
+  sub_type: 'quick_reply' | 'url' | 'catalog'
+  parameters: TemplateParameter[]
+  index: number
+}
+
+export type TemplateParameter = TemplateParameterText |
+TemplateParameterCurrency |
+TemplateParameterDateTime |
+TemplateParameterImage |
+TemplateParameterDocument |
+TemplateParameterVideo
+
+export interface TemplateParameterText {
+  type: ParametersTypes.Text
+  text: string
+}
+
+export interface TemplateParameterCurrency {
+  type: ParametersTypes.Currency
+  currency: {
+    code: string
+    amount_1000: number
+    fallback_value: string
+  }
+}
+
+export interface TemplateParameterDateTime {
+  type: ParametersTypes.DateTime
+  date_time: {
+    fallback_value: string
+  }
+}
+
+export interface TemplateParameterImage {
+  type: ParametersTypes.Image
+  image: ImageMedia
+}
+
+export interface TemplateParameterDocument {
+  type: ParametersTypes.Document
+  document: DocumentMedia
+}
+
+export interface TemplateParameterVideo {
+  type: ParametersTypes.Video
+  video: VideoMedia
+}
+
+export interface TemplateBody {
+  type: MessageTypes.Template
+  [MessageTypes.Template]: {
+    name: string
+    language: TemplateLanguage
+    components?: TemplateComponent[]
+  }
+}
+
 export interface TextBody {
   type: MessageTypes.Text
   [MessageTypes.Text]: {
@@ -167,4 +238,4 @@ export interface InteractiveBody {
   [MessageTypes.Interactive]: Interactive
 }
 
-export type WSBody = InteractiveBody | TextBody | MediaBody
+export type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody

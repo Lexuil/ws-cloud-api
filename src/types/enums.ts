@@ -19,3 +19,13 @@ export const enum MessageTypes {
   Text = 'text',
   Video = 'video'
 }
+
+export const enum ParametersTypes {
+  Currency = 'currency',
+  DateTime = 'date_time',
+  Document = 'document',
+  Image = 'image',
+  Text = 'text',
+  Video = 'video',
+  Payload = 'payload',
+}
