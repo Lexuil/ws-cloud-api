@@ -37,24 +37,17 @@ export interface Conversation {
   origin: ConversationOrigin
 }
 
+export type ConversationCategory = 'authentication' |
+'marketing' |
+'utility' |
+'service' |
+'referral_conversion'
+
 export interface ConversationOrigin {
-  type: string
+  type: ConversationCategory
 }
 
 export interface Pricing {
-  billable: boolean
-  pricing_model: string
-  category: string
-}
-
-export interface Error {
-  code: number
-  title: string
-  message: string
-  error_data: ErrorData
-  href: string
-}
-
-export interface ErrorData {
-  details: string
+  pricing_model: 'CBP'
+  category: ConversationCategory
 }

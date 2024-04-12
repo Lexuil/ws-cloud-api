@@ -33,3 +33,14 @@ export interface Metadata {
   display_phone_number: string
   phone_number_id: string
 }
+
+export interface Error {
+  code: number
+  title: string
+  message: string
+  error_data: ErrorData
+}
+
+export interface ErrorData {
+  details: string
+}

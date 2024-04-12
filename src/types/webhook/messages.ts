@@ -20,6 +20,21 @@ export interface MessageBase {
   from: string
   id: string
   timestamp: string
+  context?: MessageContext
+  errors?: Error[]
+}
+
+export interface MessageContext {
+  id: string
+  from: string
+  forwarded: boolean
+  frequently_forwarded: boolean
+  referred_product: ReferredProduct
+}
+
+export interface ReferredProduct {
+  catalog_id: string
+  product_retailer_id: string
 }
 
 // ----------------------
