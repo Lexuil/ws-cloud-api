@@ -8,7 +8,7 @@ import {
   sendButtonMessage,
   sendCTAButtonMessage,
   sendInteractiveListMessage
-} from '../dist/index'
+} from '../dist/messaging'
 
 const phoneNumberToTest = '573202601178'
 

@@ -1,4 +1,4 @@
-import { handleWebhook } from '../dist'
+import { handleWebhook } from '../dist/webhook'
 import textBody from './bodyExamples/messageText.json'
 import replyButtonBody from './bodyExamples/messageFromButton.json'
 import replyListBody from './bodyExamples/messageFromList.json'
