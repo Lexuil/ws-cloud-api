@@ -10,7 +10,7 @@ import type {
   CTAButtonInteractive
 } from './types/messages'
 
-async function sendMessageRequest (
+export async function sendMessageRequest (
   to: string,
   body: WSBody
 ): Promise<boolean> {
