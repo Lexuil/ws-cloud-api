@@ -10,7 +10,7 @@ import {
   sendInteractiveListMessage
 } from '../dist/messaging'
 
-const phoneNumberToTest = '573202601178'
+const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPENT ?? ''
 
 sendText(
   phoneNumberToTest,
