@@ -15,7 +15,8 @@
   "scripts": {
     "build": "unbuild",
     "test:messages": "jiti ./test/sendMessages.ts",
-    "test:webhook": "jiti ./test/webhook.ts"
+    "test:webhook": "jiti ./test/webhook.ts",
+    "lint": "eslint \"./src/**/*.ts\" && tsc --noEmit"
   },
   "exports": {
     ".": {
