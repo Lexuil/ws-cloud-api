@@ -56,7 +56,7 @@ WS_VERIFY_TOKEN=
 How to handle messages events
 
 ```ts
-import { handleWebhook } from "ws-cloud-api";
+import { handleWebhook } from "ws-cloud-api/webhook";
 import express from "express";
 
 const app = express();
@@ -89,7 +89,7 @@ app.listen(port, () => {
 How to send text
 
 ```ts
-import { sendText } from "ws-cloud-api";
+import { sendText } from "ws-cloud-api/messaging";
 
 const sentSuccess = sendText(
   process.env.PHONE_NUMBER_RECIPIENT,
@@ -106,9 +106,15 @@ if (sentSuccess) {
 To send a template, you have to create it first. You will need the name and the language code.
 
 ```ts
-sendTextTemplate(
+import { sendTextTemplate } from "ws-cloud-api/templates";
+
+const sentSuccess = sendTextTemplate(
   process.env.PHONE_NUMBER_RECIPIENT,
   "hello_world",
   "en_US"
 ).catch(console.error);
+
+if (sentSuccess) {
+  console.log("Template sent");
+}
 ```
