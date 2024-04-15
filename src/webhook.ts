@@ -29,6 +29,14 @@ export function handleWebhook (input: WsRequest): {
     return
   }
 
+  // Prevent messages from other phone numbers
+  if (
+    input.entry[0].changes[0].value.metadata.phone_number_id !==
+    process.env.WS_PHONE_NUMBER_ID
+  ) {
+    return
+  }
+
   const webhookValue = input.entry[0].changes[0].value
 
   // Handle status updates
