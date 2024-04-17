@@ -1,3 +1,4 @@
+import type { MessageStatus } from './types/enums'
 import type { WsRequest, WebhookSubscribeQuery } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
@@ -20,6 +21,9 @@ export function verifyWebhook (input: WebhookSubscribeQuery): {
 
 export function handleWebhook (input: WsRequest): {
   type: 'statusUpdate'
+  messageId: string
+  userId: string
+  status: MessageStatus.Read | MessageStatus.Delivered | MessageStatus.Sent | MessageStatus.Failed
 } | {
   type: 'message'
   from: string
@@ -41,9 +45,11 @@ export function handleWebhook (input: WsRequest): {
 
   // Handle status updates
   if ('statuses' in webhookValue) {
-    // TODO: Handle status updates
     return {
-      type: 'statusUpdate'
+      type: 'statusUpdate',
+      messageId: webhookValue.statuses[0].id,
+      userId: webhookValue.statuses[0].recipient_id,
+      status: webhookValue.statuses[0].status
     }
   }
 
