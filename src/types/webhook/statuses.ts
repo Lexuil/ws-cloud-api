@@ -1,3 +1,5 @@
+import { type MessageStatus } from '../enums'
+
 export interface StatusValue {
   statuses: Status[]
 }
@@ -11,23 +13,23 @@ export interface StatusBase {
 }
 
 export interface SentStatus extends StatusBase {
-  status: 'sent'
+  status: MessageStatus.Sent
   conversation: Conversation
   pricing: Pricing
 }
 
 export interface DeliveredStatus extends StatusBase {
-  status: 'delivered'
+  status: MessageStatus.Delivered
   conversation: Conversation
   pricing: Pricing
 }
 
 export interface ReadStatus extends StatusBase {
-  status: 'read'
+  status: MessageStatus.Read
 }
 
 export interface FailedStatus extends StatusBase {
-  status: 'failed'
+  status: MessageStatus.Failed
   errors: Error[]
 }
 

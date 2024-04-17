@@ -29,3 +29,10 @@ export const enum ParametersTypes {
   Video = 'video',
   Payload = 'payload',
 }
+
+export const enum MessageStatus {
+  Delivered = 'delivered',
+  Read = 'read',
+  Sent = 'sent',
+  Failed = 'failed'
+}
