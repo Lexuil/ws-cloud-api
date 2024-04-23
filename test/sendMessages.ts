@@ -8,7 +8,8 @@ import {
   sendButtonMessage,
   sendCTAButtonMessage,
   sendInteractiveListMessage,
-  sendInteractiveSectionListMessage
+  sendInteractiveSectionListMessage,
+  sendFlowMessage
 } from '../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -124,4 +125,16 @@ sendInteractiveSectionListMessage(
       }
     ]
   }
+).catch(console.error)
+
+sendFlowMessage(
+  phoneNumberToTest,
+  {
+    id: process.env.FLOW_MESSAGE_ID ?? '',
+    text: 'Flow de prueba',
+    token: 'token',
+    ctaText: 'Ver Flow',
+    defaultScreen: 'RECOMMEND'
+  },
+  true
 ).catch(console.error)

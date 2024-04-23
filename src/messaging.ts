@@ -7,7 +7,8 @@ import type {
   InteractiveBody,
   WSBody,
   MediaBody,
-  CTAButtonInteractive
+  CTAButtonInteractive,
+  FlowInteractive
 } from './types/messages'
 
 export async function sendMessageRequest (
@@ -221,6 +222,41 @@ export async function sendInteractiveSectionListMessage (
         id: list.sections[i].list[j].description,
         ...list.sections[i].list[j]
       })
+    }
+  }
+
+  return await sendMessageRequest(to, generateInteractiveBody(body))
+}
+
+export async function sendFlowMessage (
+  to: string,
+  flow: {
+    id: string
+    text: string
+    token: string
+    ctaText: string
+    defaultScreen: string
+  },
+  draft?: boolean
+): Promise<boolean> {
+  const body: FlowInteractive = {
+    type: InteractiveTypes.Flow,
+    body: {
+      text: flow.text
+    },
+    action: {
+      name: 'flow',
+      parameters: {
+        mode: draft === true ? 'draft' : 'published',
+        flow_message_version: '3',
+        flow_action: 'navigate',
+        flow_token: flow.token,
+        flow_id: flow.id,
+        flow_cta: flow.ctaText,
+        flow_action_payload: {
+          screen: flow.defaultScreen
+        }
+      }
     }
   }
 
