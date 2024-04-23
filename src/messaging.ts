@@ -184,3 +184,45 @@ export async function sendInteractiveListMessage (
 
   return await sendMessageRequest(to, generateInteractiveBody(body))
 }
+
+export async function sendInteractiveSectionListMessage (
+  to: string,
+  interactive: {
+    text: string
+    buttonText: string
+    sections: Array<{
+      sectionTitle: string
+      list: Array<{
+        title: string
+        description: string
+      }>
+    }>
+  }
+): Promise<boolean> {
+  const body: ListInteractive = {
+    type: InteractiveTypes.List,
+    body: {
+      text: interactive.text
+    },
+    action: {
+      button: interactive.buttonText,
+      sections: []
+    }
+  }
+
+  for (let i = 0; i < interactive.sections.length; i++) {
+    body.action.sections.push({
+      title: interactive.sections[i].sectionTitle,
+      rows: []
+    })
+
+    for (let j = 0; j < interactive.sections[i].list.length; j++) {
+      body.action.sections[i].rows.push({
+        id: interactive.sections[i].list[j].description,
+        ...interactive.sections[i].list[j]
+      })
+    }
+  }
+
+  return await sendMessageRequest(to, generateInteractiveBody(body))
+}

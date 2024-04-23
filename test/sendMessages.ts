@@ -7,7 +7,8 @@ import {
   sendAudio,
   sendButtonMessage,
   sendCTAButtonMessage,
-  sendInteractiveListMessage
+  sendInteractiveListMessage,
+  sendInteractiveSectionListMessage
 } from '../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -78,5 +79,49 @@ sendCTAButtonMessage(
     text: 'Botón CTA',
     buttonText: 'Botón CTA',
     url: 'https://www.google.com'
+  }
+).catch(console.error)
+
+sendInteractiveSectionListMessage(
+  phoneNumberToTest,
+  {
+    text: 'También puedes elegir entre las siguientes opciones para obtener más información:',
+    buttonText: 'Ver opciones',
+    sections: [
+      {
+        sectionTitle: '¿En que se invierte?',
+        list: [
+          {
+            title: 'Localización',
+            description: 'Ver proyectos en un municipio'
+          },
+          {
+            title: 'Sector',
+            description: 'Ver proyectos de un sector'
+          },
+          {
+            title: 'Vigencia',
+            description: 'Ver proyectos un año'
+          }
+        ]
+      },
+      {
+        sectionTitle: 'Conceptos',
+        list: [
+          {
+            title: 'Siglas',
+            description: 'Descubre el significado de las siglas que se usan'
+          },
+          {
+            title: 'Glosario',
+            description: 'Conoce el significado de los conceptos'
+          },
+          {
+            title: 'Políticas y genero',
+            description: 'Conoce las políticas y genero'
+          }
+        ]
+      }
+    ]
   }
 ).catch(console.error)
