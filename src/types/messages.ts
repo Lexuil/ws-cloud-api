@@ -84,16 +84,37 @@ export interface ReplyButton {
   reply: Button
 }
 
-interface Action {
+export interface Action {
   button: string
   buttons: ReplyButton[]
   sections: Section[]
 }
 
+export interface FlowAction {
+  name: 'flow'
+  parameters: FlowActionsParameters
+}
+
+export interface FlowActionsParameters {
+  mode?: 'draft' | 'published'
+  flow_message_version: '3'
+  flow_action?: 'navigate' | 'data_exchange'
+  flow_token: string
+  flow_id: string
+  flow_cta: string
+  flow_action_payload?: FlowActionPayload
+}
+
+export interface FlowActionPayload {
+  screen: string
+  data?: Record<string, string>
+}
+
 export type Interactive =
 ButtonInteractive |
 ListInteractive |
-CTAButtonInteractive
+CTAButtonInteractive |
+FlowInteractive
 
 export interface ButtonInteractive {
   type: InteractiveTypes.Button
@@ -123,6 +144,14 @@ export interface ListInteractive {
   footer?: SimpleText
   header?: Header
   action: Pick<Action, 'button' | 'sections'>
+}
+
+export interface FlowInteractive {
+  type: InteractiveTypes.Flow
+  body: SimpleText
+  footer?: SimpleText
+  header?: Header
+  action: FlowAction
 }
 
 export interface TemplateLanguage {

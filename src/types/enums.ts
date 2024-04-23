@@ -1,7 +1,8 @@
 export const enum InteractiveTypes {
   Button = 'button',
   CTAButton = 'cta_url',
-  List = 'list'
+  List = 'list',
+  Flow = 'flow',
   // Product = 'product',
   // ProductList = 'product_list'
 }
