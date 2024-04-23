@@ -150,7 +150,7 @@ export async function sendCTAButtonMessage (
 
 export async function sendInteractiveListMessage (
   to: string,
-  interactive: {
+  list: {
     text: string
     buttonText: string
     list: Array<{
@@ -162,23 +162,23 @@ export async function sendInteractiveListMessage (
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
-      text: interactive.text
+      text: list.text
     },
     action: {
-      button: interactive.buttonText,
+      button: list.buttonText,
       sections: [
         {
-          title: interactive.buttonText,
+          title: list.buttonText,
           rows: []
         }
       ]
     }
   }
 
-  for (let i = 0; i < interactive.list.length; i++) {
+  for (let i = 0; i < list.list.length; i++) {
     body.action.sections[0].rows.push({
-      id: interactive.list[i].description,
-      ...interactive.list[i]
+      id: list.list[i].description,
+      ...list.list[i]
     })
   }
 
@@ -187,7 +187,7 @@ export async function sendInteractiveListMessage (
 
 export async function sendInteractiveSectionListMessage (
   to: string,
-  interactive: {
+  list: {
     text: string
     buttonText: string
     sections: Array<{
@@ -202,24 +202,24 @@ export async function sendInteractiveSectionListMessage (
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
-      text: interactive.text
+      text: list.text
     },
     action: {
-      button: interactive.buttonText,
+      button: list.buttonText,
       sections: []
     }
   }
 
-  for (let i = 0; i < interactive.sections.length; i++) {
+  for (let i = 0; i < list.sections.length; i++) {
     body.action.sections.push({
-      title: interactive.sections[i].sectionTitle,
+      title: list.sections[i].sectionTitle,
       rows: []
     })
 
-    for (let j = 0; j < interactive.sections[i].list.length; j++) {
+    for (let j = 0; j < list.sections[i].list.length; j++) {
       body.action.sections[i].rows.push({
-        id: interactive.sections[i].list[j].description,
-        ...interactive.sections[i].list[j]
+        id: list.sections[i].list[j].description,
+        ...list.sections[i].list[j]
       })
     }
   }
