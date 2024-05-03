@@ -10,7 +10,7 @@ import {
   sendInteractiveListMessage,
   sendInteractiveSectionListMessage,
   sendFlowMessage
-} from '../dist/messaging'
+} from '../../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
 const messageType = process.argv[2]

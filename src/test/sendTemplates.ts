@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { sendTextTemplate } from '../dist/templates'
+import { sendTextTemplate } from '../../dist/templates'
 
 sendTextTemplate(
   process.env.PHONE_NUMBER_RECIPIENT ?? '',

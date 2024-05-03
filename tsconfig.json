@@ -26,5 +26,5 @@
       ]
     }
   },
-  "include": ["src", "test"]
+  "include": ["src", "src/test"]
 }
