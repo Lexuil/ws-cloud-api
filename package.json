@@ -14,9 +14,9 @@
   "type": "module",
   "scripts": {
     "build": "unbuild",
-    "test:messages": "jiti ./test/sendMessages.ts",
-    "test:webhook": "jiti ./test/webhook.ts",
-    "test:templates": "jiti ./test/sendTemplates.ts",
+    "test:messages": "jiti ./src/test/sendMessages.ts",
+    "test:webhook": "jiti ./src/test/webhook.ts",
+    "test:templates": "jiti ./src/test/sendTemplates.ts",
     "lint": "eslint \"./src/**/*.ts\" && tsc --noEmit"
   },
   "exports": {
