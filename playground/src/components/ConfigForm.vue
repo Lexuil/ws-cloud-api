@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useConfigStore } from '../stores/configStore'
 
-const phoneNumberId = ref('')
-const token = ref('')
-const phoneNumberTo = ref('')
+const config = useConfigStore()
 </script>
 
 <template>
@@ -13,7 +11,7 @@ const phoneNumberTo = ref('')
     >Phone number ID</label>
     <input
       id="phoneNumberId"
-      v-model="phoneNumberId"
+      v-model="config.phoneNumberId"
       name="phoneNumberId"
       type="text"
       class="border border-gray-300 rounded-md p-2 w-full"
@@ -24,7 +22,7 @@ const phoneNumberTo = ref('')
     >Token</label>
     <input
       id="token"
-      v-model="token"
+      v-model="config.token"
       name="token"
       type="text"
       class="border border-gray-300 rounded-md p-2 w-full"
@@ -35,7 +33,7 @@ const phoneNumberTo = ref('')
     >Phone number to test</label>
     <input
       id="phoneNumberTo"
-      v-model="phoneNumberTo"
+      v-model="config.phoneNumberTo"
       name="phoneNumberTo"
       type="text"
       class="border border-gray-300 rounded-md p-2 w-full"
