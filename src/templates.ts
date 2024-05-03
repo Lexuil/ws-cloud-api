@@ -1,14 +1,21 @@
 import { sendMessageRequest } from './messaging'
+import { type wsConfig } from './types/config'
 import { MessageTypes } from './types/enums'
 
-export async function sendTextTemplate (
-  to: string,
-  templateName: string,
+export async function sendTextTemplate ({
+  to,
+  templateName,
+  language,
+  config
+}: {
+  to: string
+  templateName: string
   language: string
-): Promise<boolean> {
-  return await sendMessageRequest(
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendMessageRequest({
     to,
-    {
+    body: {
       type: MessageTypes.Template,
       [MessageTypes.Template]: {
         name: templateName,
@@ -17,6 +24,7 @@ export async function sendTextTemplate (
           policy: 'deterministic'
         }
       }
-    }
-  )
+    },
+    config
+  })
 }

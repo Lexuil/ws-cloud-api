@@ -1,3 +1,4 @@
+import { type wsConfig } from './types/config'
 import { InteractiveTypes, MessageTypes } from './types/enums'
 import type {
   ListInteractive,
@@ -11,10 +12,16 @@ import type {
   FlowInteractive
 } from './types/messages'
 
-export async function sendMessageRequest (
-  to: string,
+export async function sendMessageRequest ({
+  to,
+  body,
+  config
+}: {
+  to: string
   body: WSBody
-): Promise<boolean> {
+  config?: wsConfig
+
+}): Promise<boolean> {
   const postBody = JSON.stringify({
     messaging_product: 'whatsapp',
     to,
@@ -22,11 +29,11 @@ export async function sendMessageRequest (
   })
 
   const response = await fetch(
-    `https://graph.facebook.com/v${process.env.WS_CA_VERSION ?? '19.0'}/${process.env.WS_PHONE_NUMBER_ID}/messages`,
+    `https://graph.facebook.com/v${process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'}/${process.env.WS_PHONE_NUMBER_ID ?? config?.phoneNumberId}/messages`,
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.WS_TOKEN}`,
+        Authorization: `Bearer ${process.env.WS_TOKEN ?? config?.token}`,
         'Content-Type': 'application/json'
       },
       body: postBody
@@ -42,53 +49,98 @@ export async function sendMessageRequest (
   }
 }
 
-export async function sendText (
-  to: string,
+export async function sendText ({
+  to,
+  message,
+  config
+}: {
+  to: string
   message: string
-): Promise<boolean> {
-  return await sendMessageRequest(
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendMessageRequest({
     to,
-    {
+    body: {
       type: MessageTypes.Text,
       [MessageTypes.Text]: {
         body: message
       }
-    }
-  )
+    },
+    config
+  })
 }
 
-async function sendSimpleMedia (
-  to: string,
-  type: MediaBody['type'],
+async function sendSimpleMedia ({
+  to,
+  type,
+  link,
+  config
+}: {
+  to: string
+  type: MediaBody['type']
   link: string
-): Promise<boolean> {
-  return await sendMessageRequest(
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendMessageRequest({
     to,
     // FIXME: Typescript not identifying the type
     // @ts-expect-error Typescript not identifying the type
-    {
+    body: {
       type,
       [type]: {
         link
       }
-    }
-  )
+    },
+    config
+  })
 }
 
-export async function sendImage (to: string, link: string): Promise<boolean> {
-  return await sendSimpleMedia(to, MessageTypes.Image, link)
+export async function sendImage ({
+  to,
+  link,
+  config
+}: {
+  to: string
+  link: string
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendSimpleMedia({ to, type: MessageTypes.Image, link, config })
 }
 
-export async function sendVideo (to: string, link: string): Promise<boolean> {
-  return await sendSimpleMedia(to, MessageTypes.Video, link)
+export async function sendVideo ({
+  to,
+  link,
+  config
+}: {
+  to: string
+  link: string
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendSimpleMedia({ to, type: MessageTypes.Video, link, config })
 }
 
-export async function sendDocument (to: string, link: string): Promise<boolean> {
-  return await sendSimpleMedia(to, MessageTypes.Document, link)
+export async function sendDocument ({
+  to,
+  link,
+  config
+}: {
+  to: string
+  link: string
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendSimpleMedia({ to, type: MessageTypes.Document, link, config })
 }
 
-export async function sendAudio (to: string, link: string): Promise<boolean> {
-  return await sendSimpleMedia(to, MessageTypes.Audio, link)
+export async function sendAudio ({
+  to,
+  link,
+  config
+}: {
+  to: string
+  link: string
+  config?: wsConfig
+}): Promise<boolean> {
+  return await sendSimpleMedia({ to, type: MessageTypes.Audio, link, config })
 }
 
 function generateInteractiveBody (input: Interactive): InteractiveBody {
@@ -98,13 +150,18 @@ function generateInteractiveBody (input: Interactive): InteractiveBody {
   }
 }
 
-export async function sendButtonMessage (
-  to: string,
+export async function sendButtonMessage ({
+  to,
+  message,
+  config
+}: {
+  to: string
   message: {
     text: string
     buttons: Button[]
   }
-): Promise<boolean> {
+  config?: wsConfig
+}): Promise<boolean> {
   const body: ButtonInteractive = {
     type: InteractiveTypes.Button,
     body: {
@@ -122,17 +179,26 @@ export async function sendButtonMessage (
     })
   }
 
-  return await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest({
+    to,
+    body: generateInteractiveBody(body),
+    config
+  })
 }
 
-export async function sendCTAButtonMessage (
-  to: string,
+export async function sendCTAButtonMessage ({
+  to,
+  message,
+  config
+}: {
+  to: string
   message: {
     text: string
     buttonText: string
     url: string
   }
-): Promise<boolean> {
+  config?: wsConfig
+}): Promise<boolean> {
   const body: CTAButtonInteractive = {
     type: InteractiveTypes.CTAButton,
     body: {
@@ -146,11 +212,19 @@ export async function sendCTAButtonMessage (
       }
     }
   }
-  return await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest({
+    to,
+    body: generateInteractiveBody(body),
+    config
+  })
 }
 
-export async function sendInteractiveListMessage (
-  to: string,
+export async function sendInteractiveListMessage ({
+  to,
+  list,
+  config
+}: {
+  to: string
   list: {
     text: string
     buttonText: string
@@ -159,7 +233,8 @@ export async function sendInteractiveListMessage (
       description: string
     }>
   }
-): Promise<boolean> {
+  config?: wsConfig
+}): Promise<boolean> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
@@ -183,11 +258,19 @@ export async function sendInteractiveListMessage (
     })
   }
 
-  return await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest({
+    to,
+    body: generateInteractiveBody(body),
+    config
+  })
 }
 
-export async function sendInteractiveSectionListMessage (
-  to: string,
+export async function sendInteractiveSectionListMessage ({
+  to,
+  list,
+  config
+}: {
+  to: string
   list: {
     text: string
     buttonText: string
@@ -199,7 +282,8 @@ export async function sendInteractiveSectionListMessage (
       }>
     }>
   }
-): Promise<boolean> {
+  config?: wsConfig
+}): Promise<boolean> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
@@ -225,20 +309,30 @@ export async function sendInteractiveSectionListMessage (
     }
   }
 
-  return await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest({
+    to,
+    body: generateInteractiveBody(body),
+    config
+  })
 }
 
-export async function sendFlowMessage (
-  to: string,
+export async function sendFlowMessage ({
+  to,
+  flow,
+  draft,
+  config
+}: {
+  to: string
   flow: {
     id: string
     text: string
     token: string
     ctaText: string
     defaultScreen: string
-  },
+  }
   draft?: boolean
-): Promise<boolean> {
+  config?: wsConfig
+}): Promise<boolean> {
   const body: FlowInteractive = {
     type: InteractiveTypes.Flow,
     body: {
@@ -260,5 +354,9 @@ export async function sendFlowMessage (
     }
   }
 
-  return await sendMessageRequest(to, generateInteractiveBody(body))
+  return await sendMessageRequest({
+    to,
+    body: generateInteractiveBody(body),
+    config
+  })
 }

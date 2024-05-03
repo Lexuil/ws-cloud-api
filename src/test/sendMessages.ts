@@ -16,29 +16,29 @@ const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
 const messageType = process.argv[2]
 
 const messageFunctions: Record<string, () => Promise<boolean>> = {
-  text: async () => await sendText(
-    phoneNumberToTest,
-    'Test message from library'
-  ),
-  image: async () => await sendImage(
-    phoneNumberToTest,
-    'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
-  ),
-  video: async () => await sendVideo(
-    phoneNumberToTest,
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
-  ),
-  document: async () => await sendDocument(
-    phoneNumberToTest,
-    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-  ),
-  audio: async () => await sendAudio(
-    phoneNumberToTest,
-    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-  ),
-  buttons: async () => await sendButtonMessage(
-    phoneNumberToTest,
-    {
+  text: async () => await sendText({
+    to: phoneNumberToTest,
+    message: 'Test message from library'
+  }),
+  image: async () => await sendImage({
+    to: phoneNumberToTest,
+    link: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
+  }),
+  video: async () => await sendVideo({
+    to: phoneNumberToTest,
+    link: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+  }),
+  document: async () => await sendDocument({
+    to: phoneNumberToTest,
+    link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+  }),
+  audio: async () => await sendAudio({
+    to: phoneNumberToTest,
+    link: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+  }),
+  buttons: async () => await sendButtonMessage({
+    to: phoneNumberToTest,
+    message: {
       text: 'Test button',
       buttons: [
         {
@@ -51,10 +51,10 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         }
       ]
     }
-  ),
-  list: async () => await sendInteractiveListMessage(
-    phoneNumberToTest,
-    {
+  }),
+  list: async () => await sendInteractiveListMessage({
+    to: phoneNumberToTest,
+    list: {
       text: 'Test list',
       buttonText: 'List button',
       list: [
@@ -68,18 +68,18 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         }
       ]
     }
-  ),
-  'cta-button': async () => await sendCTAButtonMessage(
-    phoneNumberToTest,
-    {
+  }),
+  'cta-button': async () => await sendCTAButtonMessage({
+    to: phoneNumberToTest,
+    message: {
       text: 'CTA button',
       buttonText: 'CTA button',
       url: 'https://www.google.com'
     }
-  ),
-  'section-list': async () => await sendInteractiveSectionListMessage(
-    phoneNumberToTest,
-    {
+  }),
+  'section-list': async () => await sendInteractiveSectionListMessage({
+    to: phoneNumberToTest,
+    list: {
       text: 'Test section list',
       buttonText: 'Section list button',
       sections: [
@@ -111,18 +111,18 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         }
       ]
     }
-  ),
-  flow: async () => await sendFlowMessage(
-    phoneNumberToTest,
-    {
+  }),
+  flow: async () => await sendFlowMessage({
+    to: phoneNumberToTest,
+    flow: {
       id: process.env.FLOW_MESSAGE_ID ?? '',
       text: 'Test flow',
       token: 'token',
       ctaText: 'View flow',
       defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? ''
     },
-    true
-  )
+    draft: true
+  })
 }
 
 if (messageType in messageFunctions) {
