@@ -13,128 +13,127 @@ import {
 } from '../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
+const messageType = process.argv[2]
 
-sendText(
-  phoneNumberToTest,
-  'Mensaje de prueba de librería'
-).catch(console.error)
+const messageFunctions: Record<string, () => Promise<boolean>> = {
+  text: async () => await sendText(
+    phoneNumberToTest,
+    'Test message from library'
+  ),
+  image: async () => await sendImage(
+    phoneNumberToTest,
+    'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
+  ),
+  video: async () => await sendVideo(
+    phoneNumberToTest,
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+  ),
+  document: async () => await sendDocument(
+    phoneNumberToTest,
+    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+  ),
+  audio: async () => await sendAudio(
+    phoneNumberToTest,
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+  ),
+  buttons: async () => await sendButtonMessage(
+    phoneNumberToTest,
+    {
+      text: 'Test button',
+      buttons: [
+        {
+          title: 'Button 1',
+          id: '1'
+        },
+        {
+          title: 'Button 2',
+          id: '2'
+        }
+      ]
+    }
+  ),
+  list: async () => await sendInteractiveListMessage(
+    phoneNumberToTest,
+    {
+      text: 'Test list',
+      buttonText: 'List button',
+      list: [
+        {
+          title: 'Element 1',
+          description: 'Description 1'
+        },
+        {
+          title: 'Element 2',
+          description: 'Description 2'
+        }
+      ]
+    }
+  ),
+  'cta-button': async () => await sendCTAButtonMessage(
+    phoneNumberToTest,
+    {
+      text: 'CTA button',
+      buttonText: 'CTA button',
+      url: 'https://www.google.com'
+    }
+  ),
+  'section-list': async () => await sendInteractiveSectionListMessage(
+    phoneNumberToTest,
+    {
+      text: 'Test section list',
+      buttonText: 'Section list button',
+      sections: [
+        {
+          sectionTitle: 'Section 1',
+          list: [
+            {
+              title: 'Element 1',
+              description: 'Description 1'
+            },
+            {
+              title: 'Element 2',
+              description: 'Description 2'
+            }
+          ]
+        },
+        {
+          sectionTitle: 'Section 2',
+          list: [
+            {
+              title: 'Element 3',
+              description: 'Description 3'
+            },
+            {
+              title: 'Element 4',
+              description: 'Description 4'
+            }
+          ]
+        }
+      ]
+    }
+  ),
+  flow: async () => await sendFlowMessage(
+    phoneNumberToTest,
+    {
+      id: process.env.FLOW_MESSAGE_ID ?? '',
+      text: 'Test flow',
+      token: 'token',
+      ctaText: 'View flow',
+      defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? ''
+    },
+    true
+  )
+}
 
-sendImage(
-  phoneNumberToTest,
-  'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
-).catch(console.error)
-
-sendVideo(
-  phoneNumberToTest,
-  'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
-).catch(console.error)
-
-sendDocument(
-  phoneNumberToTest,
-  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-).catch(console.error)
-
-sendAudio(
-  phoneNumberToTest,
-  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-).catch(console.error)
-
-sendButtonMessage(
-  phoneNumberToTest,
-  {
-    text: 'Botón de prueba',
-    buttons: [
-      {
-        title: 'Botón 1',
-        id: '1'
-      },
-      {
-        title: 'Botón 2',
-        id: '2'
-      }
-    ]
-  }
-).catch(console.error)
-
-sendInteractiveListMessage(
-  phoneNumberToTest,
-  {
-    text: 'Lista de prueba',
-    buttonText: 'Botón de lista',
-    list: [
-      {
-        title: 'Elemento 1',
-        description: 'Descripción 1'
-      },
-      {
-        title: 'Elemento 2',
-        description: 'Descripción 2'
-      }
-    ]
-  }
-).catch(console.error)
-
-sendCTAButtonMessage(
-  phoneNumberToTest,
-  {
-    text: 'Botón CTA',
-    buttonText: 'Botón CTA',
-    url: 'https://www.google.com'
-  }
-).catch(console.error)
-
-sendInteractiveSectionListMessage(
-  phoneNumberToTest,
-  {
-    text: 'También puedes elegir entre las siguientes opciones para obtener más información:',
-    buttonText: 'Ver opciones',
-    sections: [
-      {
-        sectionTitle: '¿En que se invierte?',
-        list: [
-          {
-            title: 'Localización',
-            description: 'Ver proyectos en un municipio'
-          },
-          {
-            title: 'Sector',
-            description: 'Ver proyectos de un sector'
-          },
-          {
-            title: 'Vigencia',
-            description: 'Ver proyectos un año'
-          }
-        ]
-      },
-      {
-        sectionTitle: 'Conceptos',
-        list: [
-          {
-            title: 'Siglas',
-            description: 'Descubre el significado de las siglas que se usan'
-          },
-          {
-            title: 'Glosario',
-            description: 'Conoce el significado de los conceptos'
-          },
-          {
-            title: 'Políticas y genero',
-            description: 'Conoce las políticas y genero'
-          }
-        ]
-      }
-    ]
-  }
-).catch(console.error)
-
-sendFlowMessage(
-  phoneNumberToTest,
-  {
-    id: process.env.FLOW_MESSAGE_ID ?? '',
-    text: 'Flow de prueba',
-    token: 'token',
-    ctaText: 'Ver Flow',
-    defaultScreen: 'RECOMMEND'
-  },
-  true
-).catch(console.error)
+if (messageType in messageFunctions) {
+  messageFunctions[messageType]()
+    .then((success) => { if (success) console.log('Message sent') })
+    .catch(console.error)
+} else if (messageType === undefined) {
+  console.error(
+    'Message type not provided\n\nAvailable types:\n -' +
+    Object.keys(messageFunctions).join('\n -')
+  )
+} else {
+  console.error(`Message type ${messageType} not found`)
+}
