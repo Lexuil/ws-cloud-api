@@ -28,12 +28,23 @@ export async function sendMessageRequest ({
     ...body
   })
 
+  // Config
+  const apiVersion = typeof process !== 'undefined'
+    ? process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'
+    : config?.apiVersion ?? '19.0'
+  const phoneNumberId = typeof process !== 'undefined'
+    ? process.env.WS_PHONE_NUMBER_ID ?? config?.phoneNumberId
+    : config?.phoneNumberId
+  const token = typeof process !== 'undefined'
+    ? process.env.WS_TOKEN ?? config?.token
+    : config?.token
+
   const response = await fetch(
-    `https://graph.facebook.com/v${process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'}/${process.env.WS_PHONE_NUMBER_ID ?? config?.phoneNumberId}/messages`,
+    `https://graph.facebook.com/v${apiVersion}/${phoneNumberId}/messages`,
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.WS_TOKEN ?? config?.token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: postBody
