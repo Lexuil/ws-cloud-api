@@ -51,7 +51,10 @@ function addMessage() {
       v-if="type === 'text'"
       v-model="content"
     />
-    <AddMediaMessageInput v-else />
+    <AddMediaMessageInput
+      v-else
+      v-model="content"
+    />
 
     <button
       class="bg-blue-500 text-white p-2 rounded-md w-full"

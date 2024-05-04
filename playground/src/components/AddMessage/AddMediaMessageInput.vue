@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const link = ref('')
+const link = defineModel({ type: String })
 </script>
 
 <template>
