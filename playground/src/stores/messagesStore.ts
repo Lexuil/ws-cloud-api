@@ -22,8 +22,13 @@ export const useMessagesStore = defineStore('messages', () => {
     messages.value.push(message)
   }
 
+  function clearMessages() {
+    messages.value = []
+  }
+
   return {
     messages,
-    addMessage
+    addMessage,
+    clearMessages
   }
 })

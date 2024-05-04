@@ -52,5 +52,12 @@ const { sendMessages } = useSendMessages()
     >
       Send messages
     </button>
+    <button
+      class="bg-red-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300"
+      :disabled="messages.messages.length === 0"
+      @click="messages.clearMessages()"
+    >
+      Clear messages
+    </button>
   </div>
 </template>
