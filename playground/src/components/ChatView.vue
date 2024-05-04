@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMessagesStore } from '../stores/messagesStore'
 import TextMessage from './Chat/TextMessage.vue'
+import ImageMessage from './Chat/ImageMessage.vue'
 
 const messages = useMessagesStore()
 </script>
@@ -14,8 +15,14 @@ const messages = useMessagesStore()
       <template v-for="(message, index) in messages.messages">
         <TextMessage
           v-if="message.type === 'text'"
-          :key="index"
+          :key="index + '-text'"
           :message="message.text"
+          time="2:45 p.m."
+        />
+        <ImageMessage
+          v-else-if="message.type === 'image'"
+          :key="index + '-image'"
+          :link="message.link"
           time="2:45 p.m."
         />
       </template>
