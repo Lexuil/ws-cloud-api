@@ -2,6 +2,7 @@
 import { useMessagesStore } from '../stores/messagesStore'
 import TextMessage from './Chat/TextMessage.vue'
 import ImageMessage from './Chat/ImageMessage.vue'
+import VideoMessage from './Chat/VideoMessage.vue'
 
 const messages = useMessagesStore()
 </script>
@@ -22,6 +23,12 @@ const messages = useMessagesStore()
         <ImageMessage
           v-else-if="message.type === 'image'"
           :key="index + '-image'"
+          :link="message.link"
+          time="2:45 p.m."
+        />
+        <VideoMessage
+          v-else-if="message.type === 'video'"
+          :key="index + '-video'"
           :link="message.link"
           time="2:45 p.m."
         />
