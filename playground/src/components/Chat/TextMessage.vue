@@ -12,7 +12,7 @@ defineProps({
 </script>
 
 <template>
-  <li class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px]">
+  <li class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px] break-all">
     <span>
       {{ message }}
     </span>
