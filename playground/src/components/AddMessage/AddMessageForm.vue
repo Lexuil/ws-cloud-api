@@ -20,11 +20,15 @@ function addMessage() {
       link: content.value
     })
   }
+  content.value = ''
 }
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-3 w-96 h-fit border border-gray-300 p-5 rounded-md">
+  <form
+    class="flex flex-col items-center gap-3 w-96 h-fit border border-gray-300 p-5 rounded-md"
+    @submit.prevent="addMessage"
+  >
     <select
       v-model="type"
       name="type"
@@ -57,10 +61,10 @@ function addMessage() {
     />
 
     <button
+      type="submit"
       class="bg-blue-500 text-white p-2 rounded-md w-full"
-      @click="addMessage"
     >
       Add message
     </button>
-  </div>
+  </form>
 </template>
