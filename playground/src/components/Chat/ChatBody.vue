@@ -21,13 +21,15 @@ const messages = useMessagesStore()
           time="2:45 p.m."
         />
         <ImageMessage
-          v-else-if="message.type === 'image'"
+          v-else-if="message.type === 'image' ||
+            (message.type === 'file' && message.file.type.includes('image'))"
           :key="index + '-image'"
           :link="message.link"
           time="2:45 p.m."
         />
         <VideoMessage
-          v-else-if="message.type === 'video'"
+          v-else-if="message.type === 'video' ||
+            (message.type === 'file' && message.file.type.includes('video'))"
           :key="index + '-video'"
           :link="message.link"
           time="2:45 p.m."

@@ -1,5 +1,10 @@
 import { Message } from "@/stores/messagesStore"
-import { sendText, sendImage, sendVideo } from '../../../dist/messaging'
+import {
+  sendText,
+  sendImage,
+  sendVideo,
+  sendFile
+} from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
 
 export default function () {
@@ -39,6 +44,17 @@ export default function () {
             }
           })
           await new Promise(resolve => setTimeout(resolve, 3000))
+          break
+        case 'file':
+          await sendFile({
+            file: message.file,
+            to: config.phoneNumberTo,
+            config: {
+              phoneNumberId: config.phoneNumberId,
+              token: config.token
+            }
+          })
+          await new Promise(resolve => setTimeout(resolve, 1000))
           break
       }
     }

@@ -4,35 +4,64 @@ import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 const content = ref('')
+const file = ref<File | null>(null)
 
-function addMessage() {
+function addTextMessage() {
   messages.addMessage({
     type: 'text',
     text: content.value
   })
   content.value = ''
 }
+
+function addFileMessage(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file === undefined) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    messages.addMessage({
+      type: 'file',
+      file,
+      link: reader.result as string
+    })
+  }
+  reader.readAsDataURL(file)
+  target.value = ''
+}
 </script>
 
 <template>
-  <div class="flex items-center gap-3 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
-    <span
-      class="text-gray-500 cursor-pointer"
-    ><svg
-      viewBox="0 0 24 24"
-      height="24"
-      width="24"
-    ><path
-      d="M20.5 13.2501L20.5 10.7501L13.25 10.7501L13.25 3.5L10.75 3.5L10.75 10.7501L3.5 10.7501L3.5 13.2501L10.75 13.2501L10.75 20.5L13.25 20.5L13.25 13.2501L20.5 13.2501Z"
-      fill="currentColor"
-    /></svg></span>
+  <div class="flex items-center gap-2 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
+    <label class="cursor-pointer hover:bg-gray-200 p-2 rounded-full">
+      <input
+        ref="file"
+        type="file"
+        class="hidden"
+        accept="image/jpeg, image/png, video/mp4, video/3gp"
+        @change="addFileMessage"
+      >
+      <span
+        class="text-gray-500"
+      ><svg
+        viewBox="0 0 24 24"
+        height="24"
+        width="24"
+      ><path
+        d="M20.5 13.2501L20.5 10.7501L13.25 10.7501L13.25 3.5L10.75 3.5L10.75 10.7501L3.5 10.7501L3.5 13.2501L10.75 13.2501L10.75 20.5L13.25 20.5L13.25 13.2501L20.5 13.2501Z"
+        fill="currentColor"
+      /></svg></span>
+    </label>
+
     <input
       v-model="content"
       type="text"
       class="rounded-md p-2 w-full focus:outline-none"
       placeholder="Type a message..."
-      @keydown.enter="addMessage"
+      @keydown.enter="addTextMessage"
     >
+
     <span
       class="text-gray-500 cursor-pointer"
     ><svg
