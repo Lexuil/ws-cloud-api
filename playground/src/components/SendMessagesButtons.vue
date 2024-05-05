@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useMessagesStore } from '@/stores/messagesStore'
 import { useConfigStore } from '@/stores/configStore'
-import useSendMessages from '@/hooks/useSendMessages'
+import useSendMessages from '@/composables/useSendMessages'
 
 const messages = useMessagesStore()
 const config = useConfigStore()
-const { sendMessages } = useSendMessages()
+const { sendMessages, sendingMessages } = useSendMessages()
 </script>
 
 <template>
@@ -19,10 +19,11 @@ const { sendMessages } = useSendMessages()
       :disabled="config.phoneNumberId === '' ||
         config.token === '' ||
         config.phoneNumberTo === '' ||
-        messages.messages.length === 0"
+        messages.messages.length === 0 ||
+        sendingMessages"
       @click="sendMessages(messages.messages)"
     >
-      Send messages
+      {{ sendingMessages ? 'Sending...' : 'Send messages' }}
     </button>
     <button
       class="bg-red-500 text-lg text-white px-3 py-1 rounded-md disabled:bg-gray-300 w-full"

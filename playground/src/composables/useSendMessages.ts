@@ -7,11 +7,17 @@ import {
 } from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
 import { toast } from 'vue-sonner'
+import { ref } from "vue"
 
 export default function () {
   const config = useConfigStore()
 
+  const sendingMessages = ref(false)
+
   async function sendMessages (messages: Message[]) {
+    if (sendingMessages.value) return
+
+    sendingMessages.value = true
     const paymentToast = toast.loading('Sending messages...')
 
     for (const message of messages) {
@@ -65,7 +71,11 @@ export default function () {
     toast.success('Messages sent!', {
       id: paymentToast
     })
+    sendingMessages.value = false
   }
 
-  return { sendMessages };
+  return {
+    sendingMessages,
+    sendMessages
+  };
 }

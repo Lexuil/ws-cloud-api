@@ -4,7 +4,7 @@ import ChatBody from '@/components/Chat/ChatBody.vue'
 import ChatInput from '@/components/Chat/ChatInput.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
 import { useConfigStore } from '@/stores/configStore'
-import useSendMessages from '@/hooks/useSendMessages'
+import useSendMessages from '@/composables/useSendMessages'
 
 const messages = useMessagesStore()
 const config = useConfigStore()
