@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AddMessageForm from '@/components/AddMessage/AddMessageForm.vue'
 import ChatView from '@/components/ChatView.vue'
 import ConfigForm from '@/components/ConfigForm.vue'
+import SendMessagesButtons from '@/components/SendMessagesButtons.vue'
 </script>
 
 <template>
@@ -13,7 +13,7 @@ import ConfigForm from '@/components/ConfigForm.vue'
     <div class="flex flex-wrap justify-center gap-5 w-full my-10">
       <div class="flex flex-col items-center gap-5 max-sm:w-full max-sm:p-4">
         <ConfigForm />
-        <AddMessageForm />
+        <SendMessagesButtons />
       </div>
       <ChatView />
     </div>
