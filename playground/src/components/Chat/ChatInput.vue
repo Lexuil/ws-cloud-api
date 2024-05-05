@@ -1,0 +1,30 @@
+<template>
+  <div class="flex items-center gap-3 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
+    <span
+      class="text-gray-500 cursor-pointer"
+    ><svg
+      viewBox="0 0 24 24"
+      height="24"
+      width="24"
+    ><path
+      d="M20.5 13.2501L20.5 10.7501L13.25 10.7501L13.25 3.5L10.75 3.5L10.75 10.7501L3.5 10.7501L3.5 13.2501L10.75 13.2501L10.75 20.5L13.25 20.5L13.25 13.2501L20.5 13.2501Z"
+      fill="currentColor"
+    /></svg></span>
+    <input
+      type="text"
+      class="rounded-md p-2 w-full"
+      placeholder="Type a message..."
+      @keydown.enter="console.log('Enter key pressed')"
+    >
+    <span
+      class="text-gray-500 cursor-pointer"
+    ><svg
+      viewBox="0 0 24 24"
+      height="24"
+      width="24"
+    ><path
+      fill="currentColor"
+      d="M11.999,14.942c2.001,0,3.531-1.53,3.531-3.531V4.35c0-2.001-1.53-3.531-3.531-3.531 S8.469,2.35,8.469,4.35v7.061C8.469,13.412,9.999,14.942,11.999,14.942z M18.237,11.412c0,3.531-2.942,6.002-6.237,6.002 s-6.237-2.471-6.237-6.002H3.761c0,4.001,3.178,7.297,7.061,7.885v3.884h2.354v-3.884c3.884-0.588,7.061-3.884,7.061-7.885 L18.237,11.412z"
+    /></svg></span>
+  </div>
+</template>

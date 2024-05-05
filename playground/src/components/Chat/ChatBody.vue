@@ -9,7 +9,7 @@ const messages = useMessagesStore()
 
 <template>
   <div
-    class="w-full sm:w-96 h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] rounded-b-lg px-10 py-2 overflow-auto relative"
+    class="w-full h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] px-10 py-2 overflow-auto relative"
     style="scrollbar-width: thin;"
   >
     <ol>

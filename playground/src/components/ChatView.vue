@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ChatHeader from './Chat/ChatHeader.vue'
 import ChatBody from './Chat/ChatBody.vue'
+import ChatInput from './Chat/ChatInput.vue'
 import { useMessagesStore } from '../stores/messagesStore'
 import { useConfigStore } from '../stores/configStore'
 import useSendMessages from '../hooks/useSendMessages'
@@ -12,10 +13,11 @@ const { sendMessages } = useSendMessages()
 
 <template>
   <div
-    class="flex flex-col items-center max-sm:w-full max-sm:p-4"
+    class="flex flex-col items-center max-sm:p-4 w-full sm:w-[26rem]"
   >
     <ChatHeader />
     <ChatBody />
+    <ChatInput />
 
     <div class="flex w-full justify-center gap-5 mt-5">
       <button
