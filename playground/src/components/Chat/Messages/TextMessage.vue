@@ -13,7 +13,7 @@ defineProps({
 
 <template>
   <li class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px] break-all">
-    <span>
+    <span class="whitespace-pre-wrap">
       {{ message }}
     </span>
     <span class="invisible h-0 text-[0.68rem] p-1">{{ time }}</span>

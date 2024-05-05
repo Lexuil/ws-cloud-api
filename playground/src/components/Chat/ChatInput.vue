@@ -5,14 +5,18 @@ import { useMessagesStore } from '@/stores/messagesStore'
 const messages = useMessagesStore()
 const content = ref('')
 const file = ref<File | null>(null)
+const textArea = ref<HTMLTextAreaElement | null>(null)
 
 function addTextMessage() {
+  if (content.value.trim() === '') return
+
   messages.addMessage({
     id: Date.now(),
     type: 'text',
-    text: content.value
+    text: content.value.trim()
   })
   content.value = ''
+  textArea.value?.style.setProperty('height', '40px')
 }
 
 function addFileMessage(event: Event) {
@@ -31,6 +35,12 @@ function addFileMessage(event: Event) {
   }
   reader.readAsDataURL(file)
   target.value = ''
+}
+
+function resize() {
+  if (textArea.value === null) return
+  textArea.value.style.height = "18px"
+  textArea.value.style.height = textArea.value.scrollHeight + "px";
 }
 </script>
 
@@ -56,13 +66,15 @@ function addFileMessage(event: Event) {
       /></svg></span>
     </label>
 
-    <input
+    <textarea
+      ref="textArea"
       v-model="content"
-      type="text"
-      class="rounded-md p-2 w-full focus:outline-none"
+      class="rounded-md p-2 w-full focus:outline-none resize-none"
       placeholder="Type a message..."
-      @keydown.enter="addTextMessage"
-    >
+      rows="1"
+      @keydown.enter.exact.prevent="addTextMessage"
+      @input="resize"
+    />
 
     <span
       class="text-gray-500 cursor-pointer"
