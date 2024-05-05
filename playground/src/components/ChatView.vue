@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChatHeader from './Chat/ChatHeader.vue'
 import TextMessage from './Chat/TextMessage.vue'
 import ImageMessage from './Chat/ImageMessage.vue'
 import VideoMessage from './Chat/VideoMessage.vue'
@@ -13,10 +14,12 @@ const { sendMessages } = useSendMessages()
 
 <template>
   <div
-    class="flex flex-col items-center gap-3 max-sm:w-full max-sm:p-4"
+    class="flex flex-col items-center max-sm:w-full max-sm:p-4"
   >
+    <ChatHeader />
+
     <div
-      class="w-full sm:w-96 h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] rounded-lg px-10 py-2 overflow-auto relative"
+      class="w-full sm:w-96 h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] rounded-b-lg px-10 py-2 overflow-auto relative"
       style="scrollbar-width: thin;"
     >
       <ol>
@@ -43,7 +46,7 @@ const { sendMessages } = useSendMessages()
       </ol>
     </div>
 
-    <div class="flex w-full justify-center gap-5">
+    <div class="flex w-full justify-center gap-5 mt-5">
       <button
         class="bg-green-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300 w-full"
         :disabled="config.phoneNumberId === '' ||
