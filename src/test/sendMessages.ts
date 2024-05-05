@@ -1,4 +1,6 @@
 import 'dotenv/config'
+import fs from 'fs'
+import path from 'path'
 import {
   sendImage,
   sendText,
@@ -9,7 +11,8 @@ import {
   sendCTAButtonMessage,
   sendInteractiveListMessage,
   sendInteractiveSectionListMessage,
-  sendFlowMessage
+  sendFlowMessage,
+  sendFile
 } from '../../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -36,6 +39,17 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
     to: phoneNumberToTest,
     link: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
   }),
+  file: async () => {
+    const image = new Blob(
+      [fs.readFileSync(path.join(__dirname, '/assets/kirby.jpg'))],
+      { type: 'image/jpeg' }
+    )
+
+    return await sendFile({
+      to: phoneNumberToTest,
+      file: image
+    })
+  },
   buttons: async () => await sendButtonMessage({
     to: phoneNumberToTest,
     message: {
