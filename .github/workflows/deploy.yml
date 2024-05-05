@@ -36,8 +36,12 @@ jobs:
           node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: cd playground && bun install
+        run: bun install
       - name: Build
+        run: bun run build
+      - name: Install playground dependencies
+        run: cd playground && bun install
+      - name: Build playground
         run: cd playground && bun run build
       - name: Setup Pages
         uses: actions/configure-pages@v4
