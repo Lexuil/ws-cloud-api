@@ -13,10 +13,10 @@ const { sendMessages } = useSendMessages()
 
 <template>
   <div
-    class="flex flex-col items-center gap-3"
+    class="flex flex-col items-center gap-3 max-sm:w-full max-sm:p-4"
   >
     <div
-      class="w-96 h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] rounded-lg px-10 py-2 overflow-auto relative"
+      class="w-full sm:w-96 h-[42.7rem] bg-[url('/chat-background.png')] bg-repeat bg-[length:24rem] rounded-lg px-10 py-2 overflow-auto relative"
       style="scrollbar-width: thin;"
     >
       <ol>
@@ -42,22 +42,25 @@ const { sendMessages } = useSendMessages()
         </template>
       </ol>
     </div>
-    <button
-      class="bg-blue-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300"
-      :disabled="config.phoneNumberId === '' ||
-        config.token === '' ||
-        config.phoneNumberTo === '' ||
-        messages.messages.length === 0"
-      @click="sendMessages(messages.messages)"
-    >
-      Send messages
-    </button>
-    <button
-      class="bg-red-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300"
-      :disabled="messages.messages.length === 0"
-      @click="messages.clearMessages()"
-    >
-      Clear messages
-    </button>
+
+    <div class="flex w-full justify-center gap-5">
+      <button
+        class="bg-green-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300 w-full"
+        :disabled="config.phoneNumberId === '' ||
+          config.token === '' ||
+          config.phoneNumberTo === '' ||
+          messages.messages.length === 0"
+        @click="sendMessages(messages.messages)"
+      >
+        Send messages
+      </button>
+      <button
+        class="bg-red-500 text-white px-3 py-1 rounded-md disabled:bg-gray-300 w-full"
+        :disabled="messages.messages.length === 0"
+        @click="messages.clearMessages()"
+      >
+        Clear messages
+      </button>
+    </div>
   </div>
 </template>

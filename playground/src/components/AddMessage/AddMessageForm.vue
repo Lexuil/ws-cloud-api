@@ -26,9 +26,13 @@ function addMessage() {
 
 <template>
   <form
-    class="flex flex-col items-center gap-3 w-96 h-fit border border-gray-300 p-5 rounded-md"
+    class="flex flex-col items-center gap-3 w-full sm:w-96 h-fit border border-gray-300 p-5 rounded-md"
     @submit.prevent="addMessage"
   >
+    <h2 class="text-2xl font-bold">
+      Add message
+    </h2>
+
     <select
       v-model="type"
       name="type"
@@ -62,7 +66,7 @@ function addMessage() {
 
     <button
       type="submit"
-      class="bg-blue-500 text-white p-2 rounded-md w-full"
+      class="bg-green-500 text-white p-2 rounded-md w-full"
     >
       Add message
     </button>

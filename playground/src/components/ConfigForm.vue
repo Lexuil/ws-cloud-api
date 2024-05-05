@@ -5,7 +5,11 @@ const config = useConfigStore()
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-3 w-96 h-fit border border-gray-300 p-5 rounded-md">
+  <div class="flex flex-col items-center gap-3 w-full sm:w-96 h-fit border border-gray-300 p-5 rounded-md">
+    <h2 class="text-2xl font-bold">
+      Configuration
+    </h2>
+
     <label
       for="phoneNumberId"
     >Phone number ID</label>
