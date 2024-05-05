@@ -6,11 +6,14 @@ import {
   sendFile
 } from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
+import { toast } from 'vue-sonner'
 
 export default function () {
   const config = useConfigStore()
 
   async function sendMessages (messages: Message[]) {
+    const paymentToast = toast.loading('Sending messages...')
+
     for (const message of messages) {
       switch (message.type) {
         case 'text':
@@ -58,6 +61,10 @@ export default function () {
           break
       }
     }
+
+    toast.success('Messages sent!', {
+      id: paymentToast
+    })
   }
 
   return { sendMessages };

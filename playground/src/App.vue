@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { Toaster } from 'vue-sonner'
 import ChatView from '@/components/ChatView.vue'
 import ConfigForm from '@/components/ConfigForm.vue'
 import SendMessagesButtons from '@/components/SendMessagesButtons.vue'
 </script>
 
 <template>
+  <Toaster />
   <main class="flex flex-col items-center justify-center w-full min-h-screen">
     <h1 class="text-4xl font-black text-center">
       ws-cloud-api - Playground
