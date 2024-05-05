@@ -1,5 +1,48 @@
 import { type wsConfig } from './types/config'
 
+// Supported options for images are:
+
+// image/jpeg
+// image/png
+// Supported options for documents are:
+
+// text/plain
+// application/pdf
+// application/vnd.ms-powerpoint
+// application/msword
+// application/vnd.ms-excel
+// application/vnd.openxmlformats-officedocument.wordprocessingml.document
+// application/vnd.openxmlformats-officedocument.presentationml.presentation
+// application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+// Supported options for audio are:
+
+// audio/aac
+// audio/mp4
+// audio/mpeg
+// audio/amr
+// audio/ogg
+// audio/opus
+// Supported options for video are:
+
+// video/mp4
+// video/3gp
+
+const supportedFiles = {
+  image: ['image/jpeg', 'image/png'],
+  document: [
+    'text/plain',
+    'application/pdf',
+    'application/vnd.ms-powerpoint',
+    'application/msword',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ],
+  audio: ['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus'],
+  video: ['video/mp4', 'video/3gp']
+}
+
 export async function mediaRequest ({
   body,
   config
@@ -45,6 +88,13 @@ export async function uploadMedia ({
   media: Blob
   config?: wsConfig
 }): Promise<string> {
+  if (!supportedFiles.image.includes(media.type) &&
+    !supportedFiles.document.includes(media.type) &&
+    !supportedFiles.audio.includes(media.type) &&
+    !supportedFiles.video.includes(media.type)) {
+    throw new Error('Unsupported media type')
+  }
+
   const formData = new FormData()
   formData.append('file', media)
   formData.append('type', media.type)
