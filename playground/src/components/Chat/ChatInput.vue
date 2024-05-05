@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useMessagesStore } from '@/stores/messagesStore'
+
+const messages = useMessagesStore()
+const content = ref('')
+
+function addMessage() {
+  messages.addMessage({
+    type: 'text',
+    text: content.value
+  })
+  content.value = ''
+}
+</script>
+
 <template>
   <div class="flex items-center gap-3 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
     <span
@@ -11,10 +27,11 @@
       fill="currentColor"
     /></svg></span>
     <input
+      v-model="content"
       type="text"
-      class="rounded-md p-2 w-full"
+      class="rounded-md p-2 w-full focus:outline-none"
       placeholder="Type a message..."
-      @keydown.enter="console.log('Enter key pressed')"
+      @keydown.enter="addMessage"
     >
     <span
       class="text-gray-500 cursor-pointer"
