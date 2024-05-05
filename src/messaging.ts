@@ -1,3 +1,4 @@
+import { uploadMedia } from './media'
 import { type wsConfig } from './types/config'
 import { InteractiveTypes, MessageTypes } from './types/enums'
 import type {
@@ -152,6 +153,42 @@ export async function sendAudio ({
   config?: wsConfig
 }): Promise<boolean> {
   return await sendSimpleMedia({ to, type: MessageTypes.Audio, link, config })
+}
+
+export async function sendFile ({
+  to,
+  file,
+  config
+}: {
+  to: string
+  file: Blob
+  config?: wsConfig
+}): Promise<boolean> {
+  try {
+    const mediaId = await uploadMedia({ media: file, config })
+    const mimeType = file.type.split('/')[0]
+    const type = (mimeType === 'text' ||
+      mimeType === 'application')
+      ? MessageTypes.Document
+      : mimeType as MediaBody['type']
+
+    return await sendMessageRequest({
+      to,
+      // FIXME: Typescript not identifying the type
+      // @ts-expect-error Typescript not identifying the type
+      body: {
+        type,
+        [type]: {
+          id: mediaId
+        }
+      },
+      config
+    })
+  } catch (error) {
+    console.error('Failed to send file')
+    console.error(error)
+    return false
+  }
 }
 
 function generateInteractiveBody (input: Interactive): InteractiveBody {
