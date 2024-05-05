@@ -8,6 +8,7 @@ const file = ref<File | null>(null)
 
 function addTextMessage() {
   messages.addMessage({
+    id: Date.now(),
     type: 'text',
     text: content.value
   })
@@ -22,6 +23,7 @@ function addFileMessage(event: Event) {
   const reader = new FileReader()
   reader.onload = () => {
     messages.addMessage({
+      id: Date.now(),
       type: 'file',
       file,
       link: reader.result as string

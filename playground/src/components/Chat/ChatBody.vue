@@ -2,6 +2,7 @@
 import TextMessage from '@/components/Chat/Messages/TextMessage.vue'
 import ImageMessage from '@/components/Chat/Messages/ImageMessage.vue'
 import VideoMessage from '@/components/Chat/Messages/VideoMessage.vue'
+import DeleteMessageButton from '@/components/Chat/Messages/DeleteMessageButton.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
@@ -13,28 +14,33 @@ const messages = useMessagesStore()
     style="scrollbar-width: thin;"
   >
     <ol>
-      <template v-for="(message, index) in messages.messages">
+      <li
+        v-for="(message, index) in messages.messages"
+        :key="index"
+        class="relative group"
+      >
         <TextMessage
           v-if="message.type === 'text'"
-          :key="index + '-text'"
           :message="message.text"
           time="2:45 p.m."
         />
         <ImageMessage
           v-else-if="message.type === 'image' ||
             (message.type === 'file' && message.file.type.includes('image'))"
-          :key="index + '-image'"
           :link="message.link"
           time="2:45 p.m."
         />
         <VideoMessage
           v-else-if="message.type === 'video' ||
             (message.type === 'file' && message.file.type.includes('video'))"
-          :key="index + '-video'"
           :link="message.link"
           time="2:45 p.m."
         />
-      </template>
+
+        <DeleteMessageButton
+          :message-id="message.id"
+        />
+      </li>
     </ol>
   </div>
 </template>
