@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import TextMessage from '../Chat/TextMessage.vue'
-import ImageMessage from '../Chat/ImageMessage.vue'
-import VideoMessage from '../Chat/VideoMessage.vue'
-import { useMessagesStore } from '../../stores/messagesStore'
+import TextMessage from '@/components/Chat/TextMessage.vue'
+import ImageMessage from '@/components/Chat/ImageMessage.vue'
+import VideoMessage from '@/components/Chat/VideoMessage.vue'
+import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 </script>

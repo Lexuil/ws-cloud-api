@@ -1,6 +1,6 @@
-import { Message } from "../stores/messagesStore"
+import { Message } from "@/stores/messagesStore"
 import { sendText, sendImage, sendVideo } from '../../../dist/messaging'
-import { useConfigStore } from "../stores/configStore"
+import { useConfigStore } from "@/stores/configStore"
 
 export default function () {
   const config = useConfigStore()

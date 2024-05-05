@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AddMessageForm from './components/AddMessage/AddMessageForm.vue'
-import ChatView from './components/ChatView.vue'
-import ConfigForm from './components/ConfigForm.vue'
+import AddMessageForm from '@/components/AddMessage/AddMessageForm.vue'
+import ChatView from '@/components/ChatView.vue'
+import ConfigForm from '@/components/ConfigForm.vue'
 </script>
 
 <template>
