@@ -11,11 +11,13 @@ const content = ref('')
 function addMessage() {
   if (type.value === 'text') {
     messages.addMessage({
+      id: Date.now(),
       type: type.value,
       text: content.value
     })
-  } else {
+  } else if (type.value === 'image' || type.value === 'video') {
     messages.addMessage({
+      id: Date.now(),
       type: type.value,
       link: content.value
     })

@@ -2,13 +2,6 @@
 import ChatHeader from '@/components/Chat/ChatHeader.vue'
 import ChatBody from '@/components/Chat/ChatBody.vue'
 import ChatInput from '@/components/Chat/ChatInput.vue'
-import { useMessagesStore } from '@/stores/messagesStore'
-import { useConfigStore } from '@/stores/configStore'
-import useSendMessages from '@/composables/useSendMessages'
-
-const messages = useMessagesStore()
-const config = useConfigStore()
-const { sendMessages } = useSendMessages()
 </script>
 
 <template>
