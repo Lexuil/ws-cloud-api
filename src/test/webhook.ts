@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { handleWebhook } from '../../dist/webhook'
 import textBody from './bodyExamples/messageText.json'
 import replyButtonBody from './bodyExamples/messageFromButton.json'
