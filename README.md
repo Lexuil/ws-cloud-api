@@ -4,7 +4,7 @@ A simple-to-use library for sending messages and templates to WhatsApp numbers a
 
 ## Features
 
-### Webhook
+### [Webhook](#webhook-2)
 
 Functions to verify webhook token and handle message webhook notifications to get messages content of from:
 
@@ -19,19 +19,20 @@ You can send messages of the following types:
 #### Messages
 
 - [Text](#send-text)
-- [Image](#send-image)
-- [Video](#send-video)
-- [Document](#send-document)
-- [Audio](#send-audio)
+- [Image (URL)](#send-image)
+- [Video (URL)](#send-video)
+- [Document (URL)](#send-document)
+- [Audio (URL)](#send-audio)
+- [File (Blob)](#send-file)
 - [Text message with CTA Button](#send-text-with-cta-button)
 - [Text message with buttons](#send-text-with-buttons)
 - [Text message with unique section list](#send-text-with-unique-section-list)
 - [Text message with a list of multiple sections](#send-text-with-a-list-of-multiple-sections)
-- [Text message with whatsapp flow](#send-text-with-whatsapp-flow)
+- [Text message with WhatsApp flow](#send-text-with-whatsapp-flow)
 
 #### Templates
 
-- Send simple text template
+- [Send simple text template](#send-text-template)
 
 ## Config
 
@@ -106,7 +107,7 @@ sendText(
 ```ts
 import { sendImage } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendImage(
+sendImage(
   process.env.PHONE_NUMBER_RECIPIENT,
   'https://example.com/image.jpg'
 ).then((sentSuccess) => {
@@ -119,7 +120,7 @@ const sentSuccess = sendImage(
 ```ts
 import { sendVideo } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendVideo(
+sendVideo(
   process.env.PHONE_NUMBER_RECIPIENT,
   'https://example.com/video.mp4'
 ).then((sentSuccess) => {
@@ -132,7 +133,7 @@ const sentSuccess = sendVideo(
 ```ts
 import { sendDocument } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendDocument(
+sendDocument(
   process.env.PHONE_NUMBER_RECIPIENT,
   'https://example.com/document.pdf'
 ).then((sentSuccess) => {
@@ -145,10 +146,53 @@ const sentSuccess = sendDocument(
 ```ts
 import { sendAudio } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendAudio(
+sendAudio(
   process.env.PHONE_NUMBER_RECIPIENT,
   'https://example.com/audio.mp3'
 ).then((sentSuccess) => {
+  if (sentSuccess) { console.log('Audio sent') }
+}).catch(console.error)
+```
+
+#### Send File
+
+Supported files:
+
+- Images:
+  - image/jpeg
+  - image/png
+- Documents:
+  - text/plain
+  - application/pdf
+  - application/vnd.ms-powerpoint
+  - application/msword
+  - application/vnd.ms-excel
+  - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  - application/vnd.openxmlformats-officedocument.presentationml.presentation
+  - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+- Audio:
+  - audio/aac
+  - audio/mp4
+  - audio/mpeg
+  - audio/amr
+  - audio/ogg
+  - audio/opus
+- Video:
+  - video/mp4
+  - video/3gp
+
+```ts
+import { sendFile } from 'ws-cloud-api/messaging'
+
+const image = new Blob(
+  [fs.readFileSync(path.join(__dirname, '/image.jpg'))],
+  { type: 'image/jpeg' }
+)
+
+return await sendFile({
+  to: phoneNumberToTest,
+  file: image
+}).then((sentSuccess) => {
   if (sentSuccess) { console.log('Audio sent') }
 }).catch(console.error)
 ```
@@ -158,7 +202,7 @@ const sentSuccess = sendAudio(
 ```ts
 import { sendTextWithCTAButton } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendTextWithCTAButton(
+sendTextWithCTAButton(
   process.env.PHONE_NUMBER_RECIPIENT,
   'This is a test message',
   'https://example.com/button'
@@ -172,7 +216,7 @@ const sentSuccess = sendTextWithCTAButton(
 ```ts
 import { sendTextWithButtons } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendTextWithButtons(
+sendTextWithButtons(
   process.env.PHONE_NUMBER_RECIPIENT,
   'This is a test message',
   [
@@ -195,7 +239,7 @@ const sentSuccess = sendTextWithButtons(
 ```ts
 import { sendTextWithUniqueSectionList } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendTextWithUniqueSectionList(
+sendTextWithUniqueSectionList(
   process.env.PHONE_NUMBER_RECIPIENT,
   'This is a test message',
   {
@@ -217,7 +261,7 @@ const sentSuccess = sendTextWithUniqueSectionList(
 ```ts
 import { sendTextWithMultipleSectionsList } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendTextWithMultipleSectionsList(
+sendTextWithMultipleSectionsList(
   process.env.PHONE_NUMBER_RECIPIENT,
   'This is a test message',
   [
@@ -250,7 +294,7 @@ const sentSuccess = sendTextWithMultipleSectionsList(
 ```ts
 import { sendTextWithWhatsAppFlow } from 'ws-cloud-api/messaging'
 
-const sentSuccess = sendTextWithWhatsAppFlow(
+sendTextWithWhatsAppFlow(
   process.env.PHONE_NUMBER_RECIPIENT,
   'This is a test message',
   'flow_id'
@@ -259,14 +303,16 @@ const sentSuccess = sendTextWithWhatsAppFlow(
 }).catch(console.error)
 ```
 
-### Send template
+### Templates
+
+#### Send text template
 
 To send a template, you have to create it first. You will need the name and the language code.
 
 ```ts
 import { sendTextTemplate } from 'ws-cloud-api/templates'
 
-const sentSuccess = sendTextTemplate(
+sendTextTemplate(
   process.env.PHONE_NUMBER_RECIPIENT,
   'hello_world',
   'en_US'

@@ -1,32 +1,5 @@
 import { type wsConfig } from './types/config'
 
-// Supported options for images are:
-
-// image/jpeg
-// image/png
-// Supported options for documents are:
-
-// text/plain
-// application/pdf
-// application/vnd.ms-powerpoint
-// application/msword
-// application/vnd.ms-excel
-// application/vnd.openxmlformats-officedocument.wordprocessingml.document
-// application/vnd.openxmlformats-officedocument.presentationml.presentation
-// application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-// Supported options for audio are:
-
-// audio/aac
-// audio/mp4
-// audio/mpeg
-// audio/amr
-// audio/ogg
-// audio/opus
-// Supported options for video are:
-
-// video/mp4
-// video/3gp
-
 const supportedFiles = {
   image: ['image/jpeg', 'image/png'],
   document: [
