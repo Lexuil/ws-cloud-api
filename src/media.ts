@@ -1,4 +1,5 @@
 import { type wsConfig } from './types/config'
+import nodeFetch from 'node-fetch'
 
 const supportedFiles = {
   image: ['image/jpeg', 'image/png'],
@@ -110,4 +111,24 @@ export async function getMediaUrl ({
   } else {
     return (await response.json()).url
   }
+}
+
+export async function getMedia ({
+  mediaUrl,
+  config
+}: {
+  mediaUrl: string
+  config?: wsConfig
+}): Promise<Blob> {
+  // Config
+  const token = typeof process !== 'undefined'
+    ? process.env.WS_TOKEN ?? config?.token
+    : config?.token
+
+  const response = await nodeFetch(mediaUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  return await response.blob()
 }
