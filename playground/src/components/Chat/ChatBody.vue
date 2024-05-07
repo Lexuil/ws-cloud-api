@@ -4,6 +4,7 @@ import ImageMessage from '@/components/Chat/Messages/ImageMessage.vue'
 import VideoMessage from '@/components/Chat/Messages/VideoMessage.vue'
 import DeleteMessageButton from '@/components/Chat/Messages/DeleteMessageButton.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
+import ButtonsMessage from './Messages/ButtonsMessage.vue'
 
 const messages = useMessagesStore()
 </script>
@@ -34,6 +35,12 @@ const messages = useMessagesStore()
           v-else-if="message.type === 'video' ||
             (message.type === 'file' && message.file.type.includes('video'))"
           :link="message.link"
+          time="2:45 p.m."
+        />
+        <ButtonsMessage
+          v-else-if="message.type === 'button'"
+          :message="message.text"
+          :buttons="message.buttons"
           time="2:45 p.m."
         />
 
