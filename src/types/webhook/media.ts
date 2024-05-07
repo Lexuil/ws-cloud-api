@@ -41,6 +41,8 @@ export interface AudioMessage extends MessageBase {
 export interface AudioMedia {
   id: string
   mime_type: string
+  sha256: string
+  voice: boolean
 }
 
 // ----------------------

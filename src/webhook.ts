@@ -28,6 +28,13 @@ export function handleWebhook (input: WsRequest): {
   type: 'message'
   from: string
   message: string
+} | {
+  type: 'voiceAudio'
+  from: string
+  audio: {
+    id: string
+    mimeType: string
+  }
 } | undefined {
   if (input.object === undefined) {
     return
@@ -54,6 +61,18 @@ export function handleWebhook (input: WsRequest): {
   }
 
   const messageObject = webhookValue.messages[0]
+
+  // Voce audio messages
+  if (messageObject.type === 'audio' && messageObject.audio.voice) {
+    return {
+      type: 'voiceAudio',
+      from: messageObject.from,
+      audio: {
+        id: messageObject.audio.id,
+        mimeType: messageObject.audio.mime_type
+      }
+    }
+  }
 
   // TODO: Add support for messages different than interactive and text
   if (messageObject.type !== 'interactive' && messageObject.type !== 'text') {
