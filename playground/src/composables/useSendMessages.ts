@@ -63,10 +63,12 @@ export default function () {
           await sendButtonMessage({
             message: {
               text: message.text,
-              buttons: message.buttons.map((button) => ({
-                id: button,
-                title: button
-              }))
+              buttons: message.buttons
+                .filter((button) => button !== '')
+                .map((button) => ({
+                  id: button,
+                  title: button
+                }))
             },
             to: config.phoneNumberTo,
             config: wsConfig
