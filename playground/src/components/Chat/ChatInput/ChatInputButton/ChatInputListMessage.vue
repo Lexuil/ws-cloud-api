@@ -1,5 +1,13 @@
+<script setup lang="ts">
+import { useModalsStore } from '@/stores/modalsStore'
+const { openModal } = useModalsStore()
+</script>
+
 <template>
-  <label class="flex items-center gap-2 cursor-pointer p-2">
+  <button
+    class="flex items-center gap-2 cursor-pointer p-2"
+    @click="openModal('ListMessage')"
+  >
     <svg
       class="text-purple-500 scale-125"
       xmlns="http://www.w3.org/2000/svg"
@@ -14,5 +22,5 @@
       />
     </svg>
     <span>List</span>
-  </label>
+  </button>
 </template>

@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export type Message = TextMessage | FileMessage | MediaMessage | ButtonMessage
+export type Message = TextMessage |
+FileMessage |
+MediaMessage |
+ButtonMessage |
+ListMessage
 
 interface TextMessage {
   id: number
@@ -14,6 +18,17 @@ interface ButtonMessage {
   type: 'button'
   text: string
   buttons: string[]
+}
+
+interface ListMessage {
+  id: number
+  type: 'list'
+  text: string
+  buttonText: string
+  list: Array<{
+    title: string
+    description: string
+  }>
 }
 
 interface FileMessage {
