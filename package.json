@@ -34,6 +34,11 @@
       "import": "./dist/templates.mjs",
       "require": "./dist/templates.cjs",
       "types": "./dist/templates.d.ts"
+    },
+    "./media": {
+      "import": "./dist/media.mjs",
+      "require": "./dist/media.cjs",
+      "types": "./dist/media.d.ts"
     }
   },
   "main": "./dist/index.cjs",
