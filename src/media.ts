@@ -78,3 +78,36 @@ export async function uploadMedia ({
     config
   })).id
 }
+
+export async function getMediaUrl ({
+  mediaId,
+  config
+}: {
+  mediaId: string
+  config?: wsConfig
+}): Promise<string> {
+  // Config
+  const apiVersion = typeof process !== 'undefined'
+    ? process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'
+    : config?.apiVersion ?? '19.0'
+  const token = typeof process !== 'undefined'
+    ? process.env.WS_TOKEN ?? config?.token
+    : config?.token
+
+  const response = await fetch(
+    `https://graph.facebook.com/v${apiVersion}/${mediaId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+
+  if (!response.ok) {
+    console.error('Failed to make media request')
+    console.error(JSON.stringify(await response.json(), null, 2))
+    return ''
+  } else {
+    return (await response.json()).url
+  }
+}
