@@ -3,6 +3,11 @@ import { reactive } from 'vue'
 import { useMessagesStore } from '@/stores/messagesStore'
 import { useModalsStore } from '@/stores/modalsStore'
 
+interface List {
+  title: string
+  description: string
+}
+
 const form = reactive({
   text: '',
   buttonText: '',
@@ -189,7 +194,7 @@ const addButtonMessage = () => {
           v-for="i in 10"
           :key="i"
         >
-          <div v-if="i === 1 || form[`list${i - 1}`].title !== ''">
+          <div v-if="i === 1 || (form[`list${i - 1}` as keyof typeof form] as List).title !== ''">
             <label
               :for="`title${i}`"
               class="block mt-3"
@@ -197,7 +202,7 @@ const addButtonMessage = () => {
               Tittle {{ i }}
               <input
                 :id="`title${i}`"
-                v-model="form[`list${i}`].title"
+                v-model="(form[`list${i}` as keyof typeof form] as List).title"
                 type="text"
                 :name="`title${i}`"
                 class="w-56 p-2 border border-gray-300 rounded-md"
@@ -211,12 +216,12 @@ const addButtonMessage = () => {
               Description {{ i }}
               <textarea
                 :id="`description${i}`"
-                v-model="form[`list${i}`].description"
+                v-model="(form[`list${i}` as keyof typeof form] as List).description"
                 :name="`description${i}`"
                 class="p-2 border border-gray-300 rounded-md w-full resize-none"
                 maxlength="72"
                 rows="2"
-                :required="form[`list${i}`].title !== ''"
+                :required="(form[`list${i}` as keyof typeof form] as List).title !== ''"
               />
             </label>
           </div>

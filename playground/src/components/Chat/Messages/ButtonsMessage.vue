@@ -31,10 +31,10 @@ defineProps({
     </div>
     <template
       v-for="(button, index) in buttons"
-      :key="index"
     >
       <button
         v-if="button !== ''"
+        :key="index"
         class="p-2 bg-white shadow-sm rounded-md text-sky-500 mt-[2px] w-full"
       >
         {{ button }}

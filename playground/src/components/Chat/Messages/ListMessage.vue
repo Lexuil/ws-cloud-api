@@ -2,24 +2,15 @@
 import { ref } from 'vue'
 import { format } from '@/utils/ws-format'
 
-defineProps({
-  message: {
-    type: String,
-    required: true
-  },
-  time: {
-    type: String,
-    required: true
-  },
-  buttonText: {
-    type: String,
-    required: true
-  },
+defineProps<{
+  message: string
+  time: string
+  buttonText: string
   list: {
-    type: Array,
-    required: true
-  }
-})
+    title: string
+    description: string
+  }[]
+}>()
 
 const showModal = ref(false)
 </script>
@@ -90,10 +81,10 @@ const showModal = ref(false)
         <ul class="py-3">
           <template
             v-for="(item, index) in list"
-            :key="index"
           >
             <li
               v-if="item.title !== ''"
+              :key="index"
               class="flex justify-between items-center gap-2 cursor-pointer py-2 px-4 hover:bg-gray-100"
             >
               <div class="flex flex-col">

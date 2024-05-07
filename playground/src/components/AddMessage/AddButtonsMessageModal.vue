@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { useMessagesStore } from '@/stores/messagesStore'
 import { useModalsStore } from '@/stores/modalsStore'
 
-const form = reactive({
+const form = reactive<Record<string, string>>({
   text: '',
   button1: '',
   button2: '',
