@@ -58,5 +58,7 @@
     "typescript": "*",
     "unbuild": "^2.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
 }
