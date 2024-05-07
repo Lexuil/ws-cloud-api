@@ -3,10 +3,12 @@ import { Toaster } from 'vue-sonner'
 import ChatView from '@/components/ChatView.vue'
 import ConfigForm from '@/components/ConfigForm.vue'
 import SendMessagesButtons from '@/components/SendMessagesButtons.vue'
+import AddButtonsMessageModal from './components/AddMessage/AddButtonsMessageModal.vue';
 </script>
 
 <template>
   <Toaster />
+  <AddButtonsMessageModal />
   <header class="flex items-center justify-center w-full h-12 bg-green-500 text-white">
     <span class="absolute left-5">
       By <a

@@ -1,6 +1,12 @@
+<script setup lang="ts">
+import { useModalsStore } from '@/stores/modalsStore'
+const { openModal } = useModalsStore()
+</script>
+
 <template>
   <button
     class="flex items-center gap-2 cursor-pointer p-2"
+    @click="openModal('ButtonsMessage')"
   >
     <svg
       class="text-red-500 w-5 h-5 scale-125"
