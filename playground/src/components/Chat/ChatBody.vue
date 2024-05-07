@@ -5,6 +5,7 @@ import VideoMessage from '@/components/Chat/Messages/VideoMessage.vue'
 import DeleteMessageButton from '@/components/Chat/Messages/DeleteMessageButton.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
 import ButtonsMessage from './Messages/ButtonsMessage.vue'
+import ListMessage from './Messages/ListMessage.vue'
 
 const messages = useMessagesStore()
 </script>
@@ -42,6 +43,13 @@ const messages = useMessagesStore()
           :message="message.text"
           :buttons="message.buttons"
           time="2:45 p.m."
+        />
+        <ListMessage
+          v-else-if="message.type === 'list'"
+          :message="message.text"
+          time="2:45 p.m."
+          :button-text="message.buttonText"
+          :list="message.list"
         />
 
         <DeleteMessageButton
