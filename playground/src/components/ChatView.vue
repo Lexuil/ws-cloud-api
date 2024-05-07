@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ChatHeader from '@/components/Chat/ChatHeader.vue'
 import ChatBody from '@/components/Chat/ChatBody.vue'
-import ChatInput from '@/components/Chat/ChatInput.vue'
+import ChatInput from '@/components/Chat/ChatInput/ChatInput.vue'
 </script>
 
 <template>

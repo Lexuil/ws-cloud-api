@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMessagesStore } from '@/stores/messagesStore'
-import ChatInputFile from './ChatInputFile.vue'
+import ChatInputButton from './ChatInputButton/ChatInputButton.vue'
 
 const messages = useMessagesStore()
 const content = ref('')
@@ -28,7 +28,7 @@ function resize() {
 
 <template>
   <div class="flex items-center gap-2 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
-    <ChatInputFile />
+    <ChatInputButton />
 
     <textarea
       ref="textArea"
