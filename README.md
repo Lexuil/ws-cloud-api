@@ -11,6 +11,7 @@ Functions to verify webhook token and handle message webhook notifications to ge
 - Text message
 - Button reply
 - List reply
+- Voice audio
 
 ### Send messages
 
@@ -33,6 +34,14 @@ You can send messages of the following types:
 #### Templates
 
 - [Send simple text template](#send-text-template)
+
+#### Media
+
+Functions to handle WhatsApp media
+
+- [Upload media](#upload-media)
+- [Get media Url](#get-media-url)
+- [Get media as Blob](#get-medias-as-blob)
 
 ## Config
 
@@ -73,6 +82,10 @@ app.post('/whatsapp-webhook', async (req, res) => {
 
     if (event?.type === 'message') {
       console.log(`New message from ${event.from}: ${event.message}`)
+    }
+
+    if (event?.type === 'voiceAudio') {
+      console.log(`New voice message from ${event.from}: ${event.audio.id}`)
     }
 
     res.status(200)
@@ -318,5 +331,42 @@ sendTextTemplate(
   'en_US'
 ).then((sentSuccess) => {
   if (sentSuccess) { console.log('Template sent') }
+}).catch(console.error)
+```
+
+### Media
+
+#### Upload Media
+
+```ts
+import { uploadMedia } from 'ws-cloud-api/media'
+
+const blob = new Blob(
+  [fs.readFileSync(path.join(__dirname, '/image.jpg'))],
+  { type: 'image/jpeg' }
+)
+
+uploadMedia({ media: blob }).then((mediaId) => {
+  if (mediaId) { console.log('console media id: ' + mediaId) }
+}).catch(console.error)
+```
+
+#### Get Media Url
+
+```ts
+import { getMediaUrl } from 'ws-cloud-api/media'
+
+getMediaUrl('mediaId').then((url) => {
+  if (url) { console.log('console media url: ' + url) }
+}).catch(console.error)
+```
+
+#### Get Medias as Blob
+
+```ts
+import { getMedia } from 'ws-cloud-api/media'
+
+getMedia('mediaUrl').then((blob) => {
+  if (blob) { console.log('console media blob: ' + blob) }
 }).catch(console.error)
 ```
