@@ -4,7 +4,8 @@ import {
   sendImage,
   sendVideo,
   sendFile,
-  sendButtonMessage
+  sendButtonMessage,
+  sendInteractiveListMessage
 } from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
 import { toast } from 'vue-sonner'
@@ -69,6 +70,16 @@ export default function () {
                   id: button,
                   title: button
                 }))
+            },
+            to: config.phoneNumberTo,
+            config: wsConfig
+          })
+          break
+        case 'list':
+          await sendInteractiveListMessage({
+            list: {
+              ...message,
+              list: message.list.filter((item) => item.title !== '')
             },
             to: config.phoneNumberTo,
             config: wsConfig
