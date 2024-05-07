@@ -64,20 +64,22 @@ const addButtonMessage = () => {
           v-for="i in 3"
           :key="i"
         >
-          <label
-            :for="`button${i}`"
-            class="block mt-3"
-          >
-            Button {{ i }}
-          </label>
-          <input
-            :id="`button${i}`"
-            v-model="form[`button${i}`]"
-            type="text"
-            :name="`button${i}`"
-            class="w-44 p-2 border border-gray-300 rounded-md"
-            maxlength="20"
-          >
+          <div v-if="i === 1 || form[`button${i - 1}`] !== ''">
+            <label
+              :for="`button${i}`"
+              class="block mt-3"
+            >
+              Button {{ i }}
+            </label>
+            <input
+              :id="`button${i}`"
+              v-model="form[`button${i}`]"
+              type="text"
+              :name="`button${i}`"
+              class="w-44 p-2 border border-gray-300 rounded-md"
+              maxlength="20"
+            >
+          </div>
         </template>
 
         <div class="flex justify-center mt-5">
