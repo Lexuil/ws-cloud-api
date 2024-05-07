@@ -3,7 +3,8 @@ import {
   sendText,
   sendImage,
   sendVideo,
-  sendFile
+  sendFile,
+  sendButtonMessage
 } from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
 import { toast } from 'vue-sonner'
@@ -20,26 +21,25 @@ export default function () {
     sendingMessages.value = true
     const paymentToast = toast.loading('Sending messages...')
 
+    const wsConfig = {
+      phoneNumberId: config.phoneNumberId,
+      token: config.token,
+    }
+
     for (const message of messages) {
       switch (message.type) {
         case 'text':
           await sendText({
             message: message.text,
             to: config.phoneNumberTo,
-            config: {
-              phoneNumberId: config.phoneNumberId,
-              token: config.token
-            }
+            config: wsConfig
           })
           break
         case 'image':
           await sendImage({
             link: message.link,
             to: config.phoneNumberTo,
-            config: {
-              phoneNumberId: config.phoneNumberId,
-              token: config.token
-            }
+            config: wsConfig
           })
           await new Promise(resolve => setTimeout(resolve, 1000))
           break
@@ -47,10 +47,7 @@ export default function () {
           await sendVideo({
             link: message.link,
             to: config.phoneNumberTo,
-            config: {
-              phoneNumberId: config.phoneNumberId,
-              token: config.token
-            }
+            config: wsConfig
           })
           await new Promise(resolve => setTimeout(resolve, 3000))
           break
@@ -58,12 +55,22 @@ export default function () {
           await sendFile({
             file: message.file,
             to: config.phoneNumberTo,
-            config: {
-              phoneNumberId: config.phoneNumberId,
-              token: config.token
-            }
+            config: wsConfig
           })
           await new Promise(resolve => setTimeout(resolve, 1000))
+          break
+        case 'button':
+          await sendButtonMessage({
+            message: {
+              text: message.text,
+              buttons: message.buttons.map((button) => ({
+                id: button,
+                title: button
+              }))
+            },
+            to: config.phoneNumberTo,
+            config: wsConfig
+          })
           break
       }
     }
