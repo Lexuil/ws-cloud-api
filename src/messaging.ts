@@ -1,5 +1,5 @@
 import { uploadMedia } from './media'
-import { type wsConfig } from './types/config'
+import { type WsConfig } from './types/config'
 import { InteractiveTypes, MessageTypes } from './types/enums'
 import type {
   ListInteractive,
@@ -20,7 +20,7 @@ export async function sendMessageRequest ({
 }: {
   to: string
   body: WSBody
-  config?: wsConfig
+  config?: WsConfig
 
 }): Promise<boolean> {
   const postBody = JSON.stringify({
@@ -68,7 +68,7 @@ export async function sendText ({
 }: {
   to: string
   message: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendMessageRequest({
     to,
@@ -91,7 +91,7 @@ async function sendSimpleMedia ({
   to: string
   type: MediaBody['type']
   link: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendMessageRequest({
     to,
@@ -114,7 +114,7 @@ export async function sendImage ({
 }: {
   to: string
   link: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendSimpleMedia({ to, type: MessageTypes.Image, link, config })
 }
@@ -126,7 +126,7 @@ export async function sendVideo ({
 }: {
   to: string
   link: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendSimpleMedia({ to, type: MessageTypes.Video, link, config })
 }
@@ -138,7 +138,7 @@ export async function sendDocument ({
 }: {
   to: string
   link: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendSimpleMedia({ to, type: MessageTypes.Document, link, config })
 }
@@ -150,7 +150,7 @@ export async function sendAudio ({
 }: {
   to: string
   link: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendSimpleMedia({ to, type: MessageTypes.Audio, link, config })
 }
@@ -162,7 +162,7 @@ export async function sendFile ({
 }: {
   to: string
   file: Blob
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   try {
     const mediaId = await uploadMedia({ media: file, config })
@@ -208,7 +208,7 @@ export async function sendButtonMessage ({
     text: string
     buttons: Button[]
   }
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   const body: ButtonInteractive = {
     type: InteractiveTypes.Button,
@@ -245,7 +245,7 @@ export async function sendCTAButtonMessage ({
     buttonText: string
     url: string
   }
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   const body: CTAButtonInteractive = {
     type: InteractiveTypes.CTAButton,
@@ -281,7 +281,7 @@ export async function sendInteractiveListMessage ({
       description: string
     }>
   }
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
@@ -330,7 +330,7 @@ export async function sendInteractiveSectionListMessage ({
       }>
     }>
   }
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
@@ -379,7 +379,7 @@ export async function sendFlowMessage ({
     defaultScreen: string
   }
   draft?: boolean
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   const body: FlowInteractive = {
     type: InteractiveTypes.Flow,

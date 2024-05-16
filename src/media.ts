@@ -1,4 +1,4 @@
-import { type wsConfig } from './types/config'
+import { type WsConfig } from './types/config'
 import nodeFetch from 'node-fetch'
 
 const supportedFiles = {
@@ -22,7 +22,7 @@ export async function mediaRequest ({
   config
 }: {
   body: any // TODO: Define media body type
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<any> { // TODO: Define media response type
   // Config
   const apiVersion = typeof process !== 'undefined'
@@ -60,7 +60,7 @@ export async function uploadMedia ({
   config
 }: {
   media: Blob
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<string> {
   if (!supportedFiles.image.includes(media.type) &&
     !supportedFiles.document.includes(media.type) &&
@@ -85,7 +85,7 @@ export async function getMediaUrl ({
   config
 }: {
   mediaId: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<string> {
   // Config
   const apiVersion = typeof process !== 'undefined'
@@ -118,7 +118,7 @@ export async function getMedia ({
   config
 }: {
   mediaUrl: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<Blob> {
   // Config
   const token = typeof process !== 'undefined'

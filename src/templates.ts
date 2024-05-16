@@ -1,5 +1,5 @@
 import { sendMessageRequest } from './messaging'
-import { type wsConfig } from './types/config'
+import { type WsConfig } from './types/config'
 import { MessageTypes } from './types/enums'
 
 export async function sendTextTemplate ({
@@ -11,7 +11,7 @@ export async function sendTextTemplate ({
   to: string
   templateName: string
   language: string
-  config?: wsConfig
+  config?: WsConfig
 }): Promise<boolean> {
   return await sendMessageRequest({
     to,

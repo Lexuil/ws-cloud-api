@@ -18,7 +18,7 @@ interface HostedDocumentMedia {
   filename?: string
 }
 
-export type DocumentMedia =
+export type HeaderDocumentMedia =
 | MetaDocumentMedia
 | HostedDocumentMedia
 
@@ -34,7 +34,7 @@ interface HostedImageMedia {
   caption?: string
 }
 
-export type ImageMedia = MetaImageMedia | HostedImageMedia
+export type HeaderImageMedia = MetaImageMedia | HostedImageMedia
 
 interface MetaHostedVideoMedia {
   id: string
@@ -48,16 +48,16 @@ interface SelfHostedVideoMedia {
   caption?: string
 }
 
-export type VideoMedia =
+export type HeaderVideoMedia =
 | MetaHostedVideoMedia
 | SelfHostedVideoMedia
 
 interface Header {
   type: 'document' | 'image' | 'text' | 'video'
-  document?: DocumentMedia
-  image?: ImageMedia
+  document?: HeaderDocumentMedia
+  image?: HeaderImageMedia
   text?: string
-  video?: VideoMedia
+  video?: HeaderVideoMedia
 }
 
 interface Row {
@@ -203,17 +203,17 @@ export interface TemplateParameterDateTime {
 
 export interface TemplateParameterImage {
   type: ParametersTypes.Image
-  image: ImageMedia
+  image: HeaderImageMedia
 }
 
 export interface TemplateParameterDocument {
   type: ParametersTypes.Document
-  document: DocumentMedia
+  document: HeaderDocumentMedia
 }
 
 export interface TemplateParameterVideo {
   type: ParametersTypes.Video
-  video: VideoMedia
+  video: HeaderVideoMedia
 }
 
 export interface TemplateBody {
