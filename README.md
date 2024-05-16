@@ -12,6 +12,7 @@ Functions to verify webhook token and handle message webhook notifications to ge
 - Button reply
 - List reply
 - Voice audio
+- Flow reply
 
 ### Send messages
 
@@ -86,6 +87,13 @@ app.post('/whatsapp-webhook', async (req, res) => {
 
     if (event?.type === 'voiceAudio') {
       console.log(`New voice message from ${event.from}: ${event.audio.id}`)
+    }
+
+    if (event?.type === 'flowReply') {
+      console.log(
+        `New flow reply from ${event.from}:\n\n`,
+        JSON.stringify(event.flow, null, 2)
+      )
     }
 
     res.status(200)
