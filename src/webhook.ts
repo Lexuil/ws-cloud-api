@@ -35,6 +35,10 @@ export function handleWebhook (input: WsRequest): {
     id: string
     mimeType: string
   }
+} | {
+  type: 'flowReply'
+  from: string
+  data: Record<string, unknown>
 } | undefined {
   if (input.object === undefined) {
     return
@@ -79,6 +83,16 @@ export function handleWebhook (input: WsRequest): {
     return
   }
 
+  // Flow messages
+  if (messageObject.type === 'interactive' &&
+  messageObject.interactive.type === 'nfm_reply') {
+    return {
+      type: 'flowReply',
+      from: messageObject.from,
+      data: JSON.parse(messageObject.interactive.nfm_reply.response_json)
+    }
+  }
+
   return {
     type: 'message',
     from: messageObject.from,
@@ -91,6 +105,9 @@ function getMessageText (message: Message): string {
     case 'text':
       return message.text.body
     case 'interactive':
+      if (message.interactive.type === 'nfm_reply') {
+        return 'Flow message'
+      }
       return message.interactive.type === 'list_reply'
         ? message.interactive.list_reply.id
         : message.interactive.button_reply.id

@@ -64,7 +64,7 @@ export interface Reaction {
 // Interactive Message
 export interface InteractiveMessage extends MessageBase {
   type: 'interactive'
-  interactive: InteractiveButton | InteractiveList
+  interactive: InteractiveButton | InteractiveList | InteractiveFlow
 }
 
 export interface InteractiveButton {
@@ -86,4 +86,13 @@ export interface ListRowReply {
   id: string
   title: string
   description: string
+}
+
+export interface InteractiveFlow {
+  type: 'nfm_reply'
+  nfm_reply: {
+    response_json: string
+    body: 'Sent'
+    name: 'flow'
+  }
 }
