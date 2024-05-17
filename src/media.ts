@@ -1,5 +1,12 @@
 import { type WsConfig } from './types/config'
-import nodeFetch from 'node-fetch'
+
+// FIXME: This
+let nodeFetch: typeof fetch
+if (typeof window === 'undefined') {
+  console.log('node-fetch')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  nodeFetch = require('node-fetch').default
+}
 
 const supportedFiles = {
   image: ['image/jpeg', 'image/png'],
@@ -125,7 +132,10 @@ export async function getMedia ({
     ? process.env.WS_TOKEN ?? config?.token
     : config?.token
 
-  const response = await nodeFetch(mediaUrl, {
+  console.log('window', typeof window)
+  console.log('nodeFetch', nodeFetch)
+  const fetchFunc = typeof window === 'undefined' ? nodeFetch : fetch
+  const response = await fetchFunc(mediaUrl, {
     headers: {
       Authorization: `Bearer ${token}`
     }
