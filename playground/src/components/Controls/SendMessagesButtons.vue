@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useMessagesStore } from '@/stores/messagesStore'
-import { useConfigStore } from '@/stores/configStore'
 import useSendMessages from '@/composables/useSendMessages'
 
 const messages = useMessagesStore()
-const config = useConfigStore()
-const { sendMessages, sendingMessages } = useSendMessages()
+const { sendMessages, sendingMessages, availableToSend } = useSendMessages()
 </script>
 
 <template>
@@ -16,11 +14,7 @@ const { sendMessages, sendingMessages } = useSendMessages()
 
     <button
       class="bg-green-500 text-lg text-white px-3 py-1 rounded-md disabled:bg-gray-300 w-full"
-      :disabled="config.phoneNumberId === '' ||
-        config.token === '' ||
-        config.phoneNumberTo === '' ||
-        messages.messages.length === 0 ||
-        sendingMessages"
+      :disabled="availableToSend || messages.messages.length === 0"
       @click="sendMessages(messages.messages)"
     >
       {{ sendingMessages ? 'Sending...' : 'Send messages' }}

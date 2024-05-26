@@ -9,12 +9,19 @@ import {
 } from '../../../dist/messaging'
 import { useConfigStore } from "@/stores/configStore"
 import { toast } from 'vue-sonner'
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 export default function () {
   const config = useConfigStore()
 
   const sendingMessages = ref(false)
+
+  const availableToSend = computed(() => {
+    return config.phoneNumberId === '' ||
+    config.token === '' ||
+    config.phoneNumberTo === '' ||
+    sendingMessages.value
+  })
 
   async function sendMessages (messages: Message[]) {
     if (sendingMessages.value) return
@@ -96,6 +103,7 @@ export default function () {
 
   return {
     sendingMessages,
+    availableToSend,
     sendMessages
   };
 }
