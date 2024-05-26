@@ -36,8 +36,8 @@ function addButtonMessage (): void {
 
 <template>
   <dialog
-    v-show="showModal('ButtonsMessage')"
-    class="absolute inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
+    v-if="showModal('ButtonsMessage')"
+    class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
   >
     <div class="bg-white p-5 rounded-lg shadow-lg w-96">
       <h3 class="font-bold text-lg text-center">

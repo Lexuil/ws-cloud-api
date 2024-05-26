@@ -152,8 +152,8 @@ function addButtonMessage (): void {
 
 <template>
   <dialog
-    v-show="showModal('ListMessage')"
-    class="absolute inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
+    v-if="showModal('ListMessage')"
+    class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
   >
     <div class="bg-white p-5 rounded-lg shadow-lg w-[30rem] max-h-[80vh] overflow-y-auto">
       <h3 class="font-bold text-lg text-center">
