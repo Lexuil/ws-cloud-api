@@ -5,3 +5,9 @@
 :root {
   scrollbar-width: thin;
 }
+
+@layer base {
+  body {
+    @apply bg-white dark:bg-[#0c1317] dark:text-white;
+  }
+}
