@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useMessagesStore } from '@/stores/messagesStore'
 
-defineProps({
-  messageId: {
-    type: Number,
-    required: true
-  }
-})
+defineProps<{
+  messageId: number
+}>()
 
 const messages = useMessagesStore()
 </script>

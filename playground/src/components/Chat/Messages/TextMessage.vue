@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { format } from '@/utils/ws-format'
 
-defineProps({
-  message: {
-    type: String,
-    required: true
-  },
-  time: {
-    type: String,
-    required: true
-  }
-})
+defineProps<{
+  message: string
+  time: string
+}>()
 </script>
 
 <template>

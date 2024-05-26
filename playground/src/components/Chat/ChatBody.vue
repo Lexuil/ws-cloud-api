@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import TextMessage from '@/components/Chat/Messages/TextMessage.vue'
-import ImageMessage from '@/components/Chat/Messages/ImageMessage.vue'
-import VideoMessage from '@/components/Chat/Messages/VideoMessage.vue'
 import DeleteMessageButton from '@/components/Chat/Messages/DeleteMessageButton.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
-import ButtonsMessage from './Messages/ButtonsMessage.vue'
-import ListMessage from './Messages/ListMessage.vue'
+import ChatMessage from './Messages/ChatMessage.vue'
 
 const messages = useMessagesStore()
 </script>
@@ -21,35 +17,9 @@ const messages = useMessagesStore()
         :key="index"
         class="relative group"
       >
-        <TextMessage
-          v-if="message.type === 'text'"
-          :message="message.text"
-          time="2:45 p.m."
-        />
-        <ImageMessage
-          v-else-if="message.type === 'image' ||
-            (message.type === 'file' && message.file.type.includes('image'))"
-          :link="message.link"
-          time="2:45 p.m."
-        />
-        <VideoMessage
-          v-else-if="message.type === 'video' ||
-            (message.type === 'file' && message.file.type.includes('video'))"
-          :link="message.link"
-          time="2:45 p.m."
-        />
-        <ButtonsMessage
-          v-else-if="message.type === 'button'"
-          :message="message.text"
-          :buttons="message.buttons"
-          time="2:45 p.m."
-        />
-        <ListMessage
-          v-else-if="message.type === 'list'"
-          :message="message.text"
-          time="2:45 p.m."
-          :button-text="message.buttonText"
-          :list="message.list"
+        <ChatMessage
+          :message="message"
+          time="2:45 p.m"
         />
 
         <DeleteMessageButton
