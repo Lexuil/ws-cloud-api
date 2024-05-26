@@ -11,7 +11,7 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-  <header class="flex items-center justify-between w-full h-20 sm:h-12 bg-emerald-700 text-white px-5">
+  <header class="flex items-center justify-between w-full h-20 sm:h-12 bg-primary text-white px-5">
     <h1 class="text-2xl">
       ws-cloud-api Playground
     </h1>

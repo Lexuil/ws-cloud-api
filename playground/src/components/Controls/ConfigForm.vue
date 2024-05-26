@@ -5,8 +5,8 @@ const config = useConfigStore()
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-3 w-full sm:w-96 h-fit border border-gray-300 p-5 rounded-md">
-    <h2 class="text-2xl font-bold">
+  <div class="box">
+    <h2 class="text-2xl font-bold mb-5">
       Configuration
     </h2>
 
@@ -18,7 +18,6 @@ const config = useConfigStore()
       v-model="config.phoneNumberId"
       name="phoneNumberId"
       type="text"
-      class="border border-gray-300 rounded-md p-2 w-full"
     >
 
     <label
@@ -29,7 +28,6 @@ const config = useConfigStore()
       v-model="config.token"
       name="token"
       type="text"
-      class="border border-gray-300 rounded-md p-2 w-full"
     >
 
     <label
@@ -40,7 +38,6 @@ const config = useConfigStore()
       v-model="config.phoneNumberTo"
       name="phoneNumberTo"
       type="text"
-      class="border border-gray-300 rounded-md p-2 w-full"
     >
   </div>
 </template>

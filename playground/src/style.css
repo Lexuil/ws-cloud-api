@@ -7,7 +7,44 @@
 }
 
 @layer base {
+  html {
+    --primary: #008069;
+    --background: #ffffff;
+    --sub-background: #ffffff;
+    --accent: #25d366;
+    --error: #dc2626;
+    --disabled: #d1d5db;
+
+    --box-text: #41525d;
+    --box-background: #f0f2f5;
+  }
+
+  html[data-theme='dark'] {
+    --primary: #008069;
+    --background: #0c1317;
+    --sub-background: #202c33;
+    --accent: #25d366;
+    --disabled: #202c33;
+
+    --box-text: #ffffff;
+    --box-background: #111b21;
+  }
+
   body {
-    @apply bg-white dark:bg-[#0c1317] dark:text-white;
+    @apply bg-background;
+  }
+
+  input {
+    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background
+  }
+
+  button {
+    @apply text-white px-3 py-1 rounded-md disabled:bg-disabled text-lg
+  }
+}
+
+@layer components {
+  .box {
+    @apply flex flex-col items-center gap-3 w-full sm:w-96 h-fit bg-box-background text-box-text p-5 rounded-md;
   }
 }
