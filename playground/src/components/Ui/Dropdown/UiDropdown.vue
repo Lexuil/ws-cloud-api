@@ -2,16 +2,10 @@
 import useDropdown from '@/composables/useDropdown'
 const { closeMenu, menu, menuIsOpen } = useDropdown()
 
-defineProps({
-  triggerClass: {
-    type: String,
-    required: true
-  },
-  dropdownClass: {
-    type: String,
-    required: true
-  }
-})
+defineProps<{
+  triggerClass: string
+  dropdownClass: string
+}>()
 </script>
 
 <template>
