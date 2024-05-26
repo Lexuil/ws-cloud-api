@@ -4,6 +4,7 @@ import './style.css'
 import App from './App.vue'
 
 const pinia = createPinia()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const app = createApp(App)
 
 app.use(pinia)

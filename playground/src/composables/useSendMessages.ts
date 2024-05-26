@@ -1,4 +1,4 @@
-import { Message } from "@/stores/messagesStore"
+import { type Message } from '@/stores/messagesStore'
 import {
   sendText,
   sendImage,
@@ -7,11 +7,15 @@ import {
   sendButtonMessage,
   sendInteractiveListMessage
 } from '../../../dist/messaging'
-import { useConfigStore } from "@/stores/configStore"
+import { useConfigStore } from '@/stores/configStore'
 import { toast } from 'vue-sonner'
-import { computed, ref } from "vue"
+import { type Ref, computed, ref, type ComputedRef } from 'vue'
 
-export default function () {
+export default function (): {
+  sendingMessages: Ref<boolean>
+  availableToSend: ComputedRef<boolean>
+  sendMessages: (messages: Message[]) => Promise<void>
+} {
   const config = useConfigStore()
 
   const sendingMessages = ref(false)
@@ -23,7 +27,7 @@ export default function () {
     sendingMessages.value
   })
 
-  async function sendMessages (messages: Message[]) {
+  async function sendMessages (messages: Message[]): Promise<void> {
     if (sendingMessages.value) return
 
     sendingMessages.value = true
@@ -31,7 +35,7 @@ export default function () {
 
     const wsConfig = {
       phoneNumberId: config.phoneNumberId,
-      token: config.token,
+      token: config.token
     }
 
     for (const message of messages) {
@@ -105,5 +109,5 @@ export default function () {
     sendingMessages,
     availableToSend,
     sendMessages
-  };
+  }
 }

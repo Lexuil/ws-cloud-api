@@ -56,7 +56,7 @@ const form = reactive({
 const { addMessage } = useMessagesStore()
 const { showModal, closeModal } = useModalsStore()
 
-const addButtonMessage = () => {
+function addButtonMessage (): void {
   const {
     text,
     buttonText,

@@ -49,15 +49,15 @@ export const useMessagesStore = defineStore('messages', () => {
   const messages = ref<Message[]>([])
 
   // Actions
-  function addMessage(message: Message) {
+  function addMessage (message: Message): void {
     messages.value.push(message)
   }
 
-  function removeMessage(id: number) {
+  function removeMessage (id: number): void {
     messages.value = messages.value.filter((message) => message.id !== id)
   }
 
-  function clearMessages() {
+  function clearMessages (): void {
     messages.value = []
   }
 

@@ -2,13 +2,13 @@
 import { ref } from 'vue'
 import AddTextMessageInput from './AddTextMessageInput.vue'
 import AddMediaMessageInput from './AddMediaMessageInput.vue'
-import { useMessagesStore, Message } from '@/stores/messagesStore'
+import { useMessagesStore, type Message } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 const type = ref<Message['type']>('text')
 const content = ref('')
 
-function addMessage() {
+function addMessage (): void {
   if (type.value === 'text') {
     messages.addMessage({
       id: Date.now(),

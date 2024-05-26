@@ -6,19 +6,19 @@ export const useModalsStore = defineStore('modals', () => {
   const modals = ref<string[]>([])
 
   // Actions
-  function openModal(modal: string) {
+  function openModal (modal: string): void {
     modals.value.push(modal)
   }
 
-  function closeModal(modal: string) {
+  function closeModal (modal: string): void {
     modals.value = modals.value.filter((m) => m !== modal)
   }
 
-  function closeAllModals() {
+  function closeAllModals (): void {
     modals.value = []
   }
 
-  function showModal(modal: string) {
+  function showModal (modal: string): boolean {
     return modals.value.includes(modal)
   }
 

@@ -7,7 +7,7 @@ const messages = useMessagesStore()
 const content = ref('')
 const textArea = ref<HTMLTextAreaElement | null>(null)
 
-function addTextMessage() {
+function addTextMessage (): void {
   if (content.value.trim() === '') return
 
   messages.addMessage({
@@ -19,10 +19,10 @@ function addTextMessage() {
   textArea.value?.style.setProperty('height', '40px')
 }
 
-function resize() {
+function resize (): void {
   if (textArea.value === null) return
-  textArea.value.style.height = "18px"
-  textArea.value.style.height = textArea.value.scrollHeight + "px";
+  textArea.value.style.height = '18px'
+  textArea.value.style.height = textArea.value.scrollHeight + 'px'
 }
 </script>
 

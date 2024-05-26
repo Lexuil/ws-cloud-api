@@ -3,7 +3,7 @@ import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 
-function addFileMessage(event: Event) {
+function addFileMessage (event: Event): void {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (file === undefined) return

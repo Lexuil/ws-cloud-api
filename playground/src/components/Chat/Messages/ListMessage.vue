@@ -6,10 +6,10 @@ defineProps<{
   message: string
   time: string
   buttonText: string
-  list: {
+  list: Array<{
     title: string
     description: string
-  }[]
+  }>
 }>()
 
 const showModal = ref(false)

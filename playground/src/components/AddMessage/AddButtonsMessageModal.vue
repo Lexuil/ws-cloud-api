@@ -13,7 +13,7 @@ const form = reactive<Record<string, string>>({
 const { addMessage } = useMessagesStore()
 const { showModal, closeModal } = useModalsStore()
 
-const addButtonMessage = () => {
+function addButtonMessage (): void {
   const { text, button1, button2, button3 } = form
 
   if (text === '' || button1 === '') return
