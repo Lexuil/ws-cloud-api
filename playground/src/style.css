@@ -17,17 +17,51 @@
 
     --box-text: #41525d;
     --box-background: #f0f2f5;
+
+    --ws-ui-bg: #f0f2f5;
+    --ws-ui-text: #000000;
+    --ws-mute: #54656f;
+    --ws-avatar: #ffffff;
+    --ws-avatar-bg: #dfe5e7;
+    --ws-icon:#54656f;
+    --ws-file-input-bg: #ffffff;
+    --ws-hover: #f5f6f6;
+    --ws-time: #667781;
+    --ws-link: #009de2;
+    --ws-message-bg: #ffffff;
+    --ws-list-bg: #ffffff;
+    --ws-list-header: #008069;
+    --ws-list-hover: #f5f6f6;
+    --ws-list-title: #111b21;
+    --ws-list-description: #667781;
   }
 
   html[data-theme='dark'] {
     --primary: #008069;
     --background: #0c1317;
-    --sub-background: #202c33;
+    --sub-background: #2a3942;
     --accent: #25d366;
     --disabled: #202c33;
 
     --box-text: #ffffff;
     --box-background: #111b21;
+
+    --ws-ui-bg: #202c33;
+    --ws-ui-text: #ffffff;
+    --ws-mute: #aebac1;
+    --ws-avatar: #cfd4d6;
+    --ws-avatar-bg: #6a7175;
+    --ws-icon: #8696a0;
+    --ws-file-input-bg: #202c33;
+    --ws-hover: #182229;
+    --ws-time: #ffffff99;
+    --ws-link: #53bdeb;
+    --ws-message-bg: #202c33;
+    --ws-list-bg: #111b21;
+    --ws-list-header: #202c33;
+    --ws-list-hover: #202c33;
+    --ws-list-title: #e9edef;
+    --ws-list-description: #8696a0;
   }
 
   body {
@@ -40,6 +74,10 @@
 
   button {
     @apply text-white px-3 py-1 rounded-md disabled:bg-disabled text-lg
+  }
+
+  textarea {
+    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background
   }
 }
 

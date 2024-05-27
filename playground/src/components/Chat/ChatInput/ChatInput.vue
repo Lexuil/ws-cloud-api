@@ -27,13 +27,13 @@ function resize (): void {
 </script>
 
 <template>
-  <div class="flex items-center gap-2 p-3 w-full bg-[#f0f2f5] rounded-b-lg">
+  <div class="flex items-center gap-2 p-3 w-full bg-ws-ui-bg text-ws-ui-text rounded-b-lg">
     <ChatInputButton />
 
     <textarea
       ref="textArea"
       v-model="content"
-      class="rounded-md p-2 w-full focus:outline-none resize-none"
+      class="resize-none"
       placeholder="Type a message..."
       rows="1"
       @keydown.enter.exact.prevent="addTextMessage"
@@ -41,7 +41,7 @@ function resize (): void {
     />
 
     <span
-      class="text-gray-500 cursor-pointer"
+      class="text-ws-icon cursor-pointer"
     ><svg
       viewBox="0 0 24 24"
       height="24"

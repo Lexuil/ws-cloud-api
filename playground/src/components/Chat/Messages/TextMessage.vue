@@ -8,13 +8,13 @@ defineProps<{
 </script>
 
 <template>
-  <li class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px] break-words max-w-full">
+  <li class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-fit mt-[2px] break-words max-w-full">
     <span
       class="whitespace-pre-wrap"
       v-html="format(message)"
     />
     <span class="invisible h-0 text-[0.68rem] p-1">{{ time }}</span>
-    <div class="relative text-[0.68rem] text-gray-500">
+    <div class="relative text-[0.68rem] text-ws-time">
       <span class="float-right mt-[-10px]">{{ time }}</span>
     </div>
   </li>

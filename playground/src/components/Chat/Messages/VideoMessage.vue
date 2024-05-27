@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <li class="p-[2px] bg-white shadow-sm rounded-md text-gray-700 w-fit max-w-64 mt-[2px]">
+  <li class="p-[2px] bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-fit max-w-64 mt-[2px]">
     <div class="rounded-md overflow-hidden relative">
       <video
         :src="link"

@@ -17,18 +17,18 @@ const showModal = ref(false)
 
 <template>
   <li class="w-fit">
-    <div class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px] break-words max-w-full">
+    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-full mt-[2px] break-words">
       <span
         class="whitespace-pre-wrap"
         v-html="format(message)"
       />
       <span class="invisible h-0 text-[0.68rem] p-1">{{ time }}</span>
-      <div class="relative text-[0.68rem] text-gray-500">
+      <div class="relative text-[0.68rem] text-ws-time">
         <span class="float-right mt-[-10px]">{{ time }}</span>
       </div>
     </div>
     <button
-      class="flex items-center justify-center gap-2 p-2 bg-white shadow-sm rounded-md text-sky-500 mt-[2px] w-full"
+      class="flex items-center justify-center gap-2 p-2 bg-ws-ui-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
       @click="showModal = true"
     >
       <svg
@@ -60,8 +60,8 @@ const showModal = ref(false)
       v-show="showModal"
       class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
     >
-      <div class="bg-white rounded-sm shadow-lg w-[27rem] max-h-[80vh] overflow-y-auto">
-        <div class="flex items-center gap-5 bg-emerald-700 text-white p-5">
+      <div class="bg-ws-list-bg rounded-sm shadow-lg w-[27rem] max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center gap-5 bg-ws-list-header text-white p-5">
           <button @click="showModal = false">
             <svg
               viewBox="0 0 24 24"
@@ -85,11 +85,11 @@ const showModal = ref(false)
             <li
               v-if="item.title !== ''"
               :key="index"
-              class="flex justify-between items-center gap-2 cursor-pointer py-2 px-4 hover:bg-gray-100"
+              class="flex justify-between items-center gap-2 cursor-pointer py-2 px-4 hover:bg-ws-list-hover"
             >
               <div class="flex flex-col">
-                <span class="text-lg">{{ item.title }}</span>
-                <span class="text-gray-500">{{ item.description }}</span>
+                <span class="text-ws-list-title">{{ item.title }}</span>
+                <span class="text-ws-list-description">{{ item.description }}</span>
               </div>
 
               <svg

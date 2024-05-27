@@ -39,7 +39,7 @@ function addButtonMessage (): void {
     v-if="showModal('ButtonsMessage')"
     class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
   >
-    <div class="bg-white p-5 rounded-lg shadow-lg w-96">
+    <div class="bg-box-background text-box-text p-5 rounded-lg shadow-lg w-96">
       <h3 class="font-bold text-lg text-center">
         Buttons Message
       </h3>
@@ -56,7 +56,6 @@ function addButtonMessage (): void {
           id="text"
           v-model="form.text"
           name="text"
-          class="w-full p-2 border border-gray-300 rounded-md"
           required
         />
 
@@ -76,7 +75,6 @@ function addButtonMessage (): void {
               v-model="form[`button${i}`]"
               type="text"
               :name="`button${i}`"
-              class="w-44 p-2 border border-gray-300 rounded-md"
               maxlength="20"
             >
           </div>

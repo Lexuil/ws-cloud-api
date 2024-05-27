@@ -155,7 +155,7 @@ function addButtonMessage (): void {
     v-if="showModal('ListMessage')"
     class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
   >
-    <div class="bg-white p-5 rounded-lg shadow-lg w-[30rem] max-h-[80vh] overflow-y-auto">
+    <div class="bg-box-background text-box-text p-5 rounded-lg shadow-lg w-[30rem] max-h-[80vh] overflow-y-auto">
       <h3 class="font-bold text-lg text-center">
         Buttons Message
       </h3>
@@ -172,7 +172,6 @@ function addButtonMessage (): void {
           id="text"
           v-model="form.text"
           name="text"
-          class="w-full p-2 border border-gray-300 rounded-md"
           required
         />
 
@@ -185,7 +184,6 @@ function addButtonMessage (): void {
           v-model="form.buttonText"
           type="text"
           name="buttonText"
-          class="w-44 p-2 border border-gray-300 rounded-md"
           maxlength="20"
           required
         >
@@ -205,7 +203,6 @@ function addButtonMessage (): void {
                 v-model="(form[`list${i}` as keyof typeof form] as List).title"
                 type="text"
                 :name="`title${i}`"
-                class="w-56 p-2 border border-gray-300 rounded-md"
                 maxlength="24"
               >
             </label>
@@ -218,7 +215,7 @@ function addButtonMessage (): void {
                 :id="`description${i}`"
                 v-model="(form[`list${i}` as keyof typeof form] as List).description"
                 :name="`description${i}`"
-                class="p-2 border border-gray-300 rounded-md w-full resize-none"
+                class="resize-none"
                 maxlength="72"
                 rows="2"
                 :required="(form[`list${i}` as keyof typeof form] as List).title !== ''"

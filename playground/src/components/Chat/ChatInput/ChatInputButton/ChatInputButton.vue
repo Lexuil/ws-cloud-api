@@ -7,12 +7,12 @@ import ChatInputListMessage from './ChatInputListMessage.vue'
 
 <template>
   <UiDropdown
-    trigger-class="inline-flex cursor-pointer hover:bg-gray-200 p-2 rounded-full"
-    dropdown-class="absolute top-0 -translate-y-full bg-white p-2 rounded-lg shadow-lg w-48"
+    trigger-class="inline-flex cursor-pointer p-2 rounded-full"
+    dropdown-class="absolute top-0 -translate-y-full bg-ws-file-input-bg p-2 rounded-lg shadow-lg w-48"
   >
     <template #trigger>
       <span
-        class="text-gray-500"
+        class="text-ws-icon"
       ><svg
         viewBox="0 0 24 24"
         height="24"
@@ -23,13 +23,13 @@ import ChatInputListMessage from './ChatInputListMessage.vue'
       /></svg></span>
     </template>
 
-    <li class="hover:bg-slate-100 text-slate-600 rounded-lg">
+    <li class="hover:bg-ws-hover rounded-lg">
       <ChatInputFile />
     </li>
-    <li class="hover:bg-slate-100 text-slate-600 rounded-lg">
+    <li class="hover:bg-ws-hover rounded-lg">
       <ChatInputButtonsMessage />
     </li>
-    <li class="hover:bg-slate-100 text-slate-600 rounded-lg">
+    <li class="hover:bg-ws-hover rounded-lg">
       <ChatInputListMessage />
     </li>
   </UiDropdown>

@@ -5,7 +5,7 @@ const { openModal } = useModalsStore()
 
 <template>
   <button
-    class="flex items-center gap-2 cursor-pointer p-2"
+    class="flex items-center gap-2 cursor-pointer p-2 text-ws-ui-text text-base"
     @click="openModal('ListMessage')"
   >
     <svg

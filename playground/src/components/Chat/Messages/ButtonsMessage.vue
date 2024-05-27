@@ -10,13 +10,13 @@ defineProps<{
 
 <template>
   <li class="w-fit">
-    <div class="p-2 bg-white shadow-sm rounded-md text-gray-700 w-fit mt-[2px] break-words max-w-full">
+    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-full mt-[2px] break-words">
       <span
         class="whitespace-pre-wrap"
         v-html="format(message)"
       />
       <span class="invisible h-0 text-[0.68rem] p-1">{{ time }}</span>
-      <div class="relative text-[0.68rem] text-gray-500">
+      <div class="relative text-[0.68rem] text-ws-time">
         <span class="float-right mt-[-10px]">{{ time }}</span>
       </div>
     </div>
@@ -26,7 +26,7 @@ defineProps<{
       <button
         v-if="button !== ''"
         :key="index"
-        class="p-2 bg-white shadow-sm rounded-md text-sky-500 mt-[2px] w-full"
+        class="p-2 bg-ws-ui-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
       >
         {{ button }}
       </button>
