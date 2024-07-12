@@ -170,6 +170,7 @@ sendDocument({
   to: process.env.PHONE_NUMBER_RECIPIENT,
   link: "https://example.com/document.pdf",
   filename: "document.pdf",
+  caption: "Test document message",
 })
   .then((sentSuccess) => {
     if (sentSuccess) {
