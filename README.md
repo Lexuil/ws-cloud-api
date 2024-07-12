@@ -69,43 +69,43 @@ WS_VERIFY_TOKEN=
 How to handle messages events
 
 ```ts
-import { handleWebhook } from 'ws-cloud-api/webhook'
-import express from 'express'
+import { handleWebhook } from "ws-cloud-api/webhook";
+import express from "express";
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-app.use(express.json())
+app.use(express.json());
 
-app.post('/whatsapp-webhook', async (req, res) => {
+app.post("/whatsapp-webhook", async (req, res) => {
   try {
-    const event = handleWebhook(req.body)
+    const event = handleWebhook(req.body);
 
-    if (event?.type === 'message') {
-      console.log(`New message from ${event.from}: ${event.message}`)
+    if (event?.type === "message") {
+      console.log(`New message from ${event.from}: ${event.message}`);
     }
 
-    if (event?.type === 'voiceAudio') {
-      console.log(`New voice message from ${event.from}: ${event.audio.id}`)
+    if (event?.type === "voiceAudio") {
+      console.log(`New voice message from ${event.from}: ${event.audio.id}`);
     }
 
-    if (event?.type === 'flowReply') {
+    if (event?.type === "flowReply") {
       console.log(
         `New flow reply from ${event.from}:\n\n`,
         JSON.stringify(event.flow, null, 2)
-      )
+      );
     }
 
-    res.status(200)
+    res.status(200);
   } catch (error) {
-    console.error('Error:', error)
-    res.status(500).send('Internal server error')
+    console.error("Error:", error);
+    res.status(500).send("Internal server error");
   }
-})
+});
 
 app.listen(port, () => {
-  console.log(`Server start`)
-})
+  console.log(`Server start`);
+});
 ```
 
 ### Messages
@@ -113,66 +113,87 @@ app.listen(port, () => {
 #### Send Text
 
 ```ts
-import { sendText } from 'ws-cloud-api/messaging'
+import { sendText } from "ws-cloud-api/messaging";
 
-sendText(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message sent') }
-}).catch(console.error)
+sendText({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  message: "This is a test message",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Image
 
 ```ts
-import { sendImage } from 'ws-cloud-api/messaging'
+import { sendImage } from "ws-cloud-api/messaging";
 
-sendImage(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'https://example.com/image.jpg'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Image sent') }
-}).catch(console.error)
+sendImage({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  link: "https://example.com/image.jpg",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Image sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Video
 
 ```ts
-import { sendVideo } from 'ws-cloud-api/messaging'
+import { sendVideo } from "ws-cloud-api/messaging";
 
-sendVideo(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'https://example.com/video.mp4'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Video sent') }
-}).catch(console.error)
+sendVideo({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  link: "https://example.com/video.mp4",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Video sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Document
 
 ```ts
-import { sendDocument } from 'ws-cloud-api/messaging'
+import { sendDocument } from "ws-cloud-api/messaging";
 
-sendDocument(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'https://example.com/document.pdf'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Document sent') }
-}).catch(console.error)
+sendDocument({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  link: "https://example.com/document.pdf",
+  filename: "document.pdf",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Document sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Audio
 
 ```ts
-import { sendAudio } from 'ws-cloud-api/messaging'
+import { sendAudio } from "ws-cloud-api/messaging";
 
-sendAudio(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'https://example.com/audio.mp3'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Audio sent') }
-}).catch(console.error)
+sendAudio({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  link: "https://example.com/audio.mp3",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Audio sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send File
@@ -203,125 +224,174 @@ Supported files:
   - video/3gp
 
 ```ts
-import { sendFile } from 'ws-cloud-api/messaging'
+import { sendFile } from "ws-cloud-api/messaging";
 
-const image = new Blob(
-  [fs.readFileSync(path.join(__dirname, '/image.jpg'))],
-  { type: 'image/jpeg' }
-)
+const image = new Blob([fs.readFileSync(path.join(__dirname, "/image.jpg"))], {
+  type: "image/jpeg",
+});
 
 return await sendFile({
   to: phoneNumberToTest,
-  file: image
-}).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Audio sent') }
-}).catch(console.error)
+  file: image,
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Audio sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Text with CTA Button
 
 ```ts
-import { sendTextWithCTAButton } from 'ws-cloud-api/messaging'
+import { sendTextWithCTAButton } from "ws-cloud-api/messaging";
 
-sendTextWithCTAButton(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message',
-  'https://example.com/button'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message with CTA button sent') }
-}).catch(console.error)
+sendTextWithCTAButton({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  message: {
+    text: "This is a test message",
+    buttonText: "CTA button",
+    url: "https://www.google.com",
+  },
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with CTA button sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Text with Buttons
 
 ```ts
-import { sendTextWithButtons } from 'ws-cloud-api/messaging'
+import { sendTextWithButtons } from "ws-cloud-api/messaging";
 
-sendTextWithButtons(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message',
-  [
-    {
-      title: 'Button 1',
-      payload: 'button_1',
-    },
-    {
-      title: 'Button 2',
-      payload: 'button_2',
-    },
-  ]
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message with buttons sent') }
-}).catch(console.error)
+sendTextWithButtons({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  message: {
+    text: "This is a test message",
+    buttons: [
+      {
+        title: "Button 1",
+        id: "1",
+      },
+      {
+        title: "Button 2",
+        id: "2",
+      },
+    ],
+  },
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with buttons sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Text with Unique Section List
 
 ```ts
-import { sendTextWithUniqueSectionList } from 'ws-cloud-api/messaging'
+import { sendInteractiveListMessage } from "ws-cloud-api/messaging";
 
-sendTextWithUniqueSectionList(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message',
-  {
-    title: 'Section 1',
-    subtitle: 'Subtitle 1',
-    image: 'https://example.com/image.jpg',
-    cta: {
-      title: 'Button 1',
-      payload: 'button_1',
-    },
-  }
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message with unique section list sent') }
-}).catch(console.error)
+sendInteractiveListMessage({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  list: {
+    text: "Test list",
+    buttonText: "List button",
+    list: [
+      {
+        title: "Element 1",
+        description: "Description 1",
+      },
+      {
+        title: "Element 2",
+        description: "Description 2",
+      },
+    ],
+  },
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with unique section list sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Text with a List of Multiple Sections
 
 ```ts
-import { sendTextWithMultipleSectionsList } from 'ws-cloud-api/messaging'
+import { sendInteractiveSectionListMessage } from "ws-cloud-api/messaging";
 
-sendTextWithMultipleSectionsList(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message',
-  [
-    {
-      title: 'Section 1',
-      subtitle: 'Subtitle 1',
-      image: 'https://example.com/image.jpg',
-      cta: {
-        title: 'Button 1',
-        payload: 'button_1',
+sendInteractiveSectionListMessage({
+  to: phoneNumberToTest,
+  list: {
+    text: "Test section list",
+    buttonText: "Section list button",
+    sections: [
+      {
+        sectionTitle: "Section 1",
+        list: [
+          {
+            title: "Element 1",
+            description: "Description 1",
+          },
+          {
+            title: "Element 2",
+            description: "Description 2",
+          },
+        ],
       },
-    },
-    {
-      title: 'Section 2',
-      subtitle: 'Subtitle 2',
-      image: 'https://example.com/image.jpg',
-      cta: {
-        title: 'Button 2',
-        payload: 'button_2',
+      {
+        sectionTitle: "Section 2",
+        list: [
+          {
+            title: "Element 3",
+            description: "Description 3",
+          },
+          {
+            title: "Element 4",
+            description: "Description 4",
+          },
+        ],
       },
-    },
-  ]
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message with multiple sections list sent') }
-}).catch(console.error)
+    ],
+  },
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with multiple sections list sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Send Text with WhatsApp Flow
 
 ```ts
-import { sendTextWithWhatsAppFlow } from 'ws-cloud-api/messaging'
+import { sendFlowMessage } from "ws-cloud-api/messaging";
 
-sendTextWithWhatsAppFlow(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'This is a test message',
-  'flow_id'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Message with WhatsApp flow sent') }
-}).catch(console.error)
+sendFlowMessage({
+  to: phoneNumberToTest,
+  flow: {
+    id: process.env.FLOW_MESSAGE_ID ?? "",
+    text: "Test flow",
+    token: "token",
+    ctaText: "View flow",
+    defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? "",
+  },
+  draft: true,
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with WhatsApp flow sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 ### Templates
@@ -331,15 +401,19 @@ sendTextWithWhatsAppFlow(
 To send a template, you have to create it first. You will need the name and the language code.
 
 ```ts
-import { sendTextTemplate } from 'ws-cloud-api/templates'
+import { sendTextTemplate } from "ws-cloud-api/templates";
 
-sendTextTemplate(
-  process.env.PHONE_NUMBER_RECIPIENT,
-  'hello_world',
-  'en_US'
-).then((sentSuccess) => {
-  if (sentSuccess) { console.log('Template sent') }
-}).catch(console.error)
+sendTextTemplate({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  templateName: "hello_world",
+  language: "en_US",
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Template sent");
+    }
+  })
+  .catch(console.error);
 ```
 
 ### Media
@@ -347,34 +421,45 @@ sendTextTemplate(
 #### Upload Media
 
 ```ts
-import { uploadMedia } from 'ws-cloud-api/media'
+import { uploadMedia } from "ws-cloud-api/media";
 
-const blob = new Blob(
-  [fs.readFileSync(path.join(__dirname, '/image.jpg'))],
-  { type: 'image/jpeg' }
-)
+const blob = new Blob([fs.readFileSync(path.join(__dirname, "/image.jpg"))], {
+  type: "image/jpeg",
+});
 
-uploadMedia({ media: blob }).then((mediaId) => {
-  if (mediaId) { console.log('console media id: ' + mediaId) }
-}).catch(console.error)
+uploadMedia({ media: blob })
+  .then((mediaId) => {
+    if (mediaId) {
+      console.log("console media id: " + mediaId);
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Get Media Url
 
 ```ts
-import { getMediaUrl } from 'ws-cloud-api/media'
+import { getMediaUrl } from "ws-cloud-api/media";
 
-getMediaUrl('mediaId').then((url) => {
-  if (url) { console.log('console media url: ' + url) }
-}).catch(console.error)
+getMediaUrl({ mediaId: "mediaId" })
+  .then((url) => {
+    if (url) {
+      console.log("console media url: " + url);
+    }
+  })
+  .catch(console.error);
 ```
 
 #### Get Medias as Blob
 
 ```ts
-import { getMedia } from 'ws-cloud-api/media'
+import { getMedia } from "ws-cloud-api/media";
 
-getMedia('mediaUrl').then((blob) => {
-  if (blob) { console.log('console media blob: ' + blob) }
-}).catch(console.error)
+getMedia({ mediaUrl: "mediaUrl" })
+  .then((blob) => {
+    if (blob) {
+      console.log("console media blob: " + blob);
+    }
+  })
+  .catch(console.error);
 ```
