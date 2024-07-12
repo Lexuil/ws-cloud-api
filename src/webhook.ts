@@ -2,6 +2,8 @@ import type { MessageStatus } from './types/enums'
 import type { WsRequest, WebhookSubscribeQuery } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
+type Source = 'user' | 'button' | 'list' | 'flow'
+
 export function verifyWebhook (input: WebhookSubscribeQuery): {
   statusCode: 200 | 401
   body?: string
@@ -28,6 +30,7 @@ export function handleWebhook (input: WsRequest): {
   type: 'message'
   from: string
   message: string
+  source: Source
 } | {
   type: 'voiceAudio'
   from: string
@@ -96,22 +99,42 @@ export function handleWebhook (input: WsRequest): {
   return {
     type: 'message',
     from: messageObject.from,
-    message: getMessageText(messageObject)
+    ...getMessageText(messageObject)
   }
 }
 
-function getMessageText (message: Message): string {
+function getMessageText (message: Message): {
+  message: string
+  source: Source
+} {
   switch (message.type) {
     case 'text':
-      return message.text.body
+      return {
+        message: message.text.body,
+        source: 'user'
+      }
     case 'interactive':
       if (message.interactive.type === 'nfm_reply') {
-        return 'Flow message'
+        return {
+          message: 'Flow message',
+          source: 'flow'
+        }
       }
-      return message.interactive.type === 'list_reply'
-        ? message.interactive.list_reply.id
-        : message.interactive.button_reply.id
+      if (message.interactive.type === 'list_reply') {
+        return {
+          message: message.interactive.list_reply.id,
+          source: 'list'
+        }
+      } else {
+        return {
+          message: message.interactive.button_reply.id,
+          source: 'button'
+        }
+      }
     default:
-      return ''
+      return {
+        message: 'Unsupported message type',
+        source: 'user'
+      }
   }
 }
