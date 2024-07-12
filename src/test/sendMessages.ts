@@ -33,7 +33,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
   }),
   document: async () => sendDocument({
     to: phoneNumberToTest,
-    link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+    link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    filename: 'dummy.pdf'
   }),
   audio: async () => sendAudio({
     to: phoneNumberToTest,

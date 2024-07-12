@@ -86,11 +86,13 @@ async function sendSimpleMedia ({
   to,
   type,
   link,
+  filename,
   config
 }: {
   to: string
   type: MediaBody['type']
   link: string
+  filename?: string
   config?: WsConfig
 }): Promise<boolean> {
   return await sendMessageRequest({
@@ -100,7 +102,8 @@ async function sendSimpleMedia ({
     body: {
       type,
       [type]: {
-        link
+        link,
+        filename
       }
     },
     config
@@ -134,13 +137,21 @@ export async function sendVideo ({
 export async function sendDocument ({
   to,
   link,
+  filename,
   config
 }: {
   to: string
   link: string
+  filename: string
   config?: WsConfig
 }): Promise<boolean> {
-  return await sendSimpleMedia({ to, type: MessageTypes.Document, link, config })
+  return await sendSimpleMedia({
+    to,
+    type: MessageTypes.Document,
+    link,
+    filename,
+    config
+  })
 }
 
 export async function sendAudio ({
