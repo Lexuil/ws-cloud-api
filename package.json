@@ -17,6 +17,7 @@
     "test:messages": "jiti ./src/test/sendMessages.ts",
     "test:webhook": "jiti ./src/test/webhook.ts",
     "test:templates": "jiti ./src/test/sendTemplates.ts",
+    "test:media": "jiti ./src/test/media.ts",
     "lint": "eslint \"./src/**/*.ts\" && tsc --noEmit"
   },
   "exports": {
