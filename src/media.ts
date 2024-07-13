@@ -4,8 +4,11 @@ import { type WsConfig } from './types/config'
 let nodeFetch: typeof fetch
 if (typeof window === 'undefined') {
   console.log('node-fetch')
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  nodeFetch = require('node-fetch').default
+  import('node-fetch')
+    .then((module) => {
+      nodeFetch = module.default as unknown as typeof fetch
+    })
+    .catch(console.error)
 }
 
 const supportedFiles = {
