@@ -19,25 +19,25 @@ const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
 const messageType = process.argv[2]
 
 const messageFunctions: Record<string, () => Promise<boolean>> = {
-  text: async () => sendText({
+  text: async () => await sendText({
     to: phoneNumberToTest,
     message: 'Test message from library'
   }),
-  image: async () => sendImage({
+  image: async () => await sendImage({
     to: phoneNumberToTest,
     link: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
   }),
-  video: async () => sendVideo({
+  video: async () => await sendVideo({
     to: phoneNumberToTest,
     link: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
   }),
-  document: async () => sendDocument({
+  document: async () => await sendDocument({
     to: phoneNumberToTest,
     link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     filename: 'dummy.pdf',
     caption: 'Test document'
   }),
-  audio: async () => sendAudio({
+  audio: async () => await sendAudio({
     to: phoneNumberToTest,
     link: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
   }),
@@ -47,12 +47,12 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       { type: 'image/jpeg' }
     )
 
-    return sendFile({
+    return await sendFile({
       to: phoneNumberToTest,
       file: image
     })
   },
-  buttons: async () => sendButtonMessage({
+  buttons: async () => await sendButtonMessage({
     to: phoneNumberToTest,
     message: {
       text: 'Test button',
@@ -68,7 +68,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       ]
     }
   }),
-  list: async () => sendInteractiveListMessage({
+  list: async () => await sendInteractiveListMessage({
     to: phoneNumberToTest,
     list: {
       text: 'Test list',
@@ -85,7 +85,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       ]
     }
   }),
-  'cta-button': async () => sendCTAButtonMessage({
+  'cta-button': async () => await sendCTAButtonMessage({
     to: phoneNumberToTest,
     message: {
       text: 'CTA button',
@@ -93,7 +93,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       url: 'https://www.google.com'
     }
   }),
-  'section-list': async () => sendInteractiveSectionListMessage({
+  'section-list': async () => await sendInteractiveSectionListMessage({
     to: phoneNumberToTest,
     list: {
       text: 'Test section list',
@@ -128,7 +128,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       ]
     }
   }),
-  flow: async () => sendFlowMessage({
+  flow: async () => await sendFlowMessage({
     to: phoneNumberToTest,
     flow: {
       id: process.env.FLOW_MESSAGE_ID ?? '',
