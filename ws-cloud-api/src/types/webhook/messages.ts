@@ -14,7 +14,7 @@ export interface Profile {
   name: string
 }
 
-export type Message = TextMessage | InteractiveMessage | ReactionMessage | MediaMessage
+export type Message = TextMessage | InteractiveMessage | ReactionMessage | MediaMessage | ButtonMessage
 
 export interface MessageBase {
   from: string
@@ -95,4 +95,16 @@ export interface InteractiveFlow {
     body: 'Sent'
     name: 'flow'
   }
+}
+
+// ----------------------
+// Button Message
+export interface ButtonMessage extends MessageBase {
+  type: 'button'
+  button: ButtonContent
+}
+
+export interface ButtonContent {
+  payload: string
+  text: string
 }

@@ -82,7 +82,11 @@ export function handleWebhook (input: WsRequest): {
   }
 
   // TODO: Add support for messages different than interactive and text
-  if (messageObject.type !== 'interactive' && messageObject.type !== 'text') {
+  if (
+    messageObject.type !== 'interactive' &&
+    messageObject.type !== 'text' &&
+    messageObject.type !== 'button'
+  ) {
     return
   }
 
@@ -120,16 +124,22 @@ function getMessageText (message: Message): {
           source: 'flow'
         }
       }
+
       if (message.interactive.type === 'list_reply') {
         return {
           message: message.interactive.list_reply.id,
           source: 'list'
         }
-      } else {
-        return {
-          message: message.interactive.button_reply.id,
-          source: 'button'
-        }
+      }
+
+      return {
+        message: message.interactive.button_reply.id,
+        source: 'button'
+      }
+    case 'button':
+      return {
+        message: message.button.payload,
+        source: 'button'
       }
     default:
       return {
