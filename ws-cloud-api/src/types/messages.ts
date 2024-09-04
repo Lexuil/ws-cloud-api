@@ -229,6 +229,7 @@ export interface TextBody {
   type: MessageTypes.Text
   [MessageTypes.Text]: {
     body: string
+    preview_url?: boolean | undefined
   }
 }
 

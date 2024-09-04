@@ -117,11 +117,23 @@ import { sendText } from "ws-cloud-api/messaging";
 
 sendText({
   to: process.env.PHONE_NUMBER_RECIPIENT,
-  message: "This is a test message",
+  message: "This is a test message"
 })
   .then((sentSuccess) => {
     if (sentSuccess) {
       console.log("Message sent");
+    }
+  })
+  .catch(console.error);
+
+sendText({
+  to: process.env.PHONE_NUMBER_RECIPIENT,
+  message: "https://www.youtube.com/watch?v=L9jpMYn8q0g&pp=ygUjeW91IHRvIHlvdSBhc2lhbiBrdW5nIGZ1IGdlbmVyYXRpb24%3D",
+  previewUrl: true
+})
+  .then((sentSuccess) => {
+    if (sentSuccess) {
+      console.log("Message with preview sent");
     }
   })
   .catch(console.error);

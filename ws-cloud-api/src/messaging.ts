@@ -64,10 +64,12 @@ export async function sendMessageRequest ({
 export async function sendText ({
   to,
   message,
+  previewUrl,
   config
 }: {
   to: string
   message: string
+  previewUrl?: boolean
   config?: WsConfig
 }): Promise<boolean> {
   return await sendMessageRequest({
@@ -75,6 +77,7 @@ export async function sendText ({
     body: {
       type: MessageTypes.Text,
       [MessageTypes.Text]: {
+        preview_url: previewUrl,
         body: message
       }
     },
