@@ -44,6 +44,7 @@ export default function (): {
           await sendText({
             message: message.text,
             to: config.phoneNumberTo,
+            previewUrl: true,
             config: wsConfig
           })
           break
