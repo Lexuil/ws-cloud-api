@@ -8,6 +8,9 @@ hero:
   tagline: Simple to use and tiny
   actions:
     - theme: brand
+      text: What is ws-cloud-api
+      link: /what-is
+    - theme: alt
       text: Getting starting
       link: /getting-started
     - theme: alt

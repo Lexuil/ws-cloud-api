@@ -17,7 +17,8 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           { text: 'What is ws-cloud-api?', link: '/what-is' },
-          { text: 'Getting Stated', link: '/getting-started' }
+          { text: 'Getting Stated', link: '/getting-started' },
+          { text: 'Configuration', link: '/config' }
         ]
       },
       {
