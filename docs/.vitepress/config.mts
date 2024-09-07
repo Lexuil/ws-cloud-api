@@ -24,7 +24,7 @@ export default defineConfig({
       {
         text: 'Messaging',
         items: [
-          { text: 'Text', link: '/' },
+          { text: 'Text', link: '/messaging/text' },
           { text: 'Image (URL)', link: '/' },
           { text: 'Video (URL)', link: '/' },
           { text: 'Document (URL)', link: '/' },
