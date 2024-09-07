@@ -25,15 +25,15 @@ export default defineConfig({
         text: 'Messaging',
         items: [
           { text: 'Text', link: '/messaging/text' },
-          { text: 'Image (URL)', link: '/' },
-          { text: 'Video (URL)', link: '/' },
-          { text: 'Document (URL)', link: '/' },
-          { text: 'Audio (URL)', link: '/' },
-          { text: 'File (Blob)', link: '/' },
-          { text: 'CTA button', link: '/' },
-          { text: 'Buttons', link: '/' },
-          { text: 'List', link: '/' },
-          { text: 'Flow', link: '/' }
+          { text: 'Image (URL)', link: '/messaging/image' },
+          { text: 'Video (URL)', link: '/messaging/video' },
+          { text: 'Document (URL)', link: '/messaging/document' },
+          { text: 'Audio (URL)', link: '/messaging/audio' },
+          { text: 'File (Blob)', link: '/messaging/file' },
+          { text: 'CTA button', link: '/messaging/cta' },
+          { text: 'Buttons', link: '/messaging/buttons' },
+          { text: 'List', link: '/messaging/list' },
+          { text: 'Flow', link: '/messaging/flow' }
         ]
       },
       {

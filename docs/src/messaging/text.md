@@ -22,9 +22,9 @@ async function sendText({
 
 ## Parameters:
 
-- **to:** The WhatsApp phone number recipient, including country code.
-- **message:** The text message to send.
-- **previewUrl:** Set to true if the message contains a link and you want to include a link preview.
+- `to:` The WhatsApp phone number recipient, including country code.
+- `message:` The text message to send.
+- `previewUrl:` Set to true if the message contains a link and you want to include a link preview.
 
 ## Return:
 
