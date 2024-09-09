@@ -45,9 +45,9 @@ export default defineConfig({
       {
         text: 'Media',
         items: [
-          { text: 'Upload', link: '/' },
-          { text: 'Get URL', link: '/' },
-          { text: 'Get Blob', link: '/' }
+          { text: 'Upload', link: '/media/upload' },
+          { text: 'Get URL', link: '/media/get-url' },
+          { text: 'Get Blob', link: '/media/get-bolb' }
         ]
       },
       {

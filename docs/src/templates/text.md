@@ -27,7 +27,7 @@ async function sendTextTemplate({
 
 ## Return
 
-- Success: True for success, false for fail.
+- **Success:** True for success, false for fail.
 
 ## Example usage
 
