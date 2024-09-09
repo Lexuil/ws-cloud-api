@@ -39,7 +39,7 @@ export default defineConfig({
       {
         text: 'Templates',
         items: [
-          { text: 'Text', link: '/' }
+          { text: 'Text', link: '/templates/text' }
         ]
       },
       {
