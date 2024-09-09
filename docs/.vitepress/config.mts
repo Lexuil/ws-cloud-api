@@ -54,9 +54,7 @@ export default defineConfig({
         text: 'Webhook',
         items: [
           { text: 'Verification', link: '/webhook/verification' },
-          { text: 'Text', link: '/webhook/text' },
-          { text: 'Voice audio', link: '/webhook/voice-audio' },
-          { text: 'Flow', link: '/webhook/flow' }
+          { text: 'Messages', link: '/webhook/messages' }
         ]
       },
       {
