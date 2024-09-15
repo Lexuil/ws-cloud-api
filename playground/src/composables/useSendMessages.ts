@@ -6,7 +6,7 @@ import {
   sendFile,
   sendButtonMessage,
   sendInteractiveListMessage
-} from '@/../../ws-cloud-api/dist/messaging'
+} from 'ws-cloud-api/messaging'
 import { useConfigStore } from '@/stores/configStore'
 import { toast } from 'vue-sonner'
 import { type Ref, computed, ref, type ComputedRef } from 'vue'
