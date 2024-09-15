@@ -17,5 +17,9 @@ module.exports = {
     'vue'
   ],
   rules: {
-  }
+  },
+  ignorePatterns: [
+    'src/components/ui/**/*',
+    'src/lib/utils.ts'
+  ]
 }
