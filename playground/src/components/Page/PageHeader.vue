@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDark, useToggle } from '@vueuse/core'
+import { useColorMode, useDark, useToggle } from '@vueuse/core'
 
 const isDark = useDark({
   selector: 'html',
@@ -8,6 +8,7 @@ const isDark = useDark({
   valueLight: ''
 })
 const toggleDark = useToggle(isDark)
+const mode = useColorMode()
 </script>
 
 <template>
@@ -55,10 +56,10 @@ const toggleDark = useToggle(isDark)
         </span>
         <!-- Dark mode toggle -->
         <button
-          @click="toggleDark()"
+          @click="mode = mode === 'dark' ? 'light' : 'dark'"
         >
           <svg
-            v-if="isDark"
+            v-if="mode === 'dark'"
             class="h-6 w-6"
             xmlns="http://www.w3.org/2000/svg"
             width="32"

@@ -28,7 +28,7 @@ const showModal = ref(false)
       </div>
     </div>
     <button
-      class="flex items-center justify-center gap-2 p-2 bg-ws-ui-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
+      class="flex items-center justify-center gap-2 p-2 bg-ws-button-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
       @click="showModal = true"
     >
       <svg

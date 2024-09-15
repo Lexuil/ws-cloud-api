@@ -26,7 +26,7 @@ defineProps<{
       <button
         v-if="button !== ''"
         :key="index"
-        class="p-2 bg-ws-ui-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
+        class="p-2 bg-ws-button-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
       >
         {{ button }}
       </button>

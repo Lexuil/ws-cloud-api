@@ -7,18 +7,44 @@
 }
 
 @layer base {
-  html {
-    --primary: #008069;
-    --background: #ffffff;
-    --sub-background: #ffffff;
-    --accent: #25d366;
-    --error: #dc2626;
-    --disabled: #d1d5db;
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
 
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+
+    --primary: 169, 100%, 25%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --accent: 142, 70%, 49%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 0 0% 3.9%;
+
+    --radius: 0.5rem;
+
+    /* ws */
     --box-text: #41525d;
     --box-background: #f0f2f5;
 
     --ws-ui-bg: #f0f2f5;
+    --ws-button-bg: #ffffff;
     --ws-ui-text: #000000;
     --ws-mute: #54656f;
     --ws-avatar: #ffffff;
@@ -36,17 +62,42 @@
     --ws-list-description: #667781;
   }
 
-  html[data-theme='dark'] {
-    --primary: #008069;
-    --background: #0c1317;
-    --sub-background: #2a3942;
-    --accent: #25d366;
-    --disabled: #202c33;
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
 
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+
+    --primary: 169, 100%, 25%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 0 0% 83.1%;
+
+    /* ws */
     --box-text: #ffffff;
     --box-background: #111b21;
 
     --ws-ui-bg: #202c33;
+    --ws-button-bg: #202c33;
     --ws-ui-text: #ffffff;
     --ws-mute: #aebac1;
     --ws-avatar: #cfd4d6;
@@ -63,26 +114,27 @@
     --ws-list-title: #e9edef;
     --ws-list-description: #8696a0;
   }
+}
 
+@layer base {
+  * {
+    @apply border-border;
+  }
   body {
-    @apply bg-background;
-  }
-
-  input {
-    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background
-  }
-
-  button {
-    @apply text-white px-3 py-1 rounded-md disabled:bg-disabled text-lg
-  }
-
-  textarea {
-    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background
+    @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  .box {
-    @apply flex flex-col items-center gap-3 w-full sm:w-96 h-fit bg-box-background text-box-text p-5 rounded-md;
+  #chat input {
+    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background;
+  }
+
+  #chat button {
+    @apply px-3 py-1 rounded-md disabled:bg-disabled text-lg;
+  }
+
+  #chat textarea {
+    @apply rounded-md p-2 w-full focus:outline-none;
   }
 }
