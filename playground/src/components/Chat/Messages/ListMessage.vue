@@ -58,7 +58,7 @@ const showModal = ref(false)
 
     <dialog
       v-show="showModal"
-      class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/15"
+      class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/50"
     >
       <div class="bg-ws-list-bg rounded-sm shadow-lg w-[27rem] max-h-[80vh] overflow-y-auto">
         <div class="flex items-center gap-5 bg-ws-list-header text-white p-5">

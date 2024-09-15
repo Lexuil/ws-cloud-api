@@ -11,10 +11,12 @@ watch(messages.messages, async () => {
     lang: 'json',
     theme: 'vitesse-dark'
   })
-  console.log(messages.messages)
 })
 </script>
 
 <template>
-  <div class="w-96 max-h-96 overflow-auto" v-html="html" />
+  <div
+    class="w-96 max-h-96 overflow-auto"
+    v-html="html"
+  />
 </template>
