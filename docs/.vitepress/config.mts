@@ -10,7 +10,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Docs', link: '/getting-started' },
-      { text: 'Playground', link: 'https://lexuil.github.io/ws-cloud-api' }
+      { text: 'Playground', link: 'https://ws-cloud-api-playgorund.lexuil.com' }
     ],
 
     sidebar: [

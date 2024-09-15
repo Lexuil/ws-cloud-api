@@ -15,7 +15,7 @@ hero:
       link: /getting-started
     - theme: alt
       text: Playground
-      link: https://lexuil.github.io/ws-cloud-api
+      link: https://ws-cloud-api-playgorund.lexuil.com
   image:
     src: /logo.svg
     alt: VitePress
