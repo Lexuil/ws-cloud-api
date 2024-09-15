@@ -9,7 +9,8 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Docs', link: '/getting-started' }
+      { text: 'Docs', link: '/getting-started' },
+      { text: 'Playground', link: 'https://lexuil.github.io/ws-cloud-api' }
     ],
 
     sidebar: [
