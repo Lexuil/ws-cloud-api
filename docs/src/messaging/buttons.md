@@ -43,6 +43,13 @@ async function sendTextWithButtons({
 
 - **Success:** True for success, false for fail.
 
+## Limitations
+
+- **Body text**: 1024 characters
+- **Button ID**: 256 characters
+- **Button text**: 20 characters
+- **Max buttons**: 3
+
 
 ## Example usage
 

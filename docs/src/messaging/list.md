@@ -169,3 +169,14 @@ sendInteractiveSectionListMessage({
   })
   .catch(console.error);
 ```
+
+## Limitations
+
+- **Body text**: 4096 characters
+- **Button text**: 20 characters
+- **Row ID**: 200 characters
+- **Row title**: 24 characters
+- **Row description**: 72 characters
+- **Section title**: 24 characters
+- **Max rows**: 10
+- **Max sections**: 10

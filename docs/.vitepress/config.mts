@@ -60,8 +60,6 @@ export default defineConfig({
       {
         text: 'Limitations',
         items: [
-          { text: 'Buttons', link: '/limitations/buttons' },
-          { text: 'List', link: '/limitations/list' },
           { text: 'Media', link: '/limitations/media' }
         ]
       }
