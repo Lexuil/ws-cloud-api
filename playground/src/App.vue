@@ -24,3 +24,14 @@ import JsonViewer from '@/components/JsonViewer/JsonViewer.vue'
     </Suspense>
   </main>
 </template>
+
+<style>
+@font-face {
+  font-family: 'Inter';
+  src: url('@/assets/fonts/inter.ttf') format('truetype');
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+</style>

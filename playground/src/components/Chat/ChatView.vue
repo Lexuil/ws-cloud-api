@@ -13,3 +13,9 @@ import ChatInput from '@/components/Chat/ChatInput/ChatInput.vue'
     <ChatInput />
   </div>
 </template>
+
+<style scoped>
+* {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+}
+</style>
