@@ -38,7 +38,7 @@ html .chat-background {
   background-repeat: repeat;
 }
 
-html[data-theme='dark'] .chat-background {
+.dark .chat-background {
   background-image: url('/chat-background-dark.png');
 }
 </style>

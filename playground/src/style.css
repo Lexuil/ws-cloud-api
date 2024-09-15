@@ -29,7 +29,7 @@
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
 
-    --accent: 142, 70%, 49%;
+    --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
@@ -40,6 +40,7 @@
     --radius: 0.5rem;
 
     /* ws */
+    --sub-background: #ffffff;
     --box-text: #41525d;
     --box-background: #f0f2f5;
 
@@ -93,6 +94,7 @@
     --ring: 0 0% 83.1%;
 
     /* ws */
+    --sub-background: #2a3942;
     --box-text: #ffffff;
     --box-background: #111b21;
 
@@ -135,6 +137,6 @@
   }
 
   #chat textarea {
-    @apply rounded-md p-2 w-full focus:outline-none;
+    @apply rounded-md p-2 w-full focus:outline-none bg-sub-background;
   }
 }
