@@ -1,4 +1,4 @@
-export const enum InteractiveTypes {
+export enum InteractiveTypes {
   Button = 'button',
   CTAButton = 'cta_url',
   List = 'list',
@@ -7,7 +7,7 @@ export const enum InteractiveTypes {
   // ProductList = 'product_list'
 }
 
-export const enum MessageTypes {
+export enum MessageTypes {
   Audio = 'audio',
   Contacts = 'contacts',
   Document = 'document',
@@ -21,7 +21,7 @@ export const enum MessageTypes {
   Video = 'video'
 }
 
-export const enum ParametersTypes {
+export enum ParametersTypes {
   Currency = 'currency',
   DateTime = 'date_time',
   Document = 'document',
@@ -31,7 +31,7 @@ export const enum ParametersTypes {
   Payload = 'payload',
 }
 
-export const enum MessageStatus {
+export enum MessageStatus {
   Delivered = 'delivered',
   Read = 'read',
   Sent = 'sent',
