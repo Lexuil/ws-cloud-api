@@ -6,19 +6,20 @@ import replyListBody from './bodyExamples/messageFromList.json'
 import voiceAudioBody from './bodyExamples/messageVoiceAudio.json'
 import { getMedia, getMediaUrl } from '../../dist/media'
 import fs from 'fs'
+import type { WsRequest } from '../../dist'
 
 console.log('Text message')
-console.log(handleWebhook(textBody))
+console.log(handleWebhook(textBody as WsRequest))
 
 console.log('\nReply button message')
-console.log(handleWebhook(replyButtonBody))
+console.log(handleWebhook(replyButtonBody as WsRequest))
 
 console.log('\nReply list message')
-console.log(handleWebhook(replyListBody))
+console.log(handleWebhook(replyListBody as WsRequest))
 
 // Test audio message
 console.log('\nVoice audio message')
-const audioResponse = handleWebhook(voiceAudioBody)
+const audioResponse = handleWebhook(voiceAudioBody as WsRequest)
 if (audioResponse?.type === 'voiceAudio') {
   getMediaUrl({ mediaId: audioResponse.audio.id })
     .then(mediaUrl => {
