@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { sendTextTemplate } from '../../dist/templates'
+import { sendMediaTemplate, sendTextTemplate } from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -25,6 +25,23 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         text: 'Michael'
       }
     ]
+  }),
+  mediaImage: async () => await sendMediaTemplate({
+    to: phoneNumberToTest,
+    templateName: 'hello_world_image',
+    headerParameters: {
+      type: ParametersTypes.Image,
+      image: {
+        link: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
+      }
+    },
+    bodyParameters: [
+      {
+        type: ParametersTypes.Text,
+        text: 'Joel'
+      }
+    ],
+    language: 'en_US'
   })
 }
 
