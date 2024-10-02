@@ -5,6 +5,8 @@ import type {
   TemplateBodyParameter,
   TemplateHeaderParameter
 } from './types/messages'
+import { sendRequest } from './base'
+import type { templateFields } from './types/templates'
 
 export async function sendTextTemplate ({
   to,
@@ -76,6 +78,50 @@ export async function sendMediaTemplate ({
         ]
       }
     },
+    config
+  })
+}
+
+export async function sendTemplateRequest ({
+  query,
+  config
+}: {
+  query?: string
+  config?: WsConfig
+}): Promise<any> {
+  const requestResponse = await sendRequest({
+    id: 'businessId',
+    path: 'message_templates',
+    method: 'GET',
+    query,
+    config
+  })
+
+  if (!requestResponse.success) {
+    console.error('Failed to get templates')
+    return false
+  } else {
+    return requestResponse.response
+  }
+}
+
+export async function getTemplates ({
+  fields,
+  limit,
+  config
+}: {
+  fields?: templateFields[]
+  limit?: number
+  config?: WsConfig
+} = {}): Promise<any> {
+  const queryParams: {
+    fields?: string
+    limit?: string
+  } = {}
+  if (fields !== undefined) queryParams.fields = fields.join(',')
+  if (limit !== undefined) queryParams.limit = limit.toString()
+  return await sendTemplateRequest({
+    query: new URLSearchParams(queryParams).toString(),
     config
   })
 }
