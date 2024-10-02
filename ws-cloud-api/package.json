@@ -21,6 +21,11 @@
     "lint": "eslint \"./src/**/*.ts\" && tsc --noEmit"
   },
   "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
     "./webhook": {
       "import": "./dist/webhook.mjs",
       "require": "./dist/webhook.cjs",
