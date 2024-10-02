@@ -1,3 +1,4 @@
+import { sendRequest } from './base'
 import { uploadMedia } from './media'
 import { type WsConfig } from './types/config'
 import { InteractiveTypes, MessageTypes } from './types/enums'
@@ -29,32 +30,17 @@ export async function sendMessageRequest ({
     ...body
   })
 
-  // Config
-  const apiVersion = typeof process !== 'undefined'
-    ? process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'
-    : config?.apiVersion ?? '19.0'
-  const phoneNumberId = typeof process !== 'undefined'
-    ? process.env.WS_PHONE_NUMBER_ID ?? config?.phoneNumberId
-    : config?.phoneNumberId
-  const token = typeof process !== 'undefined'
-    ? process.env.WS_TOKEN ?? config?.token
-    : config?.token
+  const requestResponse = await sendRequest({
+    id: 'phoneNumberId',
+    body: postBody,
+    path: 'messages',
+    method: 'POST',
+    config
+  })
 
-  const response = await fetch(
-    `https://graph.facebook.com/v${apiVersion}/${phoneNumberId}/messages`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: postBody
-    }
-  )
-
-  if (!response.ok) {
+  if (!requestResponse.success) {
     console.error(`Failed to send ${body.type} message`)
-    console.error(JSON.stringify(await response.json(), null, 2))
+    console.error(JSON.stringify(await requestResponse.error, null, 2))
     return false
   } else {
     return true
