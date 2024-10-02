@@ -11,6 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/Lexuil/ws-cloud-api.git"
   },
+  "homepage": "https://ws-cloud-api.lexuil.com/",
   "type": "module",
   "scripts": {
     "build": "unbuild",
@@ -66,5 +67,14 @@
   "dependencies": {
     "cross-fetch": "^4.0.0",
     "node-fetch": "^3.3.2"
-  }
+  },
+  "keywords": [
+    "whatsapp",
+    "cloud",
+    "api",
+    "nodejs",
+    "messaging",
+    "webhook",
+    "media"
+  ]
 }
