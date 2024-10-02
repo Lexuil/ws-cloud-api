@@ -40,7 +40,8 @@ export default defineConfig({
       {
         text: 'Templates',
         items: [
-          { text: 'Text', link: '/templates/text' }
+          { text: 'Text', link: '/templates/text' },
+          { text: 'Media', link: '/templates/media' }
         ]
       },
       {

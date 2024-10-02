@@ -173,12 +173,16 @@ export interface TemplateComponentButton extends TemplateComponentBase {
   index: number
 }
 
-export type TemplateParameter = TemplateParameterText |
-TemplateParameterCurrency |
-TemplateParameterDateTime |
-TemplateParameterImage |
+export type TemplateHeaderParameter = TemplateParameterImage |
 TemplateParameterDocument |
 TemplateParameterVideo
+
+export type TemplateBodyParameter = TemplateParameterText |
+TemplateParameterCurrency |
+TemplateParameterDateTime
+
+export type TemplateParameter = TemplateBodyParameter |
+TemplateHeaderParameter
 
 export interface TemplateParameterText {
   type: ParametersTypes.Text
