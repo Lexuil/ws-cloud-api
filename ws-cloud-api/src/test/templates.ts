@@ -1,5 +1,9 @@
 import 'dotenv/config'
-import { sendMediaTemplate, sendTextTemplate } from '../../dist/templates'
+import {
+  sendMediaTemplate,
+  sendTextTemplate,
+  getTemplates
+} from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -11,7 +15,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
     templateName: 'hello_world',
     language: 'en_US'
   }),
-  textParameters: async () => await sendTextTemplate({
+  'text-parameters': async () => await sendTextTemplate({
     to: phoneNumberToTest,
     templateName: 'hello_world_parameters',
     language: 'en',
@@ -26,7 +30,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       }
     ]
   }),
-  mediaImage: async () => await sendMediaTemplate({
+  'media-image': async () => await sendMediaTemplate({
     to: phoneNumberToTest,
     templateName: 'hello_world_image',
     headerParameters: {
@@ -42,7 +46,11 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       }
     ],
     language: 'en_US'
-  })
+  }),
+  'get-all': async () => {
+    console.log(await getTemplates())
+    return true
+  }
 }
 
 if (templateType in messageFunctions) {
