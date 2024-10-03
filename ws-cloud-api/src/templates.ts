@@ -109,18 +109,26 @@ export async function sendTemplateRequest ({
 export async function getTemplates ({
   fields,
   limit,
+  after,
+  before,
   config
 }: {
   fields?: templateFields[]
   limit?: number
+  after?: string
+  before?: string
   config?: WsConfig
 } = {}): Promise<Templates> {
   const queryParams: {
     fields?: string
     limit?: string
+    after?: string
+    before?: string
   } = {}
   if (fields !== undefined) queryParams.fields = fields.join(',')
   if (limit !== undefined) queryParams.limit = limit.toString()
+  if (after !== undefined) queryParams.after = after
+  if (before !== undefined) queryParams.before = before
   return (await sendTemplateRequest({
     query: new URLSearchParams(queryParams).toString(),
     config

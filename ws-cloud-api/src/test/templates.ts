@@ -58,6 +58,16 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
   'get-2': async () => {
     console.log(await getTemplates({ limit: 2 }))
     return true
+  },
+  'get-pagination': async () => {
+    const page1 = await getTemplates({ limit: 2 })
+    console.log('page1', page1)
+    const page2 = await getTemplates({
+      limit: 2,
+      after: page1.paging.cursors.after
+    })
+    console.log('page2', page2)
+    return true
   }
 }
 
