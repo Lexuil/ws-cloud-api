@@ -273,3 +273,18 @@ export interface InteractiveBody {
 }
 
 export type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody
+
+export interface MessageResponse {
+  messaging_product: 'whatsapp'
+  contacts: MessageContact[]
+  messages: MessageInfo[]
+}
+
+export interface MessageContact {
+  input: string
+  wa_id: string
+}
+
+export interface MessageInfo {
+  id: string
+}
