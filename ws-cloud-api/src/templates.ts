@@ -1,4 +1,4 @@
-import { sendMessageRequest } from './messaging'
+import { sendMessageRequest, type SendMessageResponse } from './messaging'
 import { MessageTypes } from './types/enums'
 import type { WsConfig } from './types/config'
 import type {
@@ -20,7 +20,7 @@ export async function sendTextTemplate ({
   language: string
   parameters?: TemplateBodyParameter[]
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendMessageRequest({
     to,
     body: {
@@ -55,7 +55,7 @@ export async function sendMediaTemplate ({
   headerParameters: TemplateHeaderParameter
   bodyParameters?: TemplateBodyParameter[]
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendMessageRequest({
     to,
     body: {
