@@ -78,25 +78,48 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
     return response.success
   },
   'get-all': async () => {
-    console.log(await getTemplates())
+    const response = await getTemplates()
+    if (!response.success) {
+      console.error('Error: ', response.error)
+      return false
+    }
+    console.log(response.templates)
     return true
   },
   'get-names': async () => {
-    console.log(await getTemplates({ fields: ['name'] }))
+    const response = await getTemplates({ fields: ['name'] })
+    if (!response.success) {
+      console.error('Error: ', response.error)
+      return false
+    }
+    console.log(response.templates)
     return true
   },
   'get-2': async () => {
-    console.log(await getTemplates({ limit: 2 }))
+    const response = await getTemplates({ limit: 2 })
+    if (!response.success) {
+      console.error('Error: ', response.error)
+      return false
+    }
+    console.log(response.templates)
     return true
   },
   'get-pagination': async () => {
     const page1 = await getTemplates({ limit: 2 })
-    console.log('page1', page1)
+    if (!page1.success) {
+      console.error('Error: ', page1.error)
+      return false
+    }
+    console.log('page1', page1.templates)
     const page2 = await getTemplates({
       limit: 2,
-      after: page1.paging.cursors.after
+      after: page1.templates.paging.cursors.after
     })
-    console.log('page2', page2)
+    if (!page2.success) {
+      console.error('Error: ', page2.error)
+      return false
+    }
+    console.log('page2', page2.templates)
     return true
   }
 }

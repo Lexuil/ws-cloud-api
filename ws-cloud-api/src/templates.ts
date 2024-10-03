@@ -82,13 +82,21 @@ export async function sendMediaTemplate ({
   })
 }
 
+export type SendTemplateRequestResponse = {
+  success: true
+  templates: Templates
+} | {
+  success: false
+  error: unknown
+}
+
 export async function sendTemplateRequest ({
   query,
   config
 }: {
   query?: string
   config?: WsConfig
-}): Promise<Templates | false> {
+}): Promise<SendTemplateRequestResponse> {
   const requestResponse = await sendRequest({
     id: 'businessId',
     path: 'message_templates',
@@ -100,9 +108,12 @@ export async function sendTemplateRequest ({
   if (!requestResponse.success) {
     console.error('Failed to get templates')
     console.log(requestResponse.error)
-    return false
+    return requestResponse
   } else {
-    return requestResponse.response as Templates
+    return {
+      success: true,
+      templates: requestResponse.response as Templates
+    }
   }
 }
 
@@ -118,7 +129,7 @@ export async function getTemplates ({
   after?: string
   before?: string
   config?: WsConfig
-} = {}): Promise<Templates> {
+} = {}): Promise<SendTemplateRequestResponse> {
   const queryParams: {
     fields?: string
     limit?: string
@@ -129,8 +140,8 @@ export async function getTemplates ({
   if (limit !== undefined) queryParams.limit = limit.toString()
   if (after !== undefined) queryParams.after = after
   if (before !== undefined) queryParams.before = before
-  return (await sendTemplateRequest({
+  return await sendTemplateRequest({
     query: new URLSearchParams(queryParams).toString(),
     config
-  })) as Templates
+  })
 }
