@@ -34,6 +34,21 @@ export async function sendRequest ({
 
   const requestId = id === 'phoneNumberId' ? phoneNumberId : businessId
 
+  // Check config
+  if (requestId === undefined) {
+    return {
+      success: false,
+      error: 'Missing request ID'
+    }
+  }
+
+  if (token === undefined) {
+    return {
+      success: false,
+      error: 'Missing token'
+    }
+  }
+
   const response = await fetch(
     `https://graph.facebook.com/v${apiVersion}/${requestId}/${path}${query !== undefined ? `?${query}` : ''}`,
     {
@@ -49,7 +64,7 @@ export async function sendRequest ({
   if (!response.ok) {
     return {
       success: false,
-      error: response.statusText
+      error: response
     }
   }
 
