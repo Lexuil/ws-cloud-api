@@ -50,12 +50,20 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
   'get-all': async () => {
     console.log(await getTemplates())
     return true
+  },
+  'get-names': async () => {
+    console.log(await getTemplates({ fields: ['name'] }))
+    return true
+  },
+  'get-2': async () => {
+    console.log(await getTemplates({ limit: 2 }))
+    return true
   }
 }
 
 if (templateType in messageFunctions) {
   messageFunctions[templateType]()
-    .then((success) => { if (success) console.log('Message sent') })
+    .then((success) => { if (success) console.log('Test end') })
     .catch(console.error)
 } else if (templateType === undefined) {
   console.error(
