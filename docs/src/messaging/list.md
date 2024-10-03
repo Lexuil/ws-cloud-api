@@ -41,7 +41,7 @@ async function sendInteractiveListMessage({
     }>;
   };
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ### Parameters:
@@ -54,7 +54,8 @@ async function sendInteractiveListMessage({
 
 ### Return
 
-- Success: True for success, false for fail.
+- **Success**: True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ### Example usage
 
@@ -78,8 +79,8 @@ sendInteractiveListMessage({
     ],
   },
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Message with interactive list sent");
     }
   })
@@ -107,7 +108,7 @@ async function sendInteractiveSectionListMessage({
     }>;
   };
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ### Parameters:
@@ -120,7 +121,8 @@ async function sendInteractiveSectionListMessage({
 
 ### Return
 
-- Success: True for success, false for fail.
+- **Success**: True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ### Example usage
 
@@ -162,8 +164,8 @@ sendInteractiveSectionListMessage({
     ],
   },
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Message with sectioned list sent");
     }
   })

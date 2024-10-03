@@ -11,7 +11,7 @@ This page demonstrates some of the built-in markdown extensions provided by Vite
 ::: code-group
 
 ```sh [npm]
-$ npm add ws-cloud-api
+$ npm install ws-cloud-api
 ```
 
 ```sh [pnpm]
@@ -39,8 +39,8 @@ sendText({
   to: process.env.PHONE_NUMBER_RECIPIENT,
   message: 'This is a test message'
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Message sent')
     }
   })
@@ -57,8 +57,8 @@ sendTextTemplate({
   templateName: 'hello_world',
   language: 'en_US',
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Template sent')
     }
   })

@@ -15,7 +15,7 @@ async function sendVideo({
   to: string;
   link: string;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 > [!NOTE]
@@ -30,6 +30,7 @@ async function sendVideo({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example usage
 
@@ -40,8 +41,8 @@ sendVideo({
   to: "573123456789",
   link: "https://example.com/video.mp4",
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Video sent");
     }
   })

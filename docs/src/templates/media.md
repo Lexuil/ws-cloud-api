@@ -19,7 +19,7 @@ async function sendMediaTemplate({
   headerParameters: TemplateHeaderParameter;
   bodyParameters?: TemplateBodyParameter[];
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -34,6 +34,7 @@ async function sendMediaTemplate({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example usage
 
@@ -53,8 +54,8 @@ sendMediaTemplate({
     }
   }
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Template message sent')
     }
   })
@@ -88,8 +89,8 @@ sendMediaTemplate({
     },
   ],
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Template message sent')
     }
   })

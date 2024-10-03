@@ -21,7 +21,7 @@ async function sendTextWithButtons({
     }>;
   };
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 > [!NOTE]
@@ -42,6 +42,7 @@ async function sendTextWithButtons({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Limitations
 
@@ -72,8 +73,8 @@ sendTextWithButtons({
     ],
   },
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Message with buttons sent");
     }
   })

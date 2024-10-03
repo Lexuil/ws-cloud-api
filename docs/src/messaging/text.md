@@ -17,7 +17,7 @@ async function sendText({
   message: string;
   previewUrl?: boolean;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -29,6 +29,7 @@ async function sendText({
 ## Return:
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example Usage:
 
@@ -52,8 +53,8 @@ sendText({
   message: 'https://www.youtube.com/watch?v=L9jpMYn8q0g&pp=ygUjeW91IHRvIHlvdSBhc2lhbiBrdW5nIGZ1IGdlbmVyYXRpb24%3D',
   previewUrl: true
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Message with preview sent')
     }
   })

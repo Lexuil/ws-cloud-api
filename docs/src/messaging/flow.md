@@ -21,7 +21,7 @@ async function sendFlowMessage({
   };
   draft?: boolean;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -38,6 +38,7 @@ async function sendFlowMessage({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 
 ## Example usage
@@ -56,8 +57,8 @@ sendFlowMessage({
   },
   draft: false,
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Message with WhatsApp flow sent");
     }
   })

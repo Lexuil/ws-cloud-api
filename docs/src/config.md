@@ -57,7 +57,7 @@ export async function sendText({
   message: string
   previewUrl?: boolean
   config?: WsConfig
-}): Promise<boolean>
+}): Promise<SendMessageResponse>
 ```
 
 ### Configuration Options:
@@ -91,8 +91,8 @@ sendText({
     token: 'your-optional-token'
   }
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Message sent successfully');
     }
   })

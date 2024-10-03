@@ -15,7 +15,7 @@ async function sendAudio({
   to: string;
   link: string;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -27,6 +27,7 @@ async function sendAudio({
 
 ## Return
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 
 ## Example usage
@@ -38,8 +39,8 @@ sendAudio({
   to: "573123456789",
   link: "https://example.com/audio.mp3",
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Audio sent");
     }
   })

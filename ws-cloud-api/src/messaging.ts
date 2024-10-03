@@ -11,8 +11,17 @@ import type {
   WSBody,
   MediaBody,
   CTAButtonInteractive,
-  FlowInteractive
+  FlowInteractive,
+  MessageResponse
 } from './types/messages'
+
+export type SendMessageResponse = {
+  success: false
+  error: unknown
+} | {
+  success: true
+  response: MessageResponse
+}
 
 export async function sendMessageRequest ({
   to,
@@ -23,7 +32,7 @@ export async function sendMessageRequest ({
   body: WSBody
   config?: WsConfig
 
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const postBody = JSON.stringify({
     messaging_product: 'whatsapp',
     to,
@@ -41,10 +50,9 @@ export async function sendMessageRequest ({
   if (!requestResponse.success) {
     console.error(`Failed to send ${body.type} message`)
     console.error(JSON.stringify(await requestResponse.error, null, 2))
-    return false
-  } else {
-    return true
   }
+
+  return requestResponse as SendMessageResponse
 }
 
 export async function sendText ({
@@ -57,7 +65,7 @@ export async function sendText ({
   message: string
   previewUrl?: boolean
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendMessageRequest({
     to,
     body: {
@@ -85,7 +93,7 @@ async function sendSimpleMedia ({
   filename?: string
   caption?: string
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendMessageRequest({
     to,
     // FIXME: Typescript not identifying the type
@@ -110,7 +118,7 @@ export async function sendImage ({
   to: string
   link: string
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendSimpleMedia({ to, type: MessageTypes.Image, link, config })
 }
 
@@ -122,7 +130,7 @@ export async function sendVideo ({
   to: string
   link: string
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendSimpleMedia({ to, type: MessageTypes.Video, link, config })
 }
 
@@ -138,7 +146,7 @@ export async function sendDocument ({
   filename: string
   caption?: string
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendSimpleMedia({
     to,
     type: MessageTypes.Document,
@@ -157,7 +165,7 @@ export async function sendAudio ({
   to: string
   link: string
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   return await sendSimpleMedia({ to, type: MessageTypes.Audio, link, config })
 }
 
@@ -169,7 +177,7 @@ export async function sendFile ({
   to: string
   file: Blob
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   try {
     const mediaId = await uploadMedia({ media: file, config })
     const mimeType = file.type.split('/')[0]
@@ -193,7 +201,10 @@ export async function sendFile ({
   } catch (error) {
     console.error('Failed to send file')
     console.error(error)
-    return false
+    return {
+      success: false,
+      error
+    }
   }
 }
 
@@ -215,7 +226,7 @@ export async function sendButtonMessage ({
     buttons: Button[]
   }
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const body: ButtonInteractive = {
     type: InteractiveTypes.Button,
     body: {
@@ -252,7 +263,7 @@ export async function sendCTAButtonMessage ({
     url: string
   }
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const body: CTAButtonInteractive = {
     type: InteractiveTypes.CTAButton,
     body: {
@@ -288,7 +299,7 @@ export async function sendInteractiveListMessage ({
     }>
   }
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
@@ -337,7 +348,7 @@ export async function sendInteractiveSectionListMessage ({
     }>
   }
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const body: ListInteractive = {
     type: InteractiveTypes.List,
     body: {
@@ -386,7 +397,7 @@ export async function sendFlowMessage ({
   }
   draft?: boolean
   config?: WsConfig
-}): Promise<boolean> {
+}): Promise<SendMessageResponse> {
   const body: FlowInteractive = {
     type: InteractiveTypes.Flow,
     body: {
