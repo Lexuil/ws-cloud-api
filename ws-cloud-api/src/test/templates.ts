@@ -1,5 +1,9 @@
 import 'dotenv/config'
-import { sendMediaTemplate, sendTextTemplate } from '../../dist/templates'
+import {
+  sendMediaTemplate,
+  sendTextTemplate,
+  getTemplates
+} from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -11,7 +15,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
     templateName: 'hello_world',
     language: 'en_US'
   }),
-  textParameters: async () => await sendTextTemplate({
+  'text-parameters': async () => await sendTextTemplate({
     to: phoneNumberToTest,
     templateName: 'hello_world_parameters',
     language: 'en',
@@ -26,7 +30,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       }
     ]
   }),
-  mediaImage: async () => await sendMediaTemplate({
+  'media-image': async () => await sendMediaTemplate({
     to: phoneNumberToTest,
     templateName: 'hello_world_image',
     headerParameters: {
@@ -42,12 +46,34 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       }
     ],
     language: 'en_US'
-  })
+  }),
+  'get-all': async () => {
+    console.log(await getTemplates())
+    return true
+  },
+  'get-names': async () => {
+    console.log(await getTemplates({ fields: ['name'] }))
+    return true
+  },
+  'get-2': async () => {
+    console.log(await getTemplates({ limit: 2 }))
+    return true
+  },
+  'get-pagination': async () => {
+    const page1 = await getTemplates({ limit: 2 })
+    console.log('page1', page1)
+    const page2 = await getTemplates({
+      limit: 2,
+      after: page1.paging.cursors.after
+    })
+    console.log('page2', page2)
+    return true
+  }
 }
 
 if (templateType in messageFunctions) {
   messageFunctions[templateType]()
-    .then((success) => { if (success) console.log('Message sent') })
+    .then((success) => { if (success) console.log('Test end') })
     .catch(console.error)
 } else if (templateType === undefined) {
   console.error(
