@@ -17,7 +17,7 @@ async function sendTextTemplate({
   language: string;
   parameters?:   parameters?: TemplateParameter[];
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -31,6 +31,7 @@ async function sendTextTemplate({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example usage
 
@@ -44,8 +45,8 @@ sendTextTemplate({
   templateName: 'hello_world',
   language: 'en_US'
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Template message sent')
     }
   })
@@ -73,8 +74,8 @@ sendTextTemplate({
     },
   ],
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log('Template message sent')
     }
   })

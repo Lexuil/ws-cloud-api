@@ -17,7 +17,7 @@ async function getTemplates({
   after?: string;
   before?: string;
   config?: WsConfig;
-} = {}): Promise<Templates>;
+} = {}): Promise<SendTemplateRequestResponse>;
 ```
 
 ## Parameters:
@@ -30,6 +30,7 @@ async function getTemplates({
 
 ## Return
 
+- **Success**: True for success, false for fail.
 - **Templates**: An array of message templates.
 
 ## Example usage
@@ -40,8 +41,12 @@ async function getTemplates({
 import { getTemplates } from 'ws-cloud-api/templates'
 
 getTemplates()
-  .then((templates) => {
-    console.log('Templates retrieved:', templates)
+  .then((response) => {
+    if (!response.success) {
+      console.error('Failed to retrieve templates')
+      return
+    }
+    console.log('Templates retrieved:', response.templates)
   })
   .catch(console.error)
 ```
@@ -55,8 +60,12 @@ getTemplates({
   fields: ['name', 'language'],
   limit: 10,
 })
-  .then((templates) => {
-    console.log('Templates retrieved:', templates)
+  .then((response) => {
+    if (!response.success) {
+      console.error('Failed to retrieve templates')
+      return
+    }
+    console.log('Templates retrieved:', response.templates)
   })
   .catch(console.error)
 ```
@@ -67,11 +76,17 @@ getTemplates({
 import { getTemplates } from 'ws-cloud-api/templates'
 
 const page1 = await getTemplates({ limit: 2 })
-console.log('page1', page1)
+if (!page1.success) {
+  Throw new Error('Failed to retrieve templates')
+}
+console.log('page1', page1.templates)
 
 const page2 = await getTemplates({
   limit: 2,
   after: page1.paging.cursors.after
 })
-console.log('page2', page2)
+if (!page2.success) {
+  Throw new Error('Failed to retrieve templates')
+}
+console.log('page2', page2.templates)
 ```

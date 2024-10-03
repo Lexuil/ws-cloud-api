@@ -19,7 +19,7 @@ async function sendTextWithCTAButton({
     url: string;
   };
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 > [!NOTE]
@@ -36,6 +36,7 @@ async function sendTextWithCTAButton({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example usage
 
@@ -50,8 +51,8 @@ sendTextWithCTAButton({
     url: "https://www.google.com",
   },
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Message with CTA button sent");
     }
   })

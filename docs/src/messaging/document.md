@@ -19,7 +19,7 @@ async function sendDocument({
   filename: string;
   caption?: string;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -33,6 +33,7 @@ async function sendDocument({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 ## Example usage
 
@@ -45,8 +46,8 @@ sendDocument({
   filename: "document.pdf",
   caption: "Example document",
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("Document sent");
     }
   })

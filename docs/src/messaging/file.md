@@ -13,7 +13,7 @@ async function sendFile({
   to: string;
   file: Blob;
   config?: WsConfig;
-}): Promise<boolean>;
+}): Promise<SendMessageResponse>;
 ```
 
 ## Parameters:
@@ -25,6 +25,7 @@ async function sendFile({
 ## Return
 
 - **Success:** True for success, false for fail.
+- **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
 > [!IMPORTANT]
 > You can see the supported files types in [limitations section](../limitations/media.md).
@@ -44,8 +45,8 @@ sendFile({
   to: "573123456789",
   file: file,
 })
-  .then((sentSuccess) => {
-    if (sentSuccess) {
+  .then((response) => {
+    if (response.success) {
       console.log("File sent");
     }
   })
