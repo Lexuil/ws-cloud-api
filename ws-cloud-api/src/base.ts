@@ -49,27 +49,35 @@ export async function sendRequest ({
     }
   }
 
-  const response = await fetch(
-    `https://graph.facebook.com/v${apiVersion}/${requestId}/${path}${query !== undefined ? `?${query}` : ''}`,
-    {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body
-    }
-  )
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v${apiVersion}/${requestId}/${path}${query !== undefined ? `?${query}` : ''}`,
+      {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body
+      }
+    )
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return {
+        success: false,
+        error: response
+      }
+    }
+
+    return {
+      success: true,
+      response: await response.json()
+    }
+  } catch (error) {
+    console.error('Fetch failed:', error)
     return {
       success: false,
-      error: response
+      error
     }
-  }
-
-  return {
-    success: true,
-    response: await response.json()
   }
 }
