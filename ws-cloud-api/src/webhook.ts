@@ -29,11 +29,13 @@ export function handleWebhook (input: WsRequest): {
 } | {
   type: 'message'
   from: string
+  id: string
   message: string
   source: Source
 } | {
   type: 'voiceAudio'
   from: string
+  id: string
   audio: {
     id: string
     mimeType: string
@@ -41,6 +43,7 @@ export function handleWebhook (input: WsRequest): {
 } | {
   type: 'flowReply'
   from: string
+  id: string
   data: Record<string, unknown>
 } | undefined {
   if (input.object === undefined) {
@@ -74,6 +77,7 @@ export function handleWebhook (input: WsRequest): {
     return {
       type: 'voiceAudio',
       from: messageObject.from,
+      id: messageObject.id,
       audio: {
         id: messageObject.audio.id,
         mimeType: messageObject.audio.mime_type
@@ -96,6 +100,7 @@ export function handleWebhook (input: WsRequest): {
     return {
       type: 'flowReply',
       from: messageObject.from,
+      id: messageObject.id,
       data: JSON.parse(messageObject.interactive.nfm_reply.response_json)
     }
   }
@@ -108,18 +113,22 @@ export function handleWebhook (input: WsRequest): {
 }
 
 function getMessageText (message: Message): {
+  id: string
   message: string
   source: Source
 } {
+  const id = message.id
   switch (message.type) {
     case 'text':
       return {
+        id,
         message: message.text.body,
         source: 'user'
       }
     case 'interactive':
       if (message.interactive.type === 'nfm_reply') {
         return {
+          id,
           message: 'Flow message',
           source: 'flow'
         }
@@ -127,22 +136,26 @@ function getMessageText (message: Message): {
 
       if (message.interactive.type === 'list_reply') {
         return {
+          id,
           message: message.interactive.list_reply.id,
           source: 'list'
         }
       }
 
       return {
+        id,
         message: message.interactive.button_reply.id,
         source: 'button'
       }
     case 'button':
       return {
+        id,
         message: message.button.payload,
         source: 'button'
       }
     default:
       return {
+        id,
         message: 'Unsupported message type',
         source: 'user'
       }
