@@ -26,5 +26,9 @@
       ]
     }
   },
-  "include": ["src", "src/test"]
+  "include": [
+    "src",
+    "src/test",
+    "eslint.config.js"
+  ]
 }

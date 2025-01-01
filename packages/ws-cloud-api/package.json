@@ -19,7 +19,8 @@
     "test:webhook": "jiti ./src/test/webhook.ts",
     "test:templates": "jiti ./src/test/templates.ts",
     "test:media": "jiti ./src/test/media.ts",
-    "lint": "eslint \"./src/**/*.ts\" && tsc --noEmit"
+    "lint": "eslint \"./src/**/*.ts\"",
+    "check-types": "tsc --noEmit"
   },
   "exports": {
     ".": {
@@ -53,15 +54,10 @@
     "dist"
   ],
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@types/node": "^20.17.11",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "dotenv": "^16.4.7",
-    "eslint": "^8.57.1",
-    "eslint-config-standard-with-typescript": "^43.0.1",
-    "eslint-plugin-import": "^2.30.0",
-    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
-    "eslint-plugin-promise": "^6.6.0",
-    "typescript": "5.7.2",
+    "typescript": "*",
     "unbuild": "^2.0.0"
   },
   "dependencies": {
