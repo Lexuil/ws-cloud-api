@@ -24,7 +24,7 @@ const form = reactive({
 
 const { addMessage } = useMessagesStore()
 
-function addListMessage (): void {
+function addListMessage(): void {
   const { text, buttonText, lists } = form
 
   if (text === '' || buttonText === '' || lists[0].title === '') return
@@ -33,7 +33,7 @@ function addListMessage (): void {
     type: 'list',
     text,
     buttonText,
-    list: lists.filter(list => list.title).map(item => ({
+    list: lists.filter(list => list.title !== '').map(item => ({
       title: item.title,
       description: item.description
     }))
@@ -41,10 +41,10 @@ function addListMessage (): void {
   resetForm()
 }
 
-function resetForm (): void {
+function resetForm(): void {
   form.text = ''
   form.buttonText = ''
-  form.lists.forEach(list => {
+  form.lists.forEach((list) => {
     list.title = ''
     list.description = ''
   })

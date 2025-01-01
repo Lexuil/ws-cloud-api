@@ -7,16 +7,21 @@ import pluginVue from 'eslint-plugin-vue'
  * @type {import("eslint").Linter.Config}
  * */
 export default [
+  {
+    ignores: [
+      'dist/**/*',
+      '*.config.{js,cjs,mjs}', // FIXME: Remove this line
+      'src/components/ui/**/*', // FIXME: Remove this line
+      'src/lib/utils.ts'
+    ],
+  },
   ...baseConfig,
   ...pluginVue.configs['flat/recommended'],
   {
-    ignores: [
-      'src/components/ui/**/*',
-      'src/lib/utils.ts'
-    ],
     languageOptions: {
       parserOptions: {
-        parser: '@typescript-eslint/parser'
+        parser: '@typescript-eslint/parser',
+        extraFileExtensions: ['vue']
       }
     }
   },

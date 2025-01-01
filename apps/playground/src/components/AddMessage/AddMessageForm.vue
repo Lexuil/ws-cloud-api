@@ -8,14 +8,15 @@ const messages = useMessagesStore()
 const type = ref<Message['type']>('text')
 const content = ref('')
 
-function addMessage (): void {
+function addMessage(): void {
   if (type.value === 'text') {
     messages.addMessage({
       id: Date.now(),
       type: type.value,
       text: content.value
     })
-  } else if (type.value === 'image' || type.value === 'video') {
+  }
+  else if (type.value === 'image' || type.value === 'video') {
     messages.addMessage({
       id: Date.now(),
       type: type.value,
