@@ -4,12 +4,12 @@ import type { Message } from './types/webhook/messages'
 
 type Source = 'user' | 'button' | 'list' | 'flow'
 
-export function verifyWebhook (input: WebhookSubscribeQuery): {
+export function verifyWebhook(input: WebhookSubscribeQuery): {
   statusCode: 200 | 401
   body?: string
 } {
   if (input['hub.mode'] !== 'subscribe' ||
-  input['hub.verify_token'] !== process.env.WS_VERIFY_TOKEN) {
+    input['hub.verify_token'] !== process.env.WS_VERIFY_TOKEN) {
     return {
       statusCode: 401
     }
@@ -21,7 +21,7 @@ export function verifyWebhook (input: WebhookSubscribeQuery): {
   }
 }
 
-export function handleWebhook (input: WsRequest): {
+export function handleWebhook(input: WsRequest): {
   type: 'statusUpdate'
   messageId: string
   userId: string
@@ -96,12 +96,14 @@ export function handleWebhook (input: WsRequest): {
 
   // Flow messages
   if (messageObject.type === 'interactive' &&
-  messageObject.interactive.type === 'nfm_reply') {
+    messageObject.interactive.type === 'nfm_reply') {
     return {
       type: 'flowReply',
       from: messageObject.from,
       id: messageObject.id,
-      data: JSON.parse(messageObject.interactive.nfm_reply.response_json)
+      data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as {
+        [key: string]: unknown
+      }
     }
   }
 
@@ -112,7 +114,7 @@ export function handleWebhook (input: WsRequest): {
   }
 }
 
-function getMessageText (message: Message): {
+function getMessageText(message: Message): {
   id: string
   message: string
   source: Source

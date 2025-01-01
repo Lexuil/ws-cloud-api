@@ -2,7 +2,7 @@ export enum InteractiveTypes {
   Button = 'button',
   CTAButton = 'cta_url',
   List = 'list',
-  Flow = 'flow',
+  Flow = 'flow'
   // Product = 'product',
   // ProductList = 'product_list'
 }
@@ -15,7 +15,7 @@ export enum MessageTypes {
   Interactive = 'interactive',
   Location = 'location',
   Reaction = 'sticker',
-  Sticker = 'sticker',
+  // Sticker = 'sticker',
   Template = 'template',
   Text = 'text',
   Video = 'video'
@@ -28,7 +28,7 @@ export enum ParametersTypes {
   Image = 'image',
   Text = 'text',
   Video = 'video',
-  Payload = 'payload',
+  Payload = 'payload'
 }
 
 export enum MessageStatus {

@@ -40,10 +40,10 @@ export interface Conversation {
 }
 
 export type ConversationCategory = 'authentication' |
-'marketing' |
-'utility' |
-'service' |
-'referral_conversion'
+  'marketing' |
+  'utility' |
+  'service' |
+  'referral_conversion'
 
 export interface ConversationOrigin {
   type: ConversationCategory

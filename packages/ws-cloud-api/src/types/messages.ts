@@ -19,8 +19,8 @@ interface HostedDocumentMedia {
 }
 
 export type HeaderDocumentMedia =
-| MetaDocumentMedia
-| HostedDocumentMedia
+  | MetaDocumentMedia
+  | HostedDocumentMedia
 
 interface MetaImageMedia {
   id: string
@@ -49,8 +49,8 @@ interface SelfHostedVideoMedia {
 }
 
 export type HeaderVideoMedia =
-| MetaHostedVideoMedia
-| SelfHostedVideoMedia
+  | MetaHostedVideoMedia
+  | SelfHostedVideoMedia
 
 interface Header {
   type: 'document' | 'image' | 'text' | 'video'
@@ -111,10 +111,10 @@ export interface FlowActionPayload {
 }
 
 export type Interactive =
-ButtonInteractive |
-ListInteractive |
-CTAButtonInteractive |
-FlowInteractive
+  ButtonInteractive |
+  ListInteractive |
+  CTAButtonInteractive |
+  FlowInteractive
 
 export interface ButtonInteractive {
   type: InteractiveTypes.Button
@@ -174,15 +174,15 @@ export interface TemplateComponentButton extends TemplateComponentBase {
 }
 
 export type TemplateHeaderParameter = TemplateParameterImage |
-TemplateParameterDocument |
-TemplateParameterVideo
+  TemplateParameterDocument |
+  TemplateParameterVideo
 
 export type TemplateBodyParameter = TemplateParameterText |
-TemplateParameterCurrency |
-TemplateParameterDateTime
+  TemplateParameterCurrency |
+  TemplateParameterDateTime
 
 export type TemplateParameter = TemplateBodyParameter |
-TemplateHeaderParameter
+  TemplateHeaderParameter
 
 export interface TemplateParameterText {
   type: ParametersTypes.Text

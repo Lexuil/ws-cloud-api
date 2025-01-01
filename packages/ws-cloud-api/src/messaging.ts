@@ -23,7 +23,7 @@ export type SendMessageResponse = {
   response: MessageResponse
 }
 
-export async function sendMessageRequest ({
+export async function sendMessageRequest({
   to,
   body,
   config
@@ -55,7 +55,7 @@ export async function sendMessageRequest ({
   return requestResponse as SendMessageResponse
 }
 
-export async function sendText ({
+export async function sendText({
   to,
   message,
   previewUrl,
@@ -79,7 +79,7 @@ export async function sendText ({
   })
 }
 
-async function sendSimpleMedia ({
+async function sendSimpleMedia({
   to,
   type,
   link,
@@ -110,7 +110,7 @@ async function sendSimpleMedia ({
   })
 }
 
-export async function sendImage ({
+export async function sendImage({
   to,
   link,
   config
@@ -122,7 +122,7 @@ export async function sendImage ({
   return await sendSimpleMedia({ to, type: MessageTypes.Image, link, config })
 }
 
-export async function sendVideo ({
+export async function sendVideo({
   to,
   link,
   config
@@ -134,7 +134,7 @@ export async function sendVideo ({
   return await sendSimpleMedia({ to, type: MessageTypes.Video, link, config })
 }
 
-export async function sendDocument ({
+export async function sendDocument({
   to,
   link,
   filename,
@@ -157,7 +157,7 @@ export async function sendDocument ({
   })
 }
 
-export async function sendAudio ({
+export async function sendAudio({
   to,
   link,
   config
@@ -169,7 +169,7 @@ export async function sendAudio ({
   return await sendSimpleMedia({ to, type: MessageTypes.Audio, link, config })
 }
 
-export async function sendFile ({
+export async function sendFile({
   to,
   file,
   config
@@ -198,7 +198,8 @@ export async function sendFile ({
       },
       config
     })
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to send file')
     console.error(error)
     return {
@@ -208,14 +209,14 @@ export async function sendFile ({
   }
 }
 
-function generateInteractiveBody (input: Interactive): InteractiveBody {
+function generateInteractiveBody(input: Interactive): InteractiveBody {
   return {
     type: MessageTypes.Interactive,
     interactive: input
   }
 }
 
-export async function sendButtonMessage ({
+export async function sendButtonMessage({
   to,
   message,
   config
@@ -251,7 +252,7 @@ export async function sendButtonMessage ({
   })
 }
 
-export async function sendCTAButtonMessage ({
+export async function sendCTAButtonMessage({
   to,
   message,
   config
@@ -284,7 +285,7 @@ export async function sendCTAButtonMessage ({
   })
 }
 
-export async function sendInteractiveListMessage ({
+export async function sendInteractiveListMessage({
   to,
   list,
   config
@@ -330,7 +331,7 @@ export async function sendInteractiveListMessage ({
   })
 }
 
-export async function sendInteractiveSectionListMessage ({
+export async function sendInteractiveSectionListMessage({
   to,
   list,
   config
@@ -381,7 +382,7 @@ export async function sendInteractiveSectionListMessage ({
   })
 }
 
-export async function sendFlowMessage ({
+export async function sendFlowMessage({
   to,
   flow,
   draft,

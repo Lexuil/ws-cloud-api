@@ -8,7 +8,7 @@ import type {
 import { sendRequest } from './base'
 import type { templateFields, Templates } from './types/templates'
 
-export async function sendTextTemplate ({
+export async function sendTextTemplate({
   to,
   templateName,
   language,
@@ -41,7 +41,7 @@ export async function sendTextTemplate ({
   })
 }
 
-export async function sendMediaTemplate ({
+export async function sendMediaTemplate({
   to,
   templateName,
   language,
@@ -90,7 +90,7 @@ export type SendTemplateRequestResponse = {
   error: unknown
 }
 
-export async function sendTemplateRequest ({
+export async function sendTemplateRequest({
   query,
   config
 }: {
@@ -109,7 +109,8 @@ export async function sendTemplateRequest ({
     console.error('Failed to get templates')
     console.log(requestResponse.error)
     return requestResponse
-  } else {
+  }
+  else {
     return {
       success: true,
       templates: requestResponse.response as Templates
@@ -117,7 +118,7 @@ export async function sendTemplateRequest ({
   }
 }
 
-export async function getTemplates ({
+export async function getTemplates({
   fields,
   limit,
   after,

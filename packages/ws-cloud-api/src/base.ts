@@ -1,6 +1,6 @@
 import type { WsConfig } from './types/config'
 
-export async function sendRequest ({
+export async function sendRequest({
   id,
   body,
   path,
@@ -55,7 +55,7 @@ export async function sendRequest ({
       {
         method,
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body
@@ -73,7 +73,8 @@ export async function sendRequest ({
       success: true,
       response: await response.json()
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Fetch failed:', error)
     return {
       success: false,

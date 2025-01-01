@@ -10,7 +10,7 @@ const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
 const templateType = process.argv[2]
 
 const messageFunctions: Record<string, () => Promise<boolean>> = {
-  text: async () => {
+  'text': async () => {
     const response = await sendTextTemplate({
       to: phoneNumberToTest,
       templateName: 'hello_world',
@@ -19,7 +19,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response.messages[0].id)
     }
 
@@ -44,7 +45,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
@@ -71,7 +73,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
@@ -128,11 +131,13 @@ if (templateType in messageFunctions) {
   messageFunctions[templateType]()
     .then((success) => { if (success) console.log('Test end') })
     .catch(console.error)
-} else if (templateType === undefined) {
+}
+else if (templateType === undefined) {
   console.error(
     'Message type not provided\n\nAvailable types:\n -' +
     Object.keys(messageFunctions).join('\n -')
   )
-} else {
+}
+else {
   console.error(`Message type ${templateType} not found`)
 }

@@ -19,7 +19,7 @@ const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
 const messageType = process.argv[2]
 
 const messageFunctions: Record<string, () => Promise<boolean>> = {
-  text: async () => {
+  'text': async () => {
     const response = await sendText({
       to: phoneNumberToTest,
       message: 'Test message from library'
@@ -27,13 +27,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  image: async () => {
+  'image': async () => {
     const response = await sendImage({
       to: phoneNumberToTest,
       link: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
@@ -41,13 +42,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  video: async () => {
+  'video': async () => {
     const response = await sendVideo({
       to: phoneNumberToTest,
       link: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
@@ -55,13 +57,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  document: async () => {
+  'document': async () => {
     const response = await sendDocument({
       to: phoneNumberToTest,
       link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -71,13 +74,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  audio: async () => {
+  'audio': async () => {
     const response = await sendAudio({
       to: phoneNumberToTest,
       link: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
@@ -85,13 +89,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  file: async () => {
+  'file': async () => {
     const image = new Blob(
       [fs.readFileSync(path.join(__dirname, '/assets/kirby.jpg'))],
       { type: 'image/jpeg' }
@@ -104,13 +109,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  buttons: async () => {
+  'buttons': async () => {
     const response = await sendButtonMessage({
       to: phoneNumberToTest,
       message: {
@@ -130,13 +136,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  list: async () => {
+  'list': async () => {
     const response = await sendInteractiveListMessage({
       to: phoneNumberToTest,
       list: {
@@ -157,7 +164,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
@@ -175,7 +183,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
@@ -220,13 +229,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
     return response.success
   },
-  flow: async () => {
+  'flow': async () => {
     const response = await sendFlowMessage({
       to: phoneNumberToTest,
       flow: {
@@ -241,7 +251,8 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     if (!response.success) {
       console.error('Error: ', response.error)
-    } else {
+    }
+    else {
       console.log(response.response)
     }
 
@@ -253,11 +264,13 @@ if (messageType in messageFunctions) {
   messageFunctions[messageType]()
     .then((success) => { if (success) console.log('Message sent') })
     .catch(console.error)
-} else if (messageType === undefined) {
+}
+else if (messageType === undefined) {
   console.error(
     'Message type not provided\n\nAvailable types:\n -' +
     Object.keys(messageFunctions).join('\n -')
   )
-} else {
+}
+else {
   console.error(`Message type ${messageType} not found`)
 }

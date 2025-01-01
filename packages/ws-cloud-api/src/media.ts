@@ -17,13 +17,13 @@ const supportedFiles = {
   video: ['video/mp4', 'video/3gp']
 }
 
-export async function mediaRequest ({
+export async function mediaRequest({
   body,
   config
 }: {
-  body: any // TODO: Define media body type
+  body: unknown // TODO: Define media body type
   config?: WsConfig
-}): Promise<any> { // TODO: Define media response type
+}): Promise<unknown> { // TODO: Define media response type
   // Config
   const apiVersion = typeof process !== 'undefined'
     ? process.env.WS_CA_VERSION ?? config?.apiVersion ?? '19.0'
@@ -42,7 +42,7 @@ export async function mediaRequest ({
       headers: {
         Authorization: `Bearer ${token}`
       },
-      body
+      body: body as BodyInit
     }
   )
 
@@ -50,12 +50,13 @@ export async function mediaRequest ({
     console.error('Failed to make media request')
     console.error(JSON.stringify(await response.json(), null, 2))
     return false
-  } else {
+  }
+  else {
     return await response.json()
   }
 }
 
-export async function uploadMedia ({
+export async function uploadMedia({
   media,
   config
 }: {
@@ -74,13 +75,16 @@ export async function uploadMedia ({
   formData.append('type', media.type)
   formData.append('messaging_product', 'whatsapp')
 
-  return (await mediaRequest({
+  const mediaRequestResponse = (await mediaRequest({
     body: formData,
     config
-  })).id
+  })) as {
+    id: string
+  }
+  return mediaRequestResponse.id
 }
 
-export async function getMediaUrl ({
+export async function getMediaUrl({
   mediaId,
   config
 }: {
@@ -108,12 +112,17 @@ export async function getMediaUrl ({
     console.error('Failed to make media request')
     console.error(JSON.stringify(await response.json(), null, 2))
     return ''
-  } else {
-    return (await response.json()).url
+  }
+  else {
+    return (await response.json() as {
+      // TODO: Define media response type
+      id: string
+      url: string
+    }).url
   }
 }
 
-export async function getMedia ({
+export async function getMedia({
   mediaUrl,
   config
 }: {

@@ -22,13 +22,13 @@ console.log('\nVoice audio message')
 const audioResponse = handleWebhook(voiceAudioBody as WsRequest)
 if (audioResponse?.type === 'voiceAudio') {
   getMediaUrl({ mediaId: audioResponse.audio.id })
-    .then(mediaUrl => {
+    .then((mediaUrl) => {
       console.log(mediaUrl)
       getMedia({ mediaUrl })
-        .then(media => {
+        .then((media) => {
           // Save blob media to file
           media.arrayBuffer()
-            .then(arrayBuffer => {
+            .then((arrayBuffer) => {
               const array = new Uint8Array(arrayBuffer)
               fs.writeFileSync('audio.ogg', Buffer.from(array))
             })
