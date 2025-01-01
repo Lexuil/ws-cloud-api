@@ -9,9 +9,11 @@ export default function (): {
   const menu = ref<HTMLDetailsElement | null>(null)
   const menuIsOpen = ref(false)
 
-  onClickOutside(menu, () => { closeMenu() })
+  onClickOutside(menu, () => {
+    closeMenu()
+  })
 
-  function closeMenu (): void {
+  function closeMenu(): void {
     menuIsOpen.value = false
     menu.value?.removeAttribute('open')
   }

@@ -22,12 +22,12 @@ export default function (): {
 
   const availableToSend = computed(() => {
     return config.phoneNumberId === '' ||
-    config.token === '' ||
-    config.phoneNumberTo === '' ||
-    sendingMessages.value
+      config.token === '' ||
+      config.phoneNumberTo === '' ||
+      sendingMessages.value
   })
 
-  async function sendMessages (messages: Message[]): Promise<void> {
+  async function sendMessages(messages: Message[]): Promise<void> {
     if (sendingMessages.value) return
 
     sendingMessages.value = true
@@ -77,8 +77,8 @@ export default function (): {
             message: {
               text: message.text,
               buttons: message.buttons
-                .filter((button) => button !== '')
-                .map((button) => ({
+                .filter(button => button !== '')
+                .map(button => ({
                   id: button,
                   title: button
                 }))
@@ -91,7 +91,7 @@ export default function (): {
           await sendInteractiveListMessage({
             list: {
               ...message,
-              list: message.list.filter((item) => item.title !== '')
+              list: message.list.filter(item => item.title !== '')
             },
             to: config.phoneNumberTo,
             config: wsConfig

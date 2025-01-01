@@ -1,4 +1,4 @@
-export type Wildcard = '*' | '~' | '_' | '```' | '`' | string
+export type Wildcard = '*' | '~' | '_' | '```' | '`' | string & {}
 
 export interface IRule {
   wildcard: Wildcard
@@ -6,7 +6,7 @@ export interface IRule {
   closeTag: string
 }
 
-function execRule (text: string, rule: IRule): string {
+function execRule(text: string, rule: IRule): string {
   const { wildcard, openTag, closeTag } = rule
 
   // Add tags using regex
@@ -16,7 +16,7 @@ function execRule (text: string, rule: IRule): string {
   return final
 }
 
-function parseText (text: string, rules: IRule[]): string {
+function parseText(text: string, rules: IRule[]): string {
   const final: string = rules.reduce(
     (transformed, rule) => {
       return execRule(transformed, rule)
@@ -50,11 +50,11 @@ export const whatsappRules: IRule[] = [
   },
   {
     closeTag: '</code>',
-    openTag: "<code style='background-color: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.2rem;'>",
+    openTag: '<code style=\'background-color: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.2rem;\'>',
     wildcard: '`'
   }
 ]
 
-export function format (text: string, rules?: IRule[]): string {
+export function format(text: string, rules?: IRule[]): string {
   return parseText(text, rules ?? whatsappRules)
 }

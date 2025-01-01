@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export type Message = TextMessage |
-FileMessage |
-MediaMessage |
-ButtonMessage |
-ListMessage
+  FileMessage |
+  MediaMessage |
+  ButtonMessage |
+  ListMessage
 
 interface TextMessage {
   id: number
@@ -49,15 +49,15 @@ export const useMessagesStore = defineStore('messages', () => {
   const messages = ref<Message[]>([])
 
   // Actions
-  function addMessage (message: Message): void {
+  function addMessage(message: Message): void {
     messages.value.push(message)
   }
 
-  function removeMessage (id: number): void {
-    messages.value = messages.value.filter((message) => message.id !== id)
+  function removeMessage(id: number): void {
+    messages.value = messages.value.filter(message => message.id !== id)
   }
 
-  function clearMessages (): void {
+  function clearMessages(): void {
     messages.value = []
   }
 
