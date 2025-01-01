@@ -1,0 +1,75 @@
+{
+  "name": "ws-cloud-api",
+  "version": "0.12.0-alpha",
+  "description": "WhatsApp Cloud API for NodeJS",
+  "author": {
+    "name": "Lexuil",
+    "email": "lexuil.dev@gmail.com",
+    "url": "https://lexuil.github.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lexuil/ws-cloud-api.git"
+  },
+  "homepage": "https://ws-cloud-api.lexuil.com/",
+  "type": "module",
+  "scripts": {
+    "build": "unbuild",
+    "test:messages": "jiti ./src/test/sendMessages.ts",
+    "test:webhook": "jiti ./src/test/webhook.ts",
+    "test:templates": "jiti ./src/test/templates.ts",
+    "test:media": "jiti ./src/test/media.ts",
+    "lint": "eslint \"./src/**/*.ts\"",
+    "check-types": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./webhook": {
+      "import": "./dist/webhook.mjs",
+      "require": "./dist/webhook.cjs",
+      "types": "./dist/webhook.d.ts"
+    },
+    "./messaging": {
+      "import": "./dist/messaging.mjs",
+      "require": "./dist/messaging.cjs",
+      "types": "./dist/messaging.d.ts"
+    },
+    "./templates": {
+      "import": "./dist/templates.mjs",
+      "require": "./dist/templates.cjs",
+      "types": "./dist/templates.d.ts"
+    },
+    "./media": {
+      "import": "./dist/media.mjs",
+      "require": "./dist/media.cjs",
+      "types": "./dist/media.d.ts"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@types/node": "^20.17.11",
+    "dotenv": "^16.4.7",
+    "typescript": "*",
+    "unbuild": "^2.0.0"
+  },
+  "dependencies": {
+    "cross-fetch": "^4.1.0"
+  },
+  "keywords": [
+    "whatsapp",
+    "cloud",
+    "api",
+    "nodejs",
+    "messaging",
+    "webhook",
+    "media"
+  ]
+}
