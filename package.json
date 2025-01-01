@@ -1,0 +1,8 @@
+{
+  "name": "ws-cloud-api",
+  "version": "1.0.0",
+  "scripts": {},
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  }
+}
