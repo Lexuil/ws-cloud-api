@@ -1,3 +1,4 @@
+import eslint from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import typescriptEslint from 'typescript-eslint'
 
@@ -7,6 +8,7 @@ import typescriptEslint from 'typescript-eslint'
  * @type {import("eslint").Linter.Config}
  * */
 export default typescriptEslint.config(
+  eslint.configs.recommended,
   typescriptEslint.configs.recommendedTypeChecked,
   {
     languageOptions: {

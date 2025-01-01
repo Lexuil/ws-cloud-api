@@ -7,12 +7,17 @@ import pluginVue from 'eslint-plugin-vue'
  * @type {import("eslint").Linter.Config}
  * */
 export default [
+  ...baseConfig,
+  ...pluginVue.configs['flat/recommended'],
   {
     ignores: [
       'src/components/ui/**/*',
       'src/lib/utils.ts'
-    ]
+    ],
+    languageOptions: {
+      parserOptions: {
+        parser: '@typescript-eslint/parser'
+      }
+    }
   },
-  ...pluginVue.configs['flat/recommended'],
-  ...baseConfig
 ]
