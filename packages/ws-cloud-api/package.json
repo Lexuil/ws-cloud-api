@@ -15,6 +15,7 @@
   "type": "module",
   "scripts": {
     "build": "unbuild",
+    "test": "vitest",
     "test:messages": "jiti ./src/test/sendMessages.ts",
     "test:webhook": "jiti ./src/test/webhook.ts",
     "test:templates": "jiti ./src/test/templates.ts",
@@ -58,7 +59,8 @@
     "@types/node": "^20.17.11",
     "dotenv": "^16.4.7",
     "typescript": "*",
-    "unbuild": "^2.0.0"
+    "unbuild": "^2.0.0",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "cross-fetch": "^4.1.0"
