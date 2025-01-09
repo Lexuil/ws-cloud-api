@@ -57,6 +57,7 @@
     "@repo/eslint-config": "workspace:*",
     "@types/node": "^20.17.11",
     "dotenv": "^16.4.7",
+    "jiti": "^2.4.2",
     "typescript": "*",
     "unbuild": "^2.0.0"
   },
