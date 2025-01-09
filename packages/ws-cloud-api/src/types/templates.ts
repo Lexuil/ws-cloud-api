@@ -36,6 +36,8 @@ export type CreateTemplate = Omit<
   'id' | 'status' | 'sub_category' | 'previous_category' | 'allow_category_change'
 >
 
+export type CreateTemplateResponse = Pick<Template, 'id' | 'status' | 'category'>
+
 export type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
 
 export type PreviousCategory = 'ISSUE_RESOLUTION' | 'APPOINTMENT_UPDATE' | 'MARKETING'

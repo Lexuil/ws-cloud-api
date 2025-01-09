@@ -9,7 +9,8 @@ import { sendRequest } from './base'
 import type {
   templateFields,
   CreateTemplate,
-  Templates
+  Templates,
+  CreateTemplateResponse
 } from './types/templates'
 
 export async function sendTextTemplate({
@@ -86,15 +87,15 @@ export async function sendMediaTemplate({
   })
 }
 
-export type SendTemplateRequestResponse = {
+export type SendTemplateRequestResponse<T> = {
   success: true
-  templates: Templates
+  data: T
 } | {
   success: false
   error: unknown
 }
 
-export async function sendTemplateRequest({
+export async function sendTemplateRequest<T>({
   query,
   body,
   method = 'GET',
@@ -104,7 +105,7 @@ export async function sendTemplateRequest({
   body?: string
   method?: string
   config?: WsConfig
-}): Promise<SendTemplateRequestResponse> {
+}): Promise<SendTemplateRequestResponse<T>> {
   const requestResponse = await sendRequest({
     id: 'businessId',
     path: 'message_templates',
@@ -122,7 +123,7 @@ export async function sendTemplateRequest({
   else {
     return {
       success: true,
-      templates: requestResponse.response as Templates
+      data: requestResponse.response as T
     }
   }
 }
@@ -139,7 +140,7 @@ export async function getTemplates({
   after?: string
   before?: string
   config?: WsConfig
-} = {}): Promise<SendTemplateRequestResponse> {
+} = {}): Promise<SendTemplateRequestResponse<Templates>> {
   const queryParams: {
     fields?: string
     limit?: string
@@ -162,7 +163,7 @@ export async function createTemplate({
 }: {
   template: CreateTemplate
   config?: WsConfig
-}): Promise<SendTemplateRequestResponse> {
+}): Promise<SendTemplateRequestResponse<CreateTemplateResponse>> {
   return await sendTemplateRequest({
     method: 'POST',
     body: JSON.stringify(template),
