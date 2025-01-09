@@ -21,7 +21,7 @@ export interface Templates {
 export interface Template {
   id: string
   name: string
-  status: Status
+  status: TemplateStatus
   category: Category
   language: string
   components: Component[]
@@ -42,7 +42,7 @@ export type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
 
 export type PreviousCategory = 'ISSUE_RESOLUTION' | 'APPOINTMENT_UPDATE' | 'MARKETING'
 
-export type Status = 'APPROVED' | 'PENDING' | 'REJECTED'
+export type TemplateStatus = 'APPROVED' | 'PENDING' | 'REJECTED'
 
 export interface Paging {
   cursors: Cursors
@@ -159,7 +159,7 @@ export interface UrlButton {
   example?: string[]
 }
 
-export type Button =
+export type TemplateButton =
   CopyCodeButton |
   FlowButton |
   PhoneNumberButton |
@@ -168,5 +168,5 @@ export type Button =
 
 export interface Buttons {
   type: 'BUTTONS'
-  buttons: Button[]
+  buttons: TemplateButton[]
 }
