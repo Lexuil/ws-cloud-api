@@ -19,46 +19,30 @@ export interface Templates {
 }
 
 export interface Template {
+  id: string
   name: string
-  components: Component[]
-  language: string
   status: Status
   category: Category
+  language: string
+  components: Component[]
   sub_category?: string
-  id: string
   previous_category?: PreviousCategory
+  allow_category_change?: boolean //
+  // TODO: Add library templates types
 }
 
-export type Category = 'MARKETING' | 'UTILITY'
+export type CreateTemplate = Omit<
+  Template,
+  'id' | 'status' | 'sub_category' | 'previous_category' | 'allow_category_change'
+>
 
-export interface Component {
-  type: ComponentType
-  text?: string
-  example?: Example
-  buttons?: Button[]
-  format?: Format
-}
+export type CreateTemplateResponse = Pick<Template, 'id' | 'status' | 'category'>
 
-export interface Button {
-  type: ButtonType
-  text: string
-  url?: string
-}
-
-export type ButtonType = 'QUICK_REPLY' | 'URL'
-
-export interface Example {
-  body_text?: string[][]
-  header_handle?: string[]
-}
-
-export type Format = 'IMAGE' | 'TEXT' | 'VIDEO'
-
-export type ComponentType = 'BODY' | 'BUTTONS' | 'HEADER' | 'FOOTER'
+export type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
 
 export type PreviousCategory = 'ISSUE_RESOLUTION' | 'APPOINTMENT_UPDATE' | 'MARKETING'
 
-export type Status = 'APPROVED'
+export type Status = 'APPROVED' | 'PENDING' | 'REJECTED'
 
 export interface Paging {
   cursors: Cursors
@@ -68,4 +52,121 @@ export interface Paging {
 export interface Cursors {
   before: string
   after: string
+}
+
+// -----------------------------------------------------------------------------
+// Components
+
+export type Component =
+  TextHeader |
+  MediaHeader |
+  LocationHeader |
+  Body |
+  Footer |
+  Buttons
+
+export type ExamplePositionalParams = string[]
+
+export type ExampleNamedParams = Array<{
+  param_name: string
+  example: string
+}>
+
+// -----------------------------------------------------------------------------
+// TextHeader
+
+export interface TextHeader {
+  type: 'HEADER'
+  format: 'TEXT'
+  text: string
+  example?: {
+    header_text: ExamplePositionalParams | ExampleNamedParams
+  }
+}
+
+// -----------------------------------------------------------------------------
+// MediaHeader
+
+export interface MediaHeader {
+  type: 'HEADER'
+  format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'
+  text: string
+  example: {
+    header_media_url: string
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Location Header
+
+export interface LocationHeader {
+  type: 'HEADER'
+  format: 'LOCATION'
+}
+
+// -----------------------------------------------------------------------------
+// Body
+
+export interface Body {
+  type: 'BODY'
+  text: string
+  example?: {
+    body_text: ExamplePositionalParams | ExampleNamedParams
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Footer
+
+export interface Footer {
+  type: 'FOOTER'
+  text: string
+}
+
+// -----------------------------------------------------------------------------
+// Buttons
+
+export interface CopyCodeButton {
+  type: 'COPY_CODE'
+  example: string
+}
+
+export interface FlowButton {
+  type: 'FLOW'
+  text: string
+  flow_id: string
+  flow_name: string
+  flow_json: Record<string, unknown> // TODO: Define the flow json
+  flow_action?: 'navigate' | 'data_exchange'
+  navigate_screen?: string
+}
+
+export interface PhoneNumberButton {
+  type: 'PHONE_NUMBER'
+  text: string
+  phone_number: string
+}
+
+export interface QuickReplyButton {
+  type: 'QUICK_REPLY'
+  text: string
+}
+
+export interface UrlButton {
+  type: 'URL'
+  text: string
+  url: string
+  example?: string[]
+}
+
+export type Button =
+  CopyCodeButton |
+  FlowButton |
+  PhoneNumberButton |
+  QuickReplyButton |
+  UrlButton
+
+export interface Buttons {
+  type: 'BUTTONS'
+  buttons: Button[]
 }

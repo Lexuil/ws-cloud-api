@@ -2,7 +2,8 @@ import 'dotenv/config'
 import {
   sendMediaTemplate,
   sendTextTemplate,
-  getTemplates
+  getTemplates,
+  createTemplate
 } from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
@@ -86,7 +87,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       console.error('Error: ', response.error)
       return false
     }
-    console.log(response.templates)
+    console.log(response.data)
     return true
   },
   'get-names': async () => {
@@ -95,7 +96,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       console.error('Error: ', response.error)
       return false
     }
-    console.log(response.templates)
+    console.log(response.data)
     return true
   },
   'get-2': async () => {
@@ -104,7 +105,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       console.error('Error: ', response.error)
       return false
     }
-    console.log(response.templates)
+    console.log(response.data)
     return true
   },
   'get-pagination': async () => {
@@ -113,16 +114,53 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       console.error('Error: ', page1.error)
       return false
     }
-    console.log('page1', page1.templates)
+    console.log('page1', page1.data)
     const page2 = await getTemplates({
       limit: 2,
-      after: page1.templates.paging.cursors.after
+      after: page1.data.paging.cursors.after
     })
     if (!page2.success) {
       console.error('Error: ', page2.error)
       return false
     }
-    console.log('page2', page2.templates)
+    console.log('page2', page2.data)
+    return true
+  },
+  'create-template': async () => {
+    const response = await createTemplate({
+      template: {
+        name: `test_${Date.now()}`,
+        category: 'MARKETING',
+        language: 'es',
+        components: [
+          {
+            type: 'BODY',
+            text: 'Hola {{1}}, esto es una prueba',
+            example: {
+              body_text: ['Juan']
+            }
+          },
+          {
+            type: 'BUTTONS',
+            buttons: [
+              {
+                type: 'URL',
+                text: 'Ver más',
+                url: 'https://www.google.com'
+              }
+            ]
+          }
+        ]
+      }
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+      return false
+    }
+
+    console.log(response.data)
+
     return true
   }
 }

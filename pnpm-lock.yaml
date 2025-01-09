@@ -118,6 +118,9 @@ importers:
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
+      jiti:
+        specifier: ^2.4.2
+        version: 2.4.2
       typescript:
         specifier: '*'
         version: 5.7.2

@@ -6,7 +6,12 @@ import type {
   TemplateHeaderParameter
 } from './types/messages'
 import { sendRequest } from './base'
-import type { templateFields, Templates } from './types/templates'
+import type {
+  templateFields,
+  CreateTemplate,
+  Templates,
+  CreateTemplateResponse
+} from './types/templates'
 
 export async function sendTextTemplate({
   to,
@@ -82,25 +87,30 @@ export async function sendMediaTemplate({
   })
 }
 
-export type SendTemplateRequestResponse = {
+export type SendTemplateRequestResponse<T> = {
   success: true
-  templates: Templates
+  data: T
 } | {
   success: false
   error: unknown
 }
 
-export async function sendTemplateRequest({
+export async function sendTemplateRequest<T>({
   query,
+  body,
+  method = 'GET',
   config
 }: {
   query?: string
+  body?: string
+  method?: string
   config?: WsConfig
-}): Promise<SendTemplateRequestResponse> {
+}): Promise<SendTemplateRequestResponse<T>> {
   const requestResponse = await sendRequest({
     id: 'businessId',
     path: 'message_templates',
-    method: 'GET',
+    method,
+    body,
     query,
     config
   })
@@ -113,7 +123,7 @@ export async function sendTemplateRequest({
   else {
     return {
       success: true,
-      templates: requestResponse.response as Templates
+      data: requestResponse.response as T
     }
   }
 }
@@ -130,7 +140,7 @@ export async function getTemplates({
   after?: string
   before?: string
   config?: WsConfig
-} = {}): Promise<SendTemplateRequestResponse> {
+} = {}): Promise<SendTemplateRequestResponse<Templates>> {
   const queryParams: {
     fields?: string
     limit?: string
@@ -143,6 +153,20 @@ export async function getTemplates({
   if (before !== undefined) queryParams.before = before
   return await sendTemplateRequest({
     query: new URLSearchParams(queryParams).toString(),
+    config
+  })
+}
+
+export async function createTemplate({
+  template,
+  config
+}: {
+  template: CreateTemplate
+  config?: WsConfig
+}): Promise<SendTemplateRequestResponse<CreateTemplateResponse>> {
+  return await sendTemplateRequest({
+    method: 'POST',
+    body: JSON.stringify(template),
     config
   })
 }
