@@ -90,7 +90,6 @@ export interface TextHeader {
 export interface MediaHeader {
   type: 'HEADER'
   format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'
-  text: string
   example: {
     header_media_url: string
   }
