@@ -2,7 +2,8 @@ import 'dotenv/config'
 import {
   sendMediaTemplate,
   sendTextTemplate,
-  getTemplates
+  getTemplates,
+  createTemplate
 } from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
@@ -123,6 +124,43 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       return false
     }
     console.log('page2', page2.templates)
+    return true
+  },
+  'create-template': async () => {
+    const response = await createTemplate({
+      template: {
+        name: `test_${Date.now()}`,
+        category: 'MARKETING',
+        language: 'es',
+        components: [
+          {
+            type: 'BODY',
+            text: 'Hola {{1}}, esto es una prueba',
+            example: {
+              body_text: ['Juan']
+            }
+          },
+          {
+            type: 'BUTTONS',
+            buttons: [
+              {
+                type: 'URL',
+                text: 'Ver más',
+                url: 'https://www.google.com'
+              }
+            ]
+          }
+        ]
+      }
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+      return false
+    }
+
+    console.log(response.templates)
+
     return true
   }
 }
