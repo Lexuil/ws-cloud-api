@@ -6,7 +6,11 @@ import type {
   TemplateHeaderParameter
 } from './types/messages'
 import { sendRequest } from './base'
-import type { templateFields, Templates } from './types/templates'
+import type {
+  templateFields,
+  CreateTemplate,
+  Templates
+} from './types/templates'
 
 export async function sendTextTemplate({
   to,
@@ -92,15 +96,20 @@ export type SendTemplateRequestResponse = {
 
 export async function sendTemplateRequest({
   query,
+  body,
+  method = 'GET',
   config
 }: {
   query?: string
+  body?: string
+  method?: string
   config?: WsConfig
 }): Promise<SendTemplateRequestResponse> {
   const requestResponse = await sendRequest({
     id: 'businessId',
     path: 'message_templates',
-    method: 'GET',
+    method,
+    body,
     query,
     config
   })
@@ -143,6 +152,20 @@ export async function getTemplates({
   if (before !== undefined) queryParams.before = before
   return await sendTemplateRequest({
     query: new URLSearchParams(queryParams).toString(),
+    config
+  })
+}
+
+export async function createTemplate({
+  template,
+  config
+}: {
+  template: CreateTemplate
+  config?: WsConfig
+}): Promise<SendTemplateRequestResponse> {
+  return await sendTemplateRequest({
+    method: 'POST',
+    body: JSON.stringify(template),
     config
   })
 }

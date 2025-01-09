@@ -20,16 +20,21 @@ export interface Templates {
 
 export interface Template {
   id: string
-  name: string //
+  name: string
   status: Status
-  category: Category //
-  language: string //
-  components: Component[] //
+  category: Category
+  language: string
+  components: Component[]
   sub_category?: string
   previous_category?: PreviousCategory
   allow_category_change?: boolean //
   // TODO: Add library templates types
 }
+
+export type CreateTemplate = Omit<
+  Template,
+  'id' | 'status' | 'sub_category' | 'previous_category' | 'allow_category_change'
+>
 
 export type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
 
