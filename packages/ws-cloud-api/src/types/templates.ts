@@ -80,7 +80,9 @@ export interface TextHeader {
   format: 'TEXT'
   text: string
   example?: {
-    header_text: ExamplePositionalParams | ExampleNamedParams
+    header_text: ExamplePositionalParams
+  } | {
+    header_text_named_params: ExampleNamedParams
   }
 }
 
@@ -91,7 +93,7 @@ export interface MediaHeader {
   type: 'HEADER'
   format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'
   example: {
-    header_media_url: string
+    header_handle: string
   }
 }
 
