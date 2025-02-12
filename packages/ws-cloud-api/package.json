@@ -1,6 +1,6 @@
 {
   "name": "ws-cloud-api",
-  "version": "0.13.3-alpha",
+  "version": "0.14.0-alpha",
   "description": "WhatsApp Cloud API for NodeJS",
   "author": {
     "name": "Lexuil",
