@@ -3,7 +3,8 @@ import {
   sendMediaTemplate,
   sendTextTemplate,
   getTemplates,
-  createTemplate
+  createTemplate,
+  sendAuthTemplate
 } from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
@@ -70,6 +71,23 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         }
       ],
       language: 'en_US'
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+    }
+    else {
+      console.log(response.response)
+    }
+
+    return response.success
+  },
+  'auth-code': async () => {
+    const response = await sendAuthTemplate({
+      to: phoneNumberToTest,
+      templateName: 'auth_code_crm360ms',
+      code: '123',
+      language: 'es'
     })
 
     if (!response.success) {

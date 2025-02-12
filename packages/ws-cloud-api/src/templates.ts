@@ -87,6 +87,53 @@ export async function sendMediaTemplate({
   })
 }
 
+export async function sendAuthTemplate({
+  to,
+  templateName,
+  language,
+  code,
+  config
+}: {
+  to: string
+  templateName: string
+  language: string
+  code: string
+  config?: WsConfig
+}): Promise<SendMessageResponse> {
+  return await sendMessageRequest({
+    to,
+    body: {
+      type: MessageTypes.Template,
+      [MessageTypes.Template]: {
+        name: templateName,
+        language: {
+          code: language,
+          policy: 'deterministic'
+        },
+        components: [
+          {
+            type: 'body',
+            parameters: [{
+              type: 'text',
+              text: code
+            }]
+          },
+          {
+            type: 'button',
+            sub_type: 'url',
+            index: '0',
+            parameters: [{
+              type: 'text',
+              text: code
+            }]
+          }
+        ]
+      }
+    },
+    config
+  })
+}
+
 export type SendTemplateRequestResponse<T> = {
   success: true
   data: T

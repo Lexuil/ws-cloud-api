@@ -1,4 +1,4 @@
-import type { MessageTypes, InteractiveTypes, ParametersTypes } from './enums'
+import type { MessageTypes, InteractiveTypes } from './enums'
 
 interface SimpleText {
   text: string
@@ -170,7 +170,7 @@ export interface TemplateComponentButton extends TemplateComponentBase {
   type: 'button'
   sub_type: 'quick_reply' | 'url' | 'catalog'
   parameters: TemplateParameter[]
-  index: number
+  index: `${number}`
 }
 
 export type TemplateHeaderParameter = TemplateParameterImage |
@@ -185,12 +185,12 @@ export type TemplateParameter = TemplateBodyParameter |
   TemplateHeaderParameter
 
 export interface TemplateParameterText {
-  type: ParametersTypes.Text
+  type: 'text'
   text: string
 }
 
 export interface TemplateParameterCurrency {
-  type: ParametersTypes.Currency
+  type: 'currency'
   currency: {
     code: string
     amount_1000: number
@@ -199,24 +199,24 @@ export interface TemplateParameterCurrency {
 }
 
 export interface TemplateParameterDateTime {
-  type: ParametersTypes.DateTime
+  type: 'date_time'
   date_time: {
     fallback_value: string
   }
 }
 
 export interface TemplateParameterImage {
-  type: ParametersTypes.Image
+  type: 'image'
   image: HeaderImageMedia
 }
 
 export interface TemplateParameterDocument {
-  type: ParametersTypes.Document
+  type: 'document'
   document: HeaderDocumentMedia
 }
 
 export interface TemplateParameterVideo {
-  type: ParametersTypes.Video
+  type: 'video'
   video: HeaderVideoMedia
 }
 
