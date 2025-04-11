@@ -1,3 +1,4 @@
+import { getMedia, getMediaUrl } from './media'
 import type { MessageStatus } from './types/enums'
 import type { WsRequest, WebhookSubscribeQuery } from './types/webhook'
 import type { Message } from './types/webhook/messages'
@@ -21,7 +22,7 @@ export function verifyWebhook(input: WebhookSubscribeQuery): {
   }
 }
 
-export function handleWebhook(input: WsRequest): {
+export async function handleWebhook(input: WsRequest): Promise<{
   type: 'statusUpdate'
   messageId: string
   userId: string
@@ -30,6 +31,14 @@ export function handleWebhook(input: WsRequest): {
   type: 'message'
   from: string
   id: string
+  message: string
+  source: Source
+} | {
+  type: 'media'
+  from: string
+  id: string
+  blob: Blob
+  mimeType: string
   message: string
   source: Source
 } | {
@@ -45,7 +54,12 @@ export function handleWebhook(input: WsRequest): {
   from: string
   id: string
   data: Record<string, unknown>
-} | undefined {
+} | {
+  type: 'reaction'
+  from: string
+  id: string
+  emoji: string
+} | undefined> {
   if (input.object === undefined) {
     return
   }
@@ -86,12 +100,13 @@ export function handleWebhook(input: WsRequest): {
   }
 
   // TODO: Add support for messages different than interactive and text
-  if (
-    messageObject.type !== 'interactive' &&
-    messageObject.type !== 'text' &&
-    messageObject.type !== 'button'
-  ) {
-    return
+  if (messageObject.type === 'reaction') {
+    return {
+      type: 'reaction',
+      from: messageObject.from,
+      id: messageObject.reaction.message_id,
+      emoji: messageObject.reaction.emoji,
+    }
   }
 
   // Flow messages
@@ -104,6 +119,55 @@ export function handleWebhook(input: WsRequest): {
       data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as {
         [key: string]: unknown
       }
+    }
+  }
+
+  // Media messages
+  if (['image', 'video', 'document', 'sticker', 'audio']
+    .includes(messageObject.type)) {
+    const media = {
+      id: '',
+      caption: '',
+      mimeType: ''
+    }
+    switch (messageObject.type) {
+      case 'image':
+        media.id = messageObject.image.id
+        media.caption = messageObject.image.caption
+        media.mimeType = messageObject.image.mime_type
+        break
+      case 'video':
+        media.id = messageObject.video.id
+        media.caption = messageObject.video.caption
+        media.mimeType = messageObject.video.mime_type
+        break
+      case 'document':
+        media.id = messageObject.document.id
+        media.caption = messageObject.document.caption
+        media.mimeType = messageObject.document.mime_type
+        break
+      case 'sticker':
+        media.id = messageObject.sticker.id
+        media.mimeType = messageObject.sticker.mime_type
+        break
+      case 'audio':
+        media.id = messageObject.audio.id
+        media.mimeType = messageObject.audio.mime_type
+        break
+    }
+
+    const mediaUrl = await getMediaUrl({ mediaId: media.id })
+
+    const mediaBlob = await getMedia({ mediaUrl })
+
+    return {
+      type: 'media',
+      from: messageObject.from,
+      id: messageObject.id,
+      blob: mediaBlob,
+      mimeType: media.mimeType,
+      message: media.caption,
+      source: 'user'
     }
   }
 
