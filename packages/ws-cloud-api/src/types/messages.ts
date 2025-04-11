@@ -179,10 +179,17 @@ export type TemplateHeaderParameter = TemplateParameterImage |
 
 export type TemplateBodyParameter = TemplateParameterText |
   TemplateParameterCurrency |
-  TemplateParameterDateTime
+  TemplateParameterDateTime |
+  TemplateNamedParameter
 
 export type TemplateParameter = TemplateBodyParameter |
   TemplateHeaderParameter
+
+export interface TemplateNamedParameter {
+  type: 'text'
+  parameter_name: string
+  text: string
+}
 
 export interface TemplateParameterText {
   type: 'text'

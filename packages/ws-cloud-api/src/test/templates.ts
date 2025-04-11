@@ -54,6 +54,34 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     return response.success
   },
+  'text-named-parameters': async () => {
+    const response = await sendTextTemplate({
+      to: phoneNumberToTest,
+      templateName: 'named_parameters_test',
+      language: 'es',
+      parameters: [
+        {
+          type: ParametersTypes.Text,
+          parameter_name: 'username',
+          text: 'John'
+        },
+        {
+          type: ParametersTypes.Text,
+          parameter_name: 'agent',
+          text: 'Michael'
+        }
+      ]
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+    }
+    else {
+      console.log(response.response)
+    }
+
+    return response.success
+  },
   'media-image': async () => {
     const response = await sendMediaTemplate({
       to: phoneNumberToTest,
