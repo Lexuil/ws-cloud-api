@@ -42,14 +42,6 @@ export async function handleWebhook(input: WsRequest): Promise<{
   message: string
   source: Source
 } | {
-  type: 'voiceAudio'
-  from: string
-  id: string
-  audio: {
-    id: string
-    mimeType: string
-  }
-} | {
   type: 'flowReply'
   from: string
   id: string
@@ -85,19 +77,6 @@ export async function handleWebhook(input: WsRequest): Promise<{
   }
 
   const messageObject = webhookValue.messages[0]
-
-  // Voce audio messages
-  if (messageObject.type === 'audio' && messageObject.audio.voice) {
-    return {
-      type: 'voiceAudio',
-      from: messageObject.from,
-      id: messageObject.id,
-      audio: {
-        id: messageObject.audio.id,
-        mimeType: messageObject.audio.mime_type
-      }
-    }
-  }
 
   // TODO: Add support for messages different than interactive and text
   if (messageObject.type === 'reaction') {
