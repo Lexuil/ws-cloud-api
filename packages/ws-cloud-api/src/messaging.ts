@@ -395,6 +395,7 @@ export async function sendFlowMessage({
     token: string
     ctaText: string
     defaultScreen: string
+    initDataExchange?: boolean
   }
   draft?: boolean
   config?: WsConfig
@@ -409,13 +410,17 @@ export async function sendFlowMessage({
       parameters: {
         mode: draft === true ? 'draft' : 'published',
         flow_message_version: '3',
-        flow_action: 'navigate',
+        flow_action: flow.initDataExchange === true
+          ? 'data_exchange'
+          : 'navigate',
         flow_token: flow.token,
         flow_id: flow.id,
         flow_cta: flow.ctaText,
-        flow_action_payload: {
-          screen: flow.defaultScreen
-        }
+        flow_action_payload: flow.initDataExchange === true
+          ? undefined
+          : {
+              screen: flow.defaultScreen
+            }
       }
     }
   }
