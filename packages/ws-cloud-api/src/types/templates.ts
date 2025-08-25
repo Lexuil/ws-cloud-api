@@ -24,6 +24,7 @@ export interface Template {
   status: TemplateStatus
   category: Category
   language: string
+  message_send_ttl_seconds: string
   components: Component[]
   sub_category?: string
   previous_category?: PreviousCategory
