@@ -163,7 +163,7 @@ export async function sendTemplateRequest<T>({
   })
 
   if (!requestResponse.success) {
-    console.error('Failed to get templates')
+    console.error('Failed to create template')
     console.log(requestResponse.error)
     return requestResponse
   }
