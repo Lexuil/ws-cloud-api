@@ -12,7 +12,8 @@ import {
   sendInteractiveListMessage,
   sendInteractiveSectionListMessage,
   sendFlowMessage,
-  sendFile
+  sendFile,
+  sendContact
 } from '../../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -23,6 +24,47 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
     const response = await sendText({
       to: phoneNumberToTest,
       message: 'Test message from library'
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+    }
+    else {
+      console.log(response.response)
+    }
+
+    return response.success
+  },
+  'contact': async () => {
+    const response = await sendContact({
+      to: phoneNumberToTest,
+      contacts: [{
+        name: {
+          formatted_name: 'Test 1',
+          first_name: 'Test',
+          last_name: 'Test 1'
+        },
+        phones: [
+          {
+            phone: '+57123456789',
+            type: 'Mobile',
+            wa_id: '57123456789'
+          }
+        ]
+      }, {
+        name: {
+          formatted_name: 'Test 2',
+          first_name: 'Test',
+          last_name: 'Test 2'
+        },
+        phones: [
+          {
+            phone: '+57123456780',
+            type: 'Mobile',
+            wa_id: '57123456780'
+          }
+        ]
+      }]
     })
 
     if (!response.success) {

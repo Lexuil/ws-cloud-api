@@ -12,7 +12,8 @@ import type {
   MediaBody,
   CTAButtonInteractive,
   FlowInteractive,
-  MessageResponse
+  MessageResponse,
+  Contact
 } from './types/messages'
 
 export type SendMessageResponse = {
@@ -74,6 +75,25 @@ export async function sendText({
         preview_url: previewUrl,
         body: message
       }
+    },
+    config
+  })
+}
+
+export async function sendContact({
+  to,
+  contacts,
+  config
+}: {
+  to: string
+  contacts: Contact[]
+  config?: WsConfig
+}): Promise<SendMessageResponse> {
+  return await sendMessageRequest({
+    to,
+    body: {
+      type: MessageTypes.Contacts,
+      [MessageTypes.Contacts]: contacts
     },
     config
   })

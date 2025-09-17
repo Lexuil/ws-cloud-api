@@ -244,6 +244,62 @@ export interface TextBody {
   }
 }
 
+export interface ContactAddress {
+  street?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+  country_code?: string
+  type?: string
+}
+
+export interface ContactEmail {
+  email: string
+  type?: string
+}
+
+export interface ContactName {
+  formatted_name: string
+  first_name: string
+  last_name: string
+  middle_name?: string
+  suffix?: string
+  prefix?: string
+}
+
+export interface ContactOrg {
+  company?: string
+  department?: string
+  title?: string
+}
+
+export interface ContactPhone {
+  phone: `+${string}`
+  type?: string
+  wa_id?: string
+}
+
+export interface ContactUrl {
+  url: string
+  type?: string
+}
+
+export interface Contact {
+  addresses?: ContactAddress[]
+  birthday?: string
+  emails?: ContactEmail[]
+  name: ContactName
+  org?: ContactOrg
+  phones?: ContactPhone[]
+  urls?: ContactUrl[]
+}
+
+export interface ContactsBody {
+  type: MessageTypes.Contacts
+  [MessageTypes.Contacts]: Contact[]
+}
+
 export interface ImageBody {
   type: MessageTypes.Image
   [MessageTypes.Image]: {
@@ -279,7 +335,7 @@ export interface InteractiveBody {
   [MessageTypes.Interactive]: Interactive
 }
 
-export type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody
+export type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody | ContactsBody
 
 export interface MessageResponse {
   messaging_product: 'whatsapp'

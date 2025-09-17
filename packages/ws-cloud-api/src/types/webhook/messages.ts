@@ -5,7 +5,7 @@ export interface MessageValue {
   messages: Message[]
 }
 
-export interface Contact {
+interface Contact {
   profile: Profile
   wa_id: string
 }
