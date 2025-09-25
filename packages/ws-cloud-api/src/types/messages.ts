@@ -168,9 +168,17 @@ export interface TemplateComponentBase {
 
 export interface TemplateComponentButton extends TemplateComponentBase {
   type: 'button'
-  sub_type: 'quick_reply' | 'url' | 'catalog'
+  sub_type: 'quick_reply' | 'url' | 'catalog' | 'flow'
   parameters: TemplateParameter[]
   index: `${number}`
+}
+
+export interface TemplateFlowParameter {
+  type: 'action'
+  action: {
+    flow_token?: string
+    flow_action_data?: object
+  }
 }
 
 export type TemplateHeaderParameter = TemplateParameterImage |
@@ -183,7 +191,8 @@ export type TemplateBodyParameter = TemplateParameterText |
   TemplateNamedParameter
 
 export type TemplateParameter = TemplateBodyParameter |
-  TemplateHeaderParameter
+  TemplateHeaderParameter |
+  TemplateFlowParameter
 
 export interface TemplateNamedParameter {
   type: 'text'
@@ -275,7 +284,7 @@ export interface ContactOrg {
 }
 
 export interface ContactPhone {
-  phone: `+${string}`
+  phone?: `+${string}`
   type?: string
   wa_id?: string
 }

@@ -84,7 +84,7 @@ export async function handleWebhook(input: WsRequest): Promise<{
       type: 'reaction',
       from: messageObject.from,
       id: messageObject.reaction.message_id,
-      emoji: messageObject.reaction.emoji,
+      emoji: messageObject.reaction.emoji
     }
   }
 

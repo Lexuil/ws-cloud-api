@@ -4,7 +4,8 @@ import {
   sendTextTemplate,
   getTemplates,
   createTemplate,
-  sendAuthTemplate
+  sendAuthTemplate,
+  sendFlowTemplate
 } from '../../dist/templates'
 import { ParametersTypes } from '../../dist'
 
@@ -110,10 +111,27 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 
     return response.success
   },
+  'flow': async () => {
+    const response = await sendFlowTemplate({
+      to: phoneNumberToTest,
+      templateName: 'flow_test',
+      language: 'es',
+      flow: {}
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+    }
+    else {
+      console.log(response.response)
+    }
+
+    return response.success
+  },
   'auth-code': async () => {
     const response = await sendAuthTemplate({
       to: phoneNumberToTest,
-      templateName: 'auth_code_crm360ms',
+      templateName: 'auth_code',
       code: '123',
       language: 'es'
     })

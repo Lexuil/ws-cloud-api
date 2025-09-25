@@ -3,6 +3,7 @@ import { MessageTypes } from './types/enums'
 import type { WsConfig } from './types/config'
 import type {
   TemplateBodyParameter,
+  TemplateFlowParameter,
   TemplateHeaderParameter
 } from './types/messages'
 import { sendRequest } from './base'
@@ -79,6 +80,52 @@ export async function sendMediaTemplate({
           {
             type: 'body',
             parameters: bodyParameters
+          }
+        ]
+      }
+    },
+    config
+  })
+}
+
+export async function sendFlowTemplate({
+  to,
+  templateName,
+  language,
+  flow,
+  bodyParameters,
+  config
+}: {
+  to: string
+  templateName: string
+  language: string
+  flow: TemplateFlowParameter['action']
+  bodyParameters?: TemplateBodyParameter[]
+  config?: WsConfig
+}): Promise<SendMessageResponse> {
+  return await sendMessageRequest({
+    to,
+    body: {
+      type: MessageTypes.Template,
+      [MessageTypes.Template]: {
+        name: templateName,
+        language: {
+          code: language,
+          policy: 'deterministic'
+        },
+        components: [
+          {
+            type: 'body',
+            parameters: bodyParameters
+          },
+          {
+            type: 'button',
+            sub_type: 'flow',
+            index: '0',
+            parameters: [{
+              type: 'action',
+              action: flow
+            }]
           }
         ]
       }
