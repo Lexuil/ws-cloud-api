@@ -13,7 +13,8 @@ import {
   sendInteractiveSectionListMessage,
   sendFlowMessage,
   sendFile,
-  sendContact
+  sendContact,
+  sendTypingIndicator
 } from '../../dist/messaging'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
@@ -289,6 +290,22 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
         defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? ''
       },
       draft: true
+    })
+
+    if (!response.success) {
+      console.error('Error: ', response.error)
+    }
+    else {
+      console.log(response.response)
+    }
+
+    return response.success
+  },
+  'typing-indicator': async (): Promise<boolean> => {
+    const response = await sendTypingIndicator({
+      input: {
+        messageId: 'wamid.HBgMNTczM'
+      }
     })
 
     if (!response.success) {

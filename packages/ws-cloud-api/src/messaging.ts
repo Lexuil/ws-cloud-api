@@ -451,3 +451,37 @@ export async function sendFlowMessage({
     config
   })
 }
+
+export async function sendTypingIndicator({
+  input,
+  config
+}: {
+  input: {
+    messageId: string
+  }
+  config?: WsConfig
+}): Promise<SendMessageResponse> {
+  const postBody = JSON.stringify({
+    messaging_product: 'whatsapp',
+    status: 'read',
+    message_id: input.messageId,
+    typing_indicator: {
+      type: 'text'
+    }
+  })
+
+  const requestResponse = await sendRequest({
+    id: 'phoneNumberId',
+    body: postBody,
+    path: 'messages',
+    method: 'POST',
+    config
+  })
+
+  if (!requestResponse.success) {
+    console.error(`Failed to send typing indicator`)
+    console.error(JSON.stringify(await requestResponse.error, null, 2))
+  }
+
+  return requestResponse as SendMessageResponse
+}
