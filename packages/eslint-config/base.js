@@ -1,13 +1,14 @@
 import eslint from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import typescriptEslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config'
 
 /**
  * A shared ESLint configuration for the repository.
  *
  * @type {import("eslint").Linter.Config}
  * */
-export default typescriptEslint.config(
+export default defineConfig(
   eslint.configs.recommended,
   typescriptEslint.configs.recommendedTypeChecked,
   {

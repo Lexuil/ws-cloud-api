@@ -55,7 +55,7 @@
   ],
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "20.17.11",
+    "@types/node": "24.10.4",
     "dotenv": "16.4.7",
     "jiti": "2.4.2",
     "typescript": "*",

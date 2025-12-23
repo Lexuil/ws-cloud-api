@@ -15,9 +15,9 @@ export async function sendRequest({
   method: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'CONNECT' | 'TRACE' | string & NonNullable<unknown>
   config?: WsConfig
 }): Promise<
-  | { success: true, response: unknown }
-  | { success: false, error: unknown }
-  > {
+  | { success: true, response: unknown } |
+  { success: false, error: unknown }
+> {
   // Config
   const apiVersion = typeof process !== 'undefined'
     ? process.env.WS_CA_VERSION ?? config?.apiVersion ?? '20.0'

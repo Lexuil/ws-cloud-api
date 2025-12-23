@@ -8,16 +8,22 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "emitDeclarationOnly": false,
+    "outDir": "${configDir}/dist",
 
     /* Import alias */
     "paths": {
@@ -27,8 +33,7 @@
     }
   },
   "include": [
-    "src",
-    "src/test",
+    "src/**/*",
     "eslint.config.js"
   ]
 }

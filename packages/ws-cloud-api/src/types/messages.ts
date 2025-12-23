@@ -19,8 +19,8 @@ interface HostedDocumentMedia {
 }
 
 export type HeaderDocumentMedia =
-  | MetaDocumentMedia
-  | HostedDocumentMedia
+  | MetaDocumentMedia |
+  HostedDocumentMedia
 
 interface MetaImageMedia {
   id: string
@@ -49,8 +49,8 @@ interface SelfHostedVideoMedia {
 }
 
 export type HeaderVideoMedia =
-  | MetaHostedVideoMedia
-  | SelfHostedVideoMedia
+  | MetaHostedVideoMedia |
+  SelfHostedVideoMedia
 
 interface Header {
   type: 'document' | 'image' | 'text' | 'video'
