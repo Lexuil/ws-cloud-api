@@ -15,11 +15,13 @@
   "type": "module",
   "scripts": {
     "build": "unbuild",
-    "test:messages": "jiti ./src/test/sendMessages.ts",
+    "clean": "unbuild --clean",
+    "test:messages": "jiti ./src/test/messages.ts",
     "test:webhook": "jiti ./src/test/webhook.ts",
     "test:templates": "jiti ./src/test/templates.ts",
     "test:media": "jiti ./src/test/media.ts",
     "lint": "eslint \"./src/**/*.ts\"",
+    "lint:fix": "eslint \"./src/**/*.ts\" --fix",
     "check-types": "tsc --noEmit"
   },
   "exports": {
@@ -63,6 +65,14 @@
   },
   "dependencies": {
     "cross-fetch": "4.1.0"
+  },
+  "peerDependencies": {
+    "pino": "^10.1.0"
+  },
+  "peerDependenciesMeta": {
+    "pino": {
+      "optional": true
+    }
   },
   "keywords": [
     "whatsapp",

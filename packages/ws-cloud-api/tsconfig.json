@@ -33,7 +33,7 @@
     }
   },
   "include": [
-    "src/**/*",
+    "src/**/*.ts",
     "eslint.config.js"
   ]
 }
