@@ -55,11 +55,11 @@
   ],
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "24.10.4",
-    "dotenv": "16.4.7",
-    "jiti": "2.4.2",
-    "typescript": "*",
-    "unbuild": "2.0.0"
+    "@types/node": "catalog:",
+    "dotenv": "17.2.3",
+    "jiti": "2.6.1",
+    "typescript": "catalog:",
+    "unbuild": "3.6.1"
   },
   "dependencies": {
     "cross-fetch": "4.1.0"
