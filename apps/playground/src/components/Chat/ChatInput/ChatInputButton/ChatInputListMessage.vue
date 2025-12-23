@@ -77,7 +77,7 @@ function resetForm(): void {
         <AlertDialogDescription>
           <form
             id="add-list-message-form"
-            class="flex flex-col items-center gap-1 h-[25rem] overflow-auto"
+            class="flex flex-col items-center gap-1 h-100 overflow-auto"
             @submit.prevent="addListMessage"
           >
             <div class="grid w-full max-w-sm items-center gap-1.5">

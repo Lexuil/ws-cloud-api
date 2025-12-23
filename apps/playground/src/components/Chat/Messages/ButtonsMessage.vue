@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <li class="w-fit">
-    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-full mt-[2px] break-words">
+    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-xs rounded-md w-full mt-[2px] wrap-break-word">
       <span
         class="whitespace-pre-wrap"
         v-html="format(message)"
@@ -26,7 +26,7 @@ defineProps<{
       <button
         v-if="button !== ''"
         :key="index"
-        class="p-2 bg-ws-button-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
+        class="p-2 bg-ws-button-bg shadow-xs rounded-md text-ws-link mt-[2px] w-full"
       >
         {{ button }}
       </button>

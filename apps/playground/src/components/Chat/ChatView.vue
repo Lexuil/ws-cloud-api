@@ -7,7 +7,7 @@ import ChatInput from '@/components/Chat/ChatInput/ChatInput.vue'
 <template>
   <div
     id="chat"
-    class="flex flex-col items-center max-sm:p-4 w-full sm:w-[26rem]"
+    class="flex flex-col items-center max-sm:p-4 w-full sm:w-104"
   >
     <ChatHeader />
     <ChatBody />

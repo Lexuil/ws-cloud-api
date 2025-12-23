@@ -17,7 +17,7 @@ const showModal = ref(false)
 
 <template>
   <li class="w-fit">
-    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-full mt-[2px] break-words">
+    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-xs rounded-md w-full mt-[2px] wrap-break-word">
       <span
         class="whitespace-pre-wrap"
         v-html="format(message)"
@@ -28,7 +28,7 @@ const showModal = ref(false)
       </div>
     </div>
     <button
-      class="flex items-center justify-center gap-2 p-2 bg-ws-button-bg shadow-sm rounded-md text-ws-link mt-[2px] w-full"
+      class="flex items-center justify-center gap-2 p-2 bg-ws-button-bg shadow-xs rounded-md text-ws-link mt-[2px] w-full"
       @click="showModal = true"
     >
       <svg
@@ -60,7 +60,7 @@ const showModal = ref(false)
       v-show="showModal"
       class="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-black/50"
     >
-      <div class="bg-ws-list-bg rounded-sm shadow-lg w-[27rem] max-h-[80vh] overflow-y-auto">
+      <div class="bg-ws-list-bg rounded-sm shadow-lg w-108 max-h-[80vh] overflow-y-auto">
         <div class="flex items-center gap-5 bg-ws-list-header text-white p-5">
           <button @click="showModal = false">
             <svg

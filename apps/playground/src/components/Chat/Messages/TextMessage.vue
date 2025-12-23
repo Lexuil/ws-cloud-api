@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <li class="p-2 bg-ws-message-bg text-ws-ui-text shadow-sm rounded-md w-fit mt-[2px] break-words max-w-full">
+  <li class="p-2 bg-ws-message-bg text-ws-ui-text shadow-xs rounded-md w-fit mt-[2px] wrap-break-word max-w-full">
     <span
       class="whitespace-pre-wrap"
       v-html="format(message)"
