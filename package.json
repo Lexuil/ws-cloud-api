@@ -9,7 +9,7 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "turbo": "2.3.3"
+    "turbo": "2.7.2"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.26.2"
 }
