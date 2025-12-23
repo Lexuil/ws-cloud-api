@@ -55,14 +55,14 @@
   ],
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/node": "^20.17.11",
-    "dotenv": "^16.4.7",
-    "jiti": "^2.4.2",
+    "@types/node": "20.17.11",
+    "dotenv": "16.4.7",
+    "jiti": "2.4.2",
     "typescript": "*",
-    "unbuild": "^2.0.0"
+    "unbuild": "2.0.0"
   },
   "dependencies": {
-    "cross-fetch": "^4.1.0"
+    "cross-fetch": "4.1.0"
   },
   "keywords": [
     "whatsapp",
