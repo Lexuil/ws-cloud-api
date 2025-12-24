@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useDropdown from '@/composables/useDropdown'
-const { closeMenu, menu, menuIsOpen } = useDropdown()
+const { closeMenu, menuIsOpen } = useDropdown()
 
 defineProps<{
   triggerClass: string
