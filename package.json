@@ -1,5 +1,5 @@
 {
-  "name": "ws-cloud-api",
+  "name": "ws-cloud-api-project",
   "version": "1.0.0",
   "scripts": {
     "dev": "turbo run dev",

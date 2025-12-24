@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
 import ChatView from '@/components/Chat/ChatView.vue'
 import ControlsView from '@/components/Controls/ControlsView.vue'
 import PageHeader from '@/components/Page/PageHeader.vue'
