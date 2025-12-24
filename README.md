@@ -1,3 +1,3 @@
 # Documentation
 
-[Documentation](/ws-cloud-api/README.md)
+[Documentation](packages/ws-cloud-api/README.md)
