@@ -16,11 +16,5 @@ export function resolveConfig(config?: WsConfig): ResolvedConfig {
   const businessId = config?.businessId ?? process.env.WS_BUSINESS_ID
   const token = config?.token ?? process.env.WS_TOKEN
 
-  return {
-    apiVersion,
-    phoneNumberId,
-    businessId,
-    token,
-    fetch: config?.fetch
-  }
+  return { apiVersion, businessId, fetch: config?.fetch, phoneNumberId, token }
 }

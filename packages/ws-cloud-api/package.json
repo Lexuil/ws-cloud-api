@@ -2,6 +2,16 @@
   "name": "ws-cloud-api",
   "version": "0.18.0-alpha",
   "description": "WhatsApp Cloud API for NodeJS",
+  "keywords": [
+    "api",
+    "cloud",
+    "media",
+    "messaging",
+    "nodejs",
+    "webhook",
+    "whatsapp"
+  ],
+  "homepage": "https://ws-cloud-api.lexuil.com/",
   "author": {
     "name": "Lexuil",
     "email": "lexuil.dev@gmail.com",
@@ -11,60 +21,55 @@
     "type": "git",
     "url": "git+https://github.com/Lexuil/ws-cloud-api.git"
   },
-  "homepage": "https://ws-cloud-api.lexuil.com/",
-  "type": "module",
-  "scripts": {
-    "build": "unbuild",
-    "clean": "unbuild --clean",
-    "test:messages": "jiti ./src/test/messages.ts",
-    "test:webhook": "jiti ./src/test/webhook.ts",
-    "test:templates": "jiti ./src/test/templates.ts",
-    "test:media": "jiti ./src/test/media.ts",
-    "lint": "eslint \"./src/**/*.ts\"",
-    "lint:fix": "eslint \"./src/**/*.ts\" --fix",
-    "check-types": "tsc --noEmit"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./webhook": {
-      "import": "./dist/webhook.mjs",
-      "require": "./dist/webhook.cjs",
-      "types": "./dist/webhook.d.ts"
-    },
-    "./messaging": {
-      "import": "./dist/messaging.mjs",
-      "require": "./dist/messaging.cjs",
-      "types": "./dist/messaging.d.ts"
-    },
-    "./templates": {
-      "import": "./dist/templates.mjs",
-      "require": "./dist/templates.cjs",
-      "types": "./dist/templates.d.ts"
-    },
-    "./media": {
-      "import": "./dist/media.mjs",
-      "require": "./dist/media.cjs",
-      "types": "./dist/media.d.ts"
-    }
-  },
-  "main": "./dist/index.cjs",
   "files": [
     "dist"
   ],
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@types/node": "catalog:",
-    "dotenv": "17.2.3",
-    "jiti": "2.6.1",
-    "typescript": "catalog:",
-    "unbuild": "3.6.1"
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./media": {
+      "import": "./dist/media.mjs",
+      "require": "./dist/media.cjs"
+    },
+    "./messaging": {
+      "import": "./dist/messaging.mjs",
+      "require": "./dist/messaging.cjs"
+    },
+    "./templates": {
+      "import": "./dist/templates.mjs",
+      "require": "./dist/templates.cjs"
+    },
+    "./webhook": {
+      "import": "./dist/webhook.mjs",
+      "require": "./dist/webhook.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "release": "bumpp",
+    "prepublishOnly": "pnpm run build",
+    "test:messages": "jiti ./src/test/messages.ts",
+    "test:webhook": "jiti ./src/test/webhook.ts",
+    "test:templates": "jiti ./src/test/templates.ts",
+    "test:media": "jiti ./src/test/media.ts"
   },
   "dependencies": {
     "cross-fetch": "4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "7.0.0-dev.20260316.1",
+    "dotenv": "17.2.3",
+    "jiti": "2.6.1",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "pino": "^10.1.0"
@@ -73,14 +78,5 @@
     "pino": {
       "optional": true
     }
-  },
-  "keywords": [
-    "whatsapp",
-    "cloud",
-    "api",
-    "nodejs",
-    "messaging",
-    "webhook",
-    "media"
-  ]
+  }
 }

@@ -1,7 +1,7 @@
 import 'dotenv/config'
-import { getMedia, getMediaUrl, uploadMedia } from 'ws-cloud-api/media'
 import fs from 'fs'
 import path from 'path'
+import { getMedia, getMediaUrl, uploadMedia } from 'ws-cloud-api/media'
 
 const blob = new Blob([fs.readFileSync(path.join(__dirname, '/assets/kirby.jpg'))], {
   type: 'image/jpeg'
@@ -18,9 +18,12 @@ uploadMedia({ media: blob })
         getMedia({ mediaUrl })
           .then((blob) => {
             // Save the blob to a file
-            blob.arrayBuffer().then((buffer) => {
-              fs.writeFileSync(path.join(__dirname, '/assets/kirby2.jpg'), Buffer.from(buffer))
-            }).catch(console.error)
+            blob
+              .arrayBuffer()
+              .then((buffer) => {
+                fs.writeFileSync(path.join(__dirname, '/assets/kirby2.jpg'), Buffer.from(buffer))
+              })
+              .catch(console.error)
           })
           .catch(console.error)
       })

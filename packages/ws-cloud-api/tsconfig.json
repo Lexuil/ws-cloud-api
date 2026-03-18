@@ -25,15 +25,10 @@
     "emitDeclarationOnly": false,
     "outDir": "${configDir}/dist",
 
+    "types": ["node"],
+
     /* Import alias */
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
+    "paths": { "@/*": ["./src/*"] }
   },
-  "include": [
-    "src/**/*.ts",
-    "eslint.config.js"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.json"]
 }

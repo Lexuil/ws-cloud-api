@@ -11,24 +11,14 @@
               "display_phone_number": "PHONE_NUMBER",
               "phone_number_id": "PHONE_NUMBER_ID"
             },
-            "contacts": [
-              {
-                "profile": {
-                  "name": "NAME"
-                },
-                "wa_id": "PHONE_NUMBER_ID"
-              }
-            ],
+            "contacts": [{ "profile": { "name": "NAME" }, "wa_id": "PHONE_NUMBER_ID" }],
             "messages": [
               {
                 "from": "PHONE_NUMBER_ID",
                 "id": "wamid.ID",
                 "timestamp": "TIMESTAMP",
                 "interactive": {
-                  "button_reply": {
-                    "id": "unique-button-identifier-here",
-                    "title": "button-text"
-                  },
+                  "button_reply": { "id": "unique-button-identifier-here", "title": "button-text" },
                   "type": "button_reply"
                 },
                 "type": "interactive"

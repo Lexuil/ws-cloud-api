@@ -1,8 +1,7 @@
-import { createHttpClient, type HttpResponse, type RequestMethod } from './core/http'
-import { resolveConfig, type ResolvedConfig } from './core/config'
-import { createLogger } from './core/logger'
-import { InteractiveTypes, MessageTypes } from './types/enums'
+import type { ResolvedConfig } from './core/config'
+import type { HttpResponse, RequestMethod } from './core/http'
 import type { WsConfig } from './types/config'
+import type { MessageStatus } from './types/enums'
 import type { Logger } from './types/logger'
 import type {
   Button,
@@ -15,7 +14,10 @@ import type {
   ListInteractive,
   MediaBody,
   MessageResponse,
-  WSBody
+  WSBody,
+  TemplateBodyParameter,
+  TemplateFlowParameter,
+  TemplateHeaderParameter
 } from './types/messages'
 import type {
   CreateTemplate,
@@ -23,23 +25,22 @@ import type {
   Templates,
   templateFields
 } from './types/templates'
-import type {
-  TemplateBodyParameter,
-  TemplateFlowParameter,
-  TemplateHeaderParameter
-} from './types/messages'
-import type { MessageStatus } from './types/enums'
-import type { WsRequest, WebhookSubscribeQuery } from './types/webhook'
+import type { WebhookSubscribeQuery, WsRequest } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
+import { resolveConfig } from './core/config'
+import { createHttpClient } from './core/http'
+import createLogger from './core/logger'
+import { InteractiveTypes, MessageTypes } from './types/enums'
+
 type SendMessageResponse =
-  | { success: false, error: unknown } |
-  { success: true, response: MessageResponse }
+  | { success: false; error: unknown }
+  | { success: true; response: MessageResponse }
 
 type Source = 'user' | 'button' | 'list' | 'flow'
 
 const supportedFiles = {
-  image: ['image/jpeg', 'image/png'],
+  audio: ['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus'],
   document: [
     'text/plain',
     'application/pdf',
@@ -50,11 +51,11 @@ const supportedFiles = {
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   ],
-  audio: ['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus'],
+  image: ['image/jpeg', 'image/png'],
   video: ['video/mp4', 'video/3gp']
 }
 
-export class WsApi {
+class WsApi {
   private readonly config: ResolvedConfig
   private readonly logger: Logger
   private readonly http: ReturnType<typeof createHttpClient>
@@ -80,20 +81,13 @@ export class WsApi {
     method: RequestMethod | (string & NonNullable<unknown>)
     headers?: Record<string, string>
   }): Promise<HttpResponse> {
-    const preparedBody = body === undefined
-      ? undefined
-      : body instanceof FormData || typeof body === 'string'
-        ? body
-        : JSON.stringify(body)
+    let preparedBody = undefined
+    if (body !== undefined) {
+      preparedBody =
+        body instanceof FormData || typeof body === 'string' ? body : JSON.stringify(body)
+    }
 
-    return await this.http.request({
-      id,
-      body: preparedBody ?? null,
-      path,
-      query,
-      method,
-      headers
-    })
+    return await this.http.request({ body: preparedBody ?? null, headers, id, method, path, query })
   }
 
   // Messaging ----------------------------------------------------------------
@@ -104,17 +98,13 @@ export class WsApi {
     to: string
     body: WSBody
   }): Promise<SendMessageResponse> {
-    const postBody = {
-      messaging_product: 'whatsapp',
-      to,
-      ...body
-    }
+    const postBody = { messaging_product: 'whatsapp', to, ...body }
 
     const requestResponse = await this.sendRequest({
-      id: 'phoneNumberId',
       body: postBody,
-      path: 'messages',
-      method: 'POST'
+      id: 'phoneNumberId',
+      method: 'POST',
+      path: 'messages'
     })
 
     if (!requestResponse.success) {
@@ -125,26 +115,34 @@ export class WsApi {
     return requestResponse as SendMessageResponse
   }
 
-  async sendText({ to, message, previewUrl }: { to: string, message: string, previewUrl?: boolean }): Promise<SendMessageResponse> {
+  async sendText({
+    to,
+    message,
+    previewUrl
+  }: {
+    to: string
+    message: string
+    previewUrl?: boolean
+  }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
       body: {
         type: MessageTypes.Text,
-        [MessageTypes.Text]: {
-          preview_url: previewUrl,
-          body: message
-        }
-      }
+        [MessageTypes.Text]: { body: message, preview_url: previewUrl }
+      },
+      to
     })
   }
 
-  async sendContact({ to, contacts }: { to: string, contacts: Contact[] }): Promise<SendMessageResponse> {
+  async sendContact({
+    to,
+    contacts
+  }: {
+    to: string
+    contacts: Contact[]
+  }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
-      body: {
-        type: MessageTypes.Contacts,
-        [MessageTypes.Contacts]: contacts
-      }
+      body: { type: MessageTypes.Contacts, [MessageTypes.Contacts]: contacts },
+      to
     })
   }
 
@@ -162,63 +160,58 @@ export class WsApi {
     caption?: string
   }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
-      body: {
-        type,
-        [type]: {
-          link,
-          filename,
-          caption
-        }
-      } as unknown as MediaBody
+      body: { type, [type]: { caption, filename, link } } as unknown as MediaBody,
+      to
     })
   }
 
-  async sendImage({ to, link }: { to: string, link: string }): Promise<SendMessageResponse> {
-    return await this.sendSimpleMedia({ to, type: MessageTypes.Image, link })
+  async sendImage({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Image })
   }
 
-  async sendVideo({ to, link }: { to: string, link: string }): Promise<SendMessageResponse> {
-    return await this.sendSimpleMedia({ to, type: MessageTypes.Video, link })
+  async sendVideo({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Video })
   }
 
-  async sendDocument({ to, link, filename, caption }: { to: string, link: string, filename: string, caption?: string }): Promise<SendMessageResponse> {
-    return await this.sendSimpleMedia({ to, type: MessageTypes.Document, link, filename, caption })
+  async sendDocument({
+    to,
+    link,
+    filename,
+    caption
+  }: {
+    to: string
+    link: string
+    filename: string
+    caption?: string
+  }): Promise<SendMessageResponse> {
+    return await this.sendSimpleMedia({ caption, filename, link, to, type: MessageTypes.Document })
   }
 
-  async sendAudio({ to, link }: { to: string, link: string }): Promise<SendMessageResponse> {
-    return await this.sendSimpleMedia({ to, type: MessageTypes.Audio, link })
+  async sendAudio({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Audio })
   }
 
-  async sendFile({ to, file }: { to: string, file: Blob }): Promise<SendMessageResponse> {
+  async sendFile({ to, file }: { to: string; file: Blob }): Promise<SendMessageResponse> {
     try {
       const mediaId = await this.uploadMedia({ media: file })
-      const mimeType = file.type.split('/')[0]
-      const type = (mimeType === 'text' || mimeType === 'application')
-        ? MessageTypes.Document
-        : mimeType as MediaBody['type']
+      const [mimeType] = file.type.split('/')
+      const type =
+        mimeType === 'text' || mimeType === 'application'
+          ? MessageTypes.Document
+          : (mimeType as MediaBody['type'])
 
       return await this.sendMessageRequest({
-        to,
-        body: {
-          type,
-          [type]: {
-            id: mediaId
-          }
-        } as unknown as MediaBody
+        body: { type, [type]: { id: mediaId } } as unknown as MediaBody,
+        to
       })
-    }
-    catch (error) {
+    } catch (error) {
       this.logger.error?.('Failed to send file', error)
-      return { success: false, error }
+      return { error, success: false }
     }
   }
 
   private generateInteractiveBody(input: Interactive): InteractiveBody {
-    return {
-      type: MessageTypes.Interactive,
-      interactive: input
-    }
+    return { interactive: input, type: MessageTypes.Interactive }
   }
 
   async sendButtonMessage({
@@ -226,22 +219,19 @@ export class WsApi {
     message
   }: {
     to: string
-    message: { text: string, buttons: Button[] }
+    message: { text: string; buttons: Button[] }
   }): Promise<SendMessageResponse> {
     const body: ButtonInteractive = {
-      type: InteractiveTypes.Button,
+      action: { buttons: [] },
       body: { text: message.text },
-      action: { buttons: [] }
+      type: InteractiveTypes.Button
     }
 
-    for (let i = 0; i < message.buttons.length; i++) {
-      body.action.buttons.push({ type: 'reply', reply: message.buttons[i] })
+    for (const button of message.buttons) {
+      body.action.buttons.push({ reply: button, type: 'reply' })
     }
 
-    return await this.sendMessageRequest({
-      to,
-      body: this.generateInteractiveBody(body)
-    })
+    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
   }
 
   async sendCTAButtonMessage({
@@ -249,23 +239,17 @@ export class WsApi {
     message
   }: {
     to: string
-    message: { text: string, buttonText: string, url: string }
+    message: { text: string; buttonText: string; url: string }
   }): Promise<SendMessageResponse> {
     const body: CTAButtonInteractive = {
-      type: InteractiveTypes.CTAButton,
-      body: { text: message.text },
       action: {
         name: InteractiveTypes.CTAButton,
-        parameters: {
-          display_text: message.buttonText,
-          url: message.url
-        }
-      }
+        parameters: { display_text: message.buttonText, url: message.url }
+      },
+      body: { text: message.text },
+      type: InteractiveTypes.CTAButton
     }
-    return await this.sendMessageRequest({
-      to,
-      body: this.generateInteractiveBody(body)
-    })
+    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
   }
 
   async sendInteractiveListMessage({
@@ -273,28 +257,19 @@ export class WsApi {
     list
   }: {
     to: string
-    list: { text: string, buttonText: string, list: Array<{ title: string, description: string }> }
+    list: { text: string; buttonText: string; list: { title: string; description: string }[] }
   }): Promise<SendMessageResponse> {
     const body: ListInteractive = {
-      type: InteractiveTypes.List,
+      action: { button: list.buttonText, sections: [{ rows: [], title: list.buttonText }] },
       body: { text: list.text },
-      action: {
-        button: list.buttonText,
-        sections: [{ title: list.buttonText, rows: [] }]
-      }
+      type: InteractiveTypes.List
     }
 
-    for (let i = 0; i < list.list.length; i++) {
-      body.action.sections[0].rows.push({
-        id: list.list[i].description,
-        ...list.list[i]
-      })
+    for (const listItem of list.list) {
+      body.action.sections[0].rows.push({ id: listItem.description, ...listItem })
     }
 
-    return await this.sendMessageRequest({
-      to,
-      body: this.generateInteractiveBody(body)
-    })
+    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
   }
 
   async sendInteractiveSectionListMessage({
@@ -305,30 +280,24 @@ export class WsApi {
     list: {
       text: string
       buttonText: string
-      sections: Array<{ sectionTitle: string, list: Array<{ title: string, description: string }> }>
+      sections: { sectionTitle: string; list: { title: string; description: string }[] }[]
     }
   }): Promise<SendMessageResponse> {
     const body: ListInteractive = {
-      type: InteractiveTypes.List,
+      action: { button: list.buttonText, sections: [] },
       body: { text: list.text },
-      action: { button: list.buttonText, sections: [] }
+      type: InteractiveTypes.List
     }
 
-    for (let i = 0; i < list.sections.length; i++) {
-      body.action.sections.push({ title: list.sections[i].sectionTitle, rows: [] })
+    for (let sectionIndex = 0; sectionIndex < list.sections.length; sectionIndex++) {
+      body.action.sections.push({ rows: [], title: list.sections[sectionIndex].sectionTitle })
 
-      for (let j = 0; j < list.sections[i].list.length; j++) {
-        body.action.sections[i].rows.push({
-          id: list.sections[i].list[j].description,
-          ...list.sections[i].list[j]
-        })
+      for (const listItem of list.sections[sectionIndex].list) {
+        body.action.sections[sectionIndex].rows.push({ id: listItem.description, ...listItem })
       }
     }
 
-    return await this.sendMessageRequest({
-      to,
-      body: this.generateInteractiveBody(body)
-    })
+    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
   }
 
   async sendFlowMessage({
@@ -348,43 +317,43 @@ export class WsApi {
     draft?: boolean
   }): Promise<SendMessageResponse> {
     const body: FlowInteractive = {
-      type: InteractiveTypes.Flow,
-      body: { text: flow.text },
       action: {
         name: 'flow',
         parameters: {
-          mode: draft === true ? 'draft' : 'published',
-          flow_message_version: '3',
           flow_action: flow.initDataExchange === true ? 'data_exchange' : 'navigate',
-          flow_token: flow.token,
-          flow_id: flow.id,
+          flow_action_payload:
+            flow.initDataExchange === true ? undefined : { screen: flow.defaultScreen },
           flow_cta: flow.ctaText,
-          flow_action_payload: flow.initDataExchange === true
-            ? undefined
-            : { screen: flow.defaultScreen }
+          flow_id: flow.id,
+          flow_message_version: '3',
+          flow_token: flow.token,
+          mode: draft === true ? 'draft' : 'published'
         }
-      }
+      },
+      body: { text: flow.text },
+      type: InteractiveTypes.Flow
     }
 
-    return await this.sendMessageRequest({
-      to,
-      body: this.generateInteractiveBody(body)
-    })
+    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
   }
 
-  async sendTypingIndicator({ input }: { input: { messageId: string } }): Promise<SendMessageResponse> {
+  async sendTypingIndicator({
+    input
+  }: {
+    input: { messageId: string }
+  }): Promise<SendMessageResponse> {
     const postBody = {
+      message_id: input.messageId,
       messaging_product: 'whatsapp',
       status: 'read',
-      message_id: input.messageId,
       typing_indicator: { type: 'text' }
     }
 
     const requestResponse = await this.sendRequest({
-      id: 'phoneNumberId',
       body: postBody,
-      path: 'messages',
-      method: 'POST'
+      id: 'phoneNumberId',
+      method: 'POST',
+      path: 'messages'
     })
 
     if (!requestResponse.success) {
@@ -397,10 +366,10 @@ export class WsApi {
   // Media --------------------------------------------------------------------
   async mediaRequest(body: BodyInit): Promise<unknown> {
     const response = await this.http.request({
+      body,
       id: 'phoneNumberId',
-      path: 'media',
       method: 'POST',
-      body
+      path: 'media'
     })
 
     if (!response.success) {
@@ -412,10 +381,12 @@ export class WsApi {
   }
 
   async uploadMedia({ media }: { media: Blob }): Promise<string> {
-    if (!supportedFiles.image.includes(media.type) &&
+    if (
+      !supportedFiles.image.includes(media.type) &&
       !supportedFiles.document.includes(media.type) &&
       !supportedFiles.audio.includes(media.type) &&
-      !supportedFiles.video.includes(media.type)) {
+      !supportedFiles.video.includes(media.type)
+    ) {
       throw new Error('Unsupported media type')
     }
 
@@ -424,7 +395,7 @@ export class WsApi {
     formData.append('type', media.type)
     formData.append('messaging_product', 'whatsapp')
 
-    const mediaRequestResponse = await this.mediaRequest(formData) as { id: string }
+    const mediaRequestResponse = (await this.mediaRequest(formData)) as { id: string }
     return mediaRequestResponse.id
   }
 
@@ -434,16 +405,11 @@ export class WsApi {
       return ''
     }
 
-    const apiVersion = this.config.apiVersion
-    const token = this.config.token
+    const { apiVersion, token } = this.config
 
     const response = await this.http.fetchImpl(
       `https://graph.facebook.com/v${apiVersion}/${mediaId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     )
 
     if (!response.ok) {
@@ -451,7 +417,7 @@ export class WsApi {
       return ''
     }
 
-    const parsed = await response.json() as { id: string, url: string }
+    const parsed = (await response.json()) as { id: string; url: string }
     return parsed.url
   }
 
@@ -460,12 +426,10 @@ export class WsApi {
       throw new Error('Missing token for media download')
     }
 
-    const token = this.config.token
+    const { token } = this.config
 
     const response = await this.http.fetchImpl(mediaUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
     return await response.blob()
   }
@@ -483,15 +447,15 @@ export class WsApi {
     parameters?: TemplateBodyParameter[]
   }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
       body: {
         type: MessageTypes.Template,
         [MessageTypes.Template]: {
-          name: templateName,
+          components: [{ parameters, type: 'body' }],
           language: { code: language, policy: 'deterministic' },
-          components: [{ type: 'body', parameters }]
+          name: templateName
         }
-      }
+      },
+      to
     })
   }
 
@@ -509,18 +473,18 @@ export class WsApi {
     bodyParameters?: TemplateBodyParameter[]
   }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
       body: {
         type: MessageTypes.Template,
         [MessageTypes.Template]: {
-          name: templateName,
-          language: { code: language, policy: 'deterministic' },
           components: [
-            { type: 'header', parameters: [headerParameters] },
-            { type: 'body', parameters: bodyParameters }
-          ]
+            { parameters: [headerParameters], type: 'header' },
+            { parameters: bodyParameters, type: 'body' }
+          ],
+          language: { code: language, policy: 'deterministic' },
+          name: templateName
         }
-      }
+      },
+      to
     })
   }
 
@@ -538,23 +502,23 @@ export class WsApi {
     bodyParameters?: TemplateBodyParameter[]
   }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
       body: {
         type: MessageTypes.Template,
         [MessageTypes.Template]: {
-          name: templateName,
-          language: { code: language, policy: 'deterministic' },
           components: [
-            { type: 'body', parameters: bodyParameters },
+            { parameters: bodyParameters, type: 'body' },
             {
-              type: 'button',
-              sub_type: 'flow',
               index: '0',
-              parameters: [{ type: 'action', action: flow }]
+              parameters: [{ action: flow, type: 'action' }],
+              sub_type: 'flow',
+              type: 'button'
             }
-          ]
+          ],
+          language: { code: language, policy: 'deterministic' },
+          name: templateName
         }
-      }
+      },
+      to
     })
   }
 
@@ -570,23 +534,23 @@ export class WsApi {
     code: string
   }): Promise<SendMessageResponse> {
     return await this.sendMessageRequest({
-      to,
       body: {
         type: MessageTypes.Template,
         [MessageTypes.Template]: {
-          name: templateName,
-          language: { code: language, policy: 'deterministic' },
           components: [
-            { type: 'body', parameters: [{ type: 'text', text: code }] },
+            { parameters: [{ text: code, type: 'text' }], type: 'body' },
             {
-              type: 'button',
-              sub_type: 'url',
               index: '0',
-              parameters: [{ type: 'text', text: code }]
+              parameters: [{ text: code, type: 'text' }],
+              sub_type: 'url',
+              type: 'button'
             }
-          ]
+          ],
+          language: { code: language, policy: 'deterministic' },
+          name: templateName
         }
-      }
+      },
+      to
     })
   }
 
@@ -598,12 +562,12 @@ export class WsApi {
     query?: string
     body?: string
     method?: string
-  }): Promise<{ success: true, data: T } | { success: false, error: unknown }> {
+  }): Promise<{ success: true; data: T } | { success: false; error: unknown }> {
     const requestResponse = await this.sendRequest({
-      id: 'businessId',
-      path: 'message_templates',
-      method: method as RequestMethod,
       body,
+      id: 'businessId',
+      method: method as RequestMethod,
+      path: 'message_templates',
       query
     })
 
@@ -612,7 +576,7 @@ export class WsApi {
       return requestResponse
     }
 
-    return { success: true, data: requestResponse.response as T }
+    return { data: requestResponse.response as T, success: true }
   }
 
   async getTemplates({
@@ -620,53 +584,85 @@ export class WsApi {
     limit,
     after,
     before
-  }: {
-    fields?: templateFields[]
-    limit?: number
-    after?: string
-    before?: string
-  } = {}): Promise<{ success: true, data: Templates } | { success: false, error: unknown }> {
-    const queryParams: { fields?: string, limit?: string, after?: string, before?: string } = {}
-    if (fields !== undefined) queryParams.fields = fields.join(',')
-    if (limit !== undefined) queryParams.limit = limit.toString()
-    if (after !== undefined) queryParams.after = after
-    if (before !== undefined) queryParams.before = before
+  }: { fields?: templateFields[]; limit?: number; after?: string; before?: string } = {}): Promise<
+    { success: true; data: Templates } | { success: false; error: unknown }
+  > {
+    const queryParams: { fields?: string; limit?: string; after?: string; before?: string } = {}
+    if (fields !== undefined) {
+      queryParams.fields = fields.join(',')
+    }
+    if (limit !== undefined) {
+      queryParams.limit = limit.toString()
+    }
+    if (after !== undefined) {
+      queryParams.after = after
+    }
+    if (before !== undefined) {
+      queryParams.before = before
+    }
 
     return await this.sendTemplateRequest<Templates>({
       query: new URLSearchParams(queryParams).toString()
     })
   }
 
-  async createTemplate({ template }: { template: CreateTemplate }): Promise<{ success: true, data: CreateTemplateResponse } | { success: false, error: unknown }> {
+  async createTemplate({
+    template
+  }: {
+    template: CreateTemplate
+  }): Promise<
+    { success: true; data: CreateTemplateResponse } | { success: false; error: unknown }
+  > {
     return await this.sendTemplateRequest<CreateTemplateResponse>({
-      method: 'POST',
-      body: JSON.stringify(template)
+      body: JSON.stringify(template),
+      method: 'POST'
     })
   }
 
   // Webhook ------------------------------------------------------------------
-  verifyWebhook(input: WebhookSubscribeQuery): { statusCode: 200 | 401, body?: string } {
-    if (input['hub.mode'] !== 'subscribe' || input['hub.verify_token'] !== process.env.WS_VERIFY_TOKEN) {
+  verifyWebhook(input: WebhookSubscribeQuery): { statusCode: 200 | 401; body?: string } {
+    if (
+      input['hub.mode'] !== 'subscribe' ||
+      input['hub.verify_token'] !== process.env.WS_VERIFY_TOKEN
+    ) {
       return { statusCode: 401 }
     }
 
-    return {
-      statusCode: 200,
-      body: input['hub.challenge']
-    }
+    return { body: input['hub.challenge'], statusCode: 200 }
   }
 
-  async handleWebhook(input: WsRequest): Promise<
-    | { type: 'statusUpdate', messageId: string, userId: string, status: MessageStatus.Read | MessageStatus.Delivered | MessageStatus.Sent | MessageStatus.Failed } |
-    { type: 'message', from: string, id: string, message: string, source: Source } |
-    { type: 'media', from: string, id: string, blob: Blob, mimeType: string, message: string, source: Source } |
-    { type: 'flowReply', from: string, id: string, data: Record<string, unknown> } |
-    { type: 'reaction', from: string, id: string, emoji: string } |
-    undefined
+  // oxlint-disable-next-line max-statements
+  async handleWebhook(
+    input: WsRequest
+  ): Promise<
+    | {
+        type: 'statusUpdate'
+        messageId: string
+        userId: string
+        status:
+          | MessageStatus.Read
+          | MessageStatus.Delivered
+          | MessageStatus.Sent
+          | MessageStatus.Failed
+      }
+    | { type: 'message'; from: string; id: string; message: string; source: Source }
+    | {
+        type: 'media'
+        from: string
+        id: string
+        blob: Blob
+        mimeType: string
+        message: string
+        source: Source
+      }
+    | { type: 'flowReply'; from: string; id: string; data: Record<string, unknown> }
+    | { type: 'reaction'; from: string; id: string; emoji: string }
+    | undefined
   > {
-    if (input.object === undefined) return undefined
-
-    if (input.entry[0].changes[0].value.metadata.phone_number_id !== this.config.phoneNumberId) {
+    if (
+      input.object === undefined ||
+      input.entry[0].changes[0].value.metadata.phone_number_id !== this.config.phoneNumberId
+    ) {
       return undefined
     }
 
@@ -674,88 +670,93 @@ export class WsApi {
 
     if ('statuses' in webhookValue) {
       return {
-        type: 'statusUpdate',
         messageId: webhookValue.statuses[0].id,
-        userId: webhookValue.statuses[0].recipient_id,
-        status: webhookValue.statuses[0].status
+        status: webhookValue.statuses[0].status,
+        type: 'statusUpdate',
+        userId: webhookValue.statuses[0].recipient_id
       }
     }
 
-    const messageObject = webhookValue.messages[0]
+    const [messageObject] = webhookValue.messages
 
     if (messageObject.type === 'reaction') {
       return {
-        type: 'reaction',
+        emoji: messageObject.reaction.emoji,
         from: messageObject.from,
         id: messageObject.reaction.message_id,
-        emoji: messageObject.reaction.emoji
+        type: 'reaction'
       }
     }
 
     if (messageObject.type === 'interactive' && messageObject.interactive.type === 'nfm_reply') {
       return {
-        type: 'flowReply',
+        data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as Record<
+          string,
+          unknown
+        >,
         from: messageObject.from,
         id: messageObject.id,
-        data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as { [key: string]: unknown }
+        type: 'flowReply'
       }
     }
 
     if (['image', 'video', 'document', 'sticker', 'audio'].includes(messageObject.type)) {
-      const media = { id: '', caption: '', mimeType: '' }
+      const media = { caption: '', id: '', mimeType: '' }
       switch (messageObject.type) {
-        case 'image':
+        case 'image': {
           media.id = messageObject.image.id
           media.caption = messageObject.image.caption
           media.mimeType = messageObject.image.mime_type
           break
-        case 'video':
+        }
+        case 'video': {
           media.id = messageObject.video.id
           media.caption = messageObject.video.caption
           media.mimeType = messageObject.video.mime_type
           break
-        case 'document':
+        }
+        case 'document': {
           media.id = messageObject.document.id
           media.caption = messageObject.document.caption
           media.mimeType = messageObject.document.mime_type
           break
-        case 'sticker':
+        }
+        case 'sticker': {
           media.id = messageObject.sticker.id
           media.mimeType = messageObject.sticker.mime_type
           break
-        case 'audio':
+        }
+        case 'audio': {
           media.id = messageObject.audio.id
           media.mimeType = messageObject.audio.mime_type
           break
+        }
       }
 
       const mediaUrl = await this.getMediaUrl({ mediaId: media.id })
       const mediaBlob = await this.getMedia({ mediaUrl })
 
       return {
-        type: 'media',
+        blob: mediaBlob,
         from: messageObject.from,
         id: messageObject.id,
-        blob: mediaBlob,
-        mimeType: media.mimeType,
         message: media.caption,
-        source: 'user'
+        mimeType: media.mimeType,
+        source: 'user',
+        type: 'media'
       }
     }
 
-    return {
-      type: 'message',
-      from: messageObject.from,
-      ...this.getMessageText(messageObject)
-    }
+    return { from: messageObject.from, type: 'message', ...this.getMessageText(messageObject) }
   }
 
-  private getMessageText(message: Message): { id: string, message: string, source: Source } {
-    const id = message.id
+  private getMessageText(message: Message): { id: string; message: string; source: Source } {
+    const { id } = message
     switch (message.type) {
-      case 'text':
+      case 'text': {
         return { id, message: message.text.body, source: 'user' }
-      case 'interactive':
+      }
+      case 'interactive': {
         if (message.interactive.type === 'nfm_reply') {
           return { id, message: 'Flow message', source: 'flow' }
         }
@@ -763,12 +764,17 @@ export class WsApi {
           return { id, message: message.interactive.list_reply.id, source: 'list' }
         }
         return { id, message: message.interactive.button_reply.id, source: 'button' }
-      case 'button':
+      }
+      case 'button': {
         return { id, message: message.button.payload, source: 'button' }
-      default:
+      }
+      default: {
         return { id, message: 'Unsupported message type', source: 'user' }
+      }
     }
   }
 }
 
-export const defaultWsApi = new WsApi()
+const defaultWsApi = new WsApi()
+
+export { defaultWsApi, WsApi }

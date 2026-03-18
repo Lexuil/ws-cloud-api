@@ -1,4 +1,4 @@
-import { type MessageStatus } from '../enums'
+import type { MessageStatus } from '../enums'
 
 export interface StatusValue {
   statuses: Status[]
@@ -39,11 +39,12 @@ export interface Conversation {
   origin: ConversationOrigin
 }
 
-export type ConversationCategory = 'authentication' |
-  'marketing' |
-  'utility' |
-  'service' |
-  'referral_conversion'
+export type ConversationCategory =
+  | 'authentication'
+  | 'marketing'
+  | 'utility'
+  | 'service'
+  | 'referral_conversion'
 
 export interface ConversationOrigin {
   type: ConversationCategory

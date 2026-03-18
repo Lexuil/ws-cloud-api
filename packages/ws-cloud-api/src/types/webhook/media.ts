@@ -1,6 +1,11 @@
-import { type MessageBase } from './messages'
+import type { MessageBase } from './messages'
 
-export type MediaMessage = ImageMessage | VideoMessage | AudioMessage | DocumentMessage | StickerMessage
+export type MediaMessage =
+  | ImageMessage
+  | VideoMessage
+  | AudioMessage
+  | DocumentMessage
+  | StickerMessage
 
 // ----------------------
 // Image

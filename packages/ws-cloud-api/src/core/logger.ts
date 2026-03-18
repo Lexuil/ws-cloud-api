@@ -1,25 +1,25 @@
 import type { Logger } from '../types/logger'
 
-const noop = (): void => {}
+function noop(): void {}
 
 function normalizeLogger(input?: Logger): Logger {
   if (!input) {
     return {
       debug: noop,
+      error: (...args: unknown[]) => console.error(...args),
       info: (...args: unknown[]) => console.info(...args),
-      warn: (...args: unknown[]) => console.warn(...args),
-      error: (...args: unknown[]) => console.error(...args)
+      warn: (...args: unknown[]) => console.warn(...args)
     }
   }
 
   return {
     debug: input.debug ?? noop,
+    error: input.error ?? noop,
     info: input.info ?? noop,
-    warn: input.warn ?? noop,
-    error: input.error ?? noop
+    warn: input.warn ?? noop
   }
 }
 
-export function createLogger(logger?: Logger): Logger {
+export default function createLogger(logger?: Logger): Logger {
   return normalizeLogger(logger)
 }

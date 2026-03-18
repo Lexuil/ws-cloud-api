@@ -1,4 +1,4 @@
-import type { MessageTypes, InteractiveTypes } from './enums'
+import type { InteractiveTypes, MessageTypes } from './enums'
 
 interface SimpleText {
   text: string
@@ -18,9 +18,7 @@ interface HostedDocumentMedia {
   filename?: string
 }
 
-export type HeaderDocumentMedia =
-  | MetaDocumentMedia |
-  HostedDocumentMedia
+export type HeaderDocumentMedia = MetaDocumentMedia | HostedDocumentMedia
 
 interface MetaImageMedia {
   id: string
@@ -48,9 +46,7 @@ interface SelfHostedVideoMedia {
   caption?: string
 }
 
-export type HeaderVideoMedia =
-  | MetaHostedVideoMedia |
-  SelfHostedVideoMedia
+export type HeaderVideoMedia = MetaHostedVideoMedia | SelfHostedVideoMedia
 
 interface Header {
   type: 'document' | 'image' | 'text' | 'video'
@@ -111,10 +107,10 @@ export interface FlowActionPayload {
 }
 
 export type Interactive =
-  ButtonInteractive |
-  ListInteractive |
-  CTAButtonInteractive |
-  FlowInteractive
+  | ButtonInteractive
+  | ListInteractive
+  | CTAButtonInteractive
+  | FlowInteractive
 
 export interface ButtonInteractive {
   type: InteractiveTypes.Button
@@ -129,13 +125,7 @@ export interface CTAButtonInteractive {
   body: SimpleText
   footer?: SimpleText
   header?: Header
-  action: {
-    name: InteractiveTypes.CTAButton
-    parameters: {
-      display_text: string
-      url: string
-    }
-  }
+  action: { name: InteractiveTypes.CTAButton; parameters: { display_text: string; url: string } }
 }
 
 export interface ListInteractive {
@@ -175,24 +165,24 @@ export interface TemplateComponentButton extends TemplateComponentBase {
 
 export interface TemplateFlowParameter {
   type: 'action'
-  action: {
-    flow_token?: string
-    flow_action_data?: object
-  }
+  action: { flow_token?: string; flow_action_data?: object }
 }
 
-export type TemplateHeaderParameter = TemplateParameterImage |
-  TemplateParameterDocument |
-  TemplateParameterVideo
+export type TemplateHeaderParameter =
+  | TemplateParameterImage
+  | TemplateParameterDocument
+  | TemplateParameterVideo
 
-export type TemplateBodyParameter = TemplateParameterText |
-  TemplateParameterCurrency |
-  TemplateParameterDateTime |
-  TemplateNamedParameter
+export type TemplateBodyParameter =
+  | TemplateParameterText
+  | TemplateParameterCurrency
+  | TemplateParameterDateTime
+  | TemplateNamedParameter
 
-export type TemplateParameter = TemplateBodyParameter |
-  TemplateHeaderParameter |
-  TemplateFlowParameter
+export type TemplateParameter =
+  | TemplateBodyParameter
+  | TemplateHeaderParameter
+  | TemplateFlowParameter
 
 export interface TemplateNamedParameter {
   type: 'text'
@@ -207,18 +197,12 @@ export interface TemplateParameterText {
 
 export interface TemplateParameterCurrency {
   type: 'currency'
-  currency: {
-    code: string
-    amount_1000: number
-    fallback_value: string
-  }
+  currency: { code: string; amount_1000: number; fallback_value: string }
 }
 
 export interface TemplateParameterDateTime {
   type: 'date_time'
-  date_time: {
-    fallback_value: string
-  }
+  date_time: { fallback_value: string }
 }
 
 export interface TemplateParameterImage {
@@ -247,10 +231,7 @@ export interface TemplateBody {
 
 export interface TextBody {
   type: MessageTypes.Text
-  [MessageTypes.Text]: {
-    body: string
-    preview_url?: boolean | undefined
-  }
+  [MessageTypes.Text]: { body: string; preview_url?: boolean | undefined }
 }
 
 export interface ContactAddress {
@@ -311,30 +292,22 @@ export interface ContactsBody {
 
 export interface ImageBody {
   type: MessageTypes.Image
-  [MessageTypes.Image]: {
-    link: string
-  }
+  [MessageTypes.Image]: { link: string }
 }
 
 export interface VideoBody {
   type: MessageTypes.Video
-  [MessageTypes.Video]: {
-    link: string
-  }
+  [MessageTypes.Video]: { link: string }
 }
 
 export interface AudioBody {
   type: MessageTypes.Audio
-  [MessageTypes.Audio]: {
-    link: string
-  }
+  [MessageTypes.Audio]: { link: string }
 }
 
 export interface DocumentBody {
   type: MessageTypes.Document
-  [MessageTypes.Document]: {
-    link: string
-  }
+  [MessageTypes.Document]: { link: string }
 }
 
 export type MediaBody = ImageBody | VideoBody | AudioBody | DocumentBody

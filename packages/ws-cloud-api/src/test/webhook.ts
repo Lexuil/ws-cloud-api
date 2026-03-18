@@ -1,10 +1,12 @@
 import 'dotenv/config'
-import { handleWebhook } from '../../dist/webhook'
-import textBody from './bodyExamples/messageText.json'
+import type { WsRequest } from 'ws-cloud-api'
+
+import { handleWebhook } from 'ws-cloud-api/webhook'
+
 import replyButtonBody from './bodyExamples/messageFromButton.json'
 import replyListBody from './bodyExamples/messageFromList.json'
+import textBody from './bodyExamples/messageText.json'
 import voiceAudioBody from './bodyExamples/messageVoiceAudio.json'
-import type { WsRequest } from '../../dist'
 
 console.log('Text message')
 console.log(handleWebhook(textBody as WsRequest))

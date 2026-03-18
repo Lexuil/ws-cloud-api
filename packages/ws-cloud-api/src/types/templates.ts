@@ -1,17 +1,18 @@
-export type templateFields = 'id' |
-  'category' |
-  'components' |
-  'correct_category' |
-  'cta_url_link_tracking_opted_out' |
-  'language' |
-  'library_template_name' |
-  'message_send_ttl_seconds' |
-  'name' |
-  'previous_category' |
-  'quality_score' |
-  'rejected_reason' |
-  'status' |
-  'sub_category'
+export type templateFields =
+  | 'id'
+  | 'category'
+  | 'components'
+  | 'correct_category'
+  | 'cta_url_link_tracking_opted_out'
+  | 'language'
+  | 'library_template_name'
+  | 'message_send_ttl_seconds'
+  | 'name'
+  | 'previous_category'
+  | 'quality_score'
+  | 'rejected_reason'
+  | 'status'
+  | 'sub_category'
 
 export interface Templates {
   data: Template[]
@@ -58,20 +59,11 @@ export interface Cursors {
 // -----------------------------------------------------------------------------
 // Components
 
-export type Component =
-  TextHeader |
-  MediaHeader |
-  LocationHeader |
-  Body |
-  Footer |
-  Buttons
+export type Component = TextHeader | MediaHeader | LocationHeader | Body | Footer | Buttons
 
 export type ExamplePositionalParams = string[]
 
-export type ExampleNamedParams = Array<{
-  param_name: string
-  example: string
-}>
+export type ExampleNamedParams = { param_name: string; example: string }[]
 
 // -----------------------------------------------------------------------------
 // TextHeader
@@ -80,11 +72,9 @@ export interface TextHeader {
   type: 'HEADER'
   format: 'TEXT'
   text: string
-  example?: {
-    header_text: ExamplePositionalParams
-  } | {
-    header_text_named_params: ExampleNamedParams
-  }
+  example?:
+    | { header_text: ExamplePositionalParams }
+    | { header_text_named_params: ExampleNamedParams }
 }
 
 // -----------------------------------------------------------------------------
@@ -93,9 +83,7 @@ export interface TextHeader {
 export interface MediaHeader {
   type: 'HEADER'
   format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'
-  example: {
-    header_handle: string
-  }
+  example: { header_handle: string }
 }
 
 // -----------------------------------------------------------------------------
@@ -112,9 +100,7 @@ export interface LocationHeader {
 export interface Body {
   type: 'BODY'
   text: string
-  example?: {
-    body_text: ExamplePositionalParams | ExampleNamedParams
-  }
+  example?: { body_text: ExamplePositionalParams | ExampleNamedParams }
 }
 
 // -----------------------------------------------------------------------------
@@ -162,11 +148,11 @@ export interface UrlButton {
 }
 
 export type TemplateButton =
-  CopyCodeButton |
-  FlowButton |
-  PhoneNumberButton |
-  QuickReplyButton |
-  UrlButton
+  | CopyCodeButton
+  | FlowButton
+  | PhoneNumberButton
+  | QuickReplyButton
+  | UrlButton
 
 export interface Buttons {
   type: 'BUTTONS'

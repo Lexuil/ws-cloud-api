@@ -1,4 +1,4 @@
-import { type MediaMessage } from './media'
+import type { MediaMessage } from './media'
 
 export interface MessageValue {
   contacts: Contact[]
@@ -14,7 +14,12 @@ export interface Profile {
   name: string
 }
 
-export type Message = TextMessage | InteractiveMessage | ReactionMessage | MediaMessage | ButtonMessage
+export type Message =
+  | TextMessage
+  | InteractiveMessage
+  | ReactionMessage
+  | MediaMessage
+  | ButtonMessage
 
 export interface MessageBase {
   from: string
@@ -90,11 +95,7 @@ export interface ListRowReply {
 
 export interface InteractiveFlow {
   type: 'nfm_reply'
-  nfm_reply: {
-    response_json: string
-    body: 'Sent'
-    name: 'flow'
-  }
+  nfm_reply: { response_json: string; body: 'Sent'; name: 'flow' }
 }
 
 // ----------------------

@@ -11,22 +11,13 @@
               "display_phone_number": "PHONE_NUMBER",
               "phone_number_id": "PHONE_NUMBER_ID"
             },
-            "contacts": [
-              {
-                "profile": {
-                  "name": "NAME"
-                },
-                "wa_id": "PHONE_NUMBER"
-              }
-            ],
+            "contacts": [{ "profile": { "name": "NAME" }, "wa_id": "PHONE_NUMBER" }],
             "messages": [
               {
                 "from": "PHONE_NUMBER",
                 "id": "wamid.ID",
                 "timestamp": "TIMESTAMP",
-                "text": {
-                  "body": "MESSAGE_BODY"
-                },
+                "text": { "body": "MESSAGE_BODY" },
                 "type": "text"
               }
             ]
