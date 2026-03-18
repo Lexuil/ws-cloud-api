@@ -8,15 +8,12 @@ The `verifyWebhook` function verifies the webhook by ensuring that the token rec
 async function verifyWebhook({
   mode,
   token,
-  challenge,
+  challenge
 }: {
-  mode: string;
-  token: string;
-  challenge: string;
-}): {
-  statusCode: 200 | 401
-  body?: string
-};
+  mode: string
+  token: string
+  challenge: string
+}): { statusCode: 200 | 401; body?: string }
 ```
 
 ## Parameters
@@ -39,7 +36,7 @@ app.get('/whatsapp-webhook', (req, res) => {
   const response = verifyWebhook({
     mode: req.query['hub.mode'],
     token: req.query['hub.verify_token'],
-    challenge: req.query['hub.challenge'],
+    challenge: req.query['hub.challenge']
   })
 
   if (response.statusCode === 200) {

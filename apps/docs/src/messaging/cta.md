@@ -10,16 +10,12 @@ The `sendTextWithCTAButton` function allows you to send a text message with a Ca
 async function sendTextWithCTAButton({
   to,
   message,
-  config,
+  config
 }: {
-  to: string;
-  message: {
-    text: string;
-    buttonText: string;
-    url: string;
-  };
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  message: { text: string; buttonText: string; url: string }
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 > [!NOTE]
@@ -41,20 +37,20 @@ async function sendTextWithCTAButton({
 ## Example usage
 
 ```ts
-import { sendTextWithCTAButton } from "ws-cloud-api/messaging";
+import { sendTextWithCTAButton } from 'ws-cloud-api/messaging'
 
 sendTextWithCTAButton({
-  to: "573123456789",
+  to: '573123456789',
   message: {
-    text: "This is a test message with CTA button",
-    buttonText: "Visit Google",
-    url: "https://www.google.com",
-  },
+    text: 'This is a test message with CTA button',
+    buttonText: 'Visit Google',
+    url: 'https://www.google.com'
+  }
 })
   .then((response) => {
     if (response.success) {
-      console.log("Message with CTA button sent");
+      console.log('Message with CTA button sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

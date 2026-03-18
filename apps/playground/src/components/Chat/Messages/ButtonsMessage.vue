@@ -10,7 +10,9 @@ defineProps<{
 
 <template>
   <li class="w-fit">
-    <div class="p-2 bg-ws-message-bg text-ws-ui-text shadow-xs rounded-md w-full mt-[2px] wrap-break-word">
+    <div
+      class="p-2 bg-ws-message-bg text-ws-ui-text shadow-xs rounded-md w-full mt-[2px] wrap-break-word"
+    >
       <span
         class="whitespace-pre-wrap"
         v-html="format(message)"
@@ -20,9 +22,7 @@ defineProps<{
         <span class="float-right mt-[-10px]">{{ time }}</span>
       </div>
     </div>
-    <template
-      v-for="(button, index) in buttons"
-    >
+    <template v-for="(button, index) in buttons">
       <button
         v-if="button !== ''"
         :key="index"

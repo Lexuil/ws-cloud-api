@@ -1,14 +1,9 @@
 <script setup lang="ts">
+import { Braces, Fingerprint, Phone } from 'lucide-vue-next'
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { Braces, Phone, Fingerprint } from 'lucide-vue-next'
 import { useConfigStore } from '@/stores/configStore'
 
 const config = useConfigStore()

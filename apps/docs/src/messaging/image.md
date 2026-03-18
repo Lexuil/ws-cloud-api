@@ -10,12 +10,12 @@ The `sendImage` function allows you to send an image to a WhatsApp number using 
 async function sendImage({
   to,
   link,
-  config,
+  config
 }: {
-  to: string;
-  link: string;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  link: string
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 > [!NOTE]
@@ -35,16 +35,13 @@ async function sendImage({
 ## Example usage
 
 ```ts
-import { sendImage } from "ws-cloud-api/messaging";
+import { sendImage } from 'ws-cloud-api/messaging'
 
-sendImage({
-  to: "573123456789",
-  link: "https://example.com/image.jpg",
-})
+sendImage({ to: '573123456789', link: 'https://example.com/image.jpg' })
   .then((response) => {
     if (response.success) {
-      console.log("Image sent");
+      console.log('Image sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

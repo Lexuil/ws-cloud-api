@@ -10,18 +10,12 @@ The `sendTextWithButtons` function allows you to send a text message with multip
 async function sendTextWithButtons({
   to,
   message,
-  config,
+  config
 }: {
-  to: string;
-  message: {
-    text: string;
-    buttons: Array<{
-      title: string;
-      id: string;
-    }>;
-  };
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  message: { text: string; buttons: Array<{ title: string; id: string }> }
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 > [!NOTE]
@@ -51,32 +45,25 @@ async function sendTextWithButtons({
 - **Button text**: 20 characters
 - **Max buttons**: 3
 
-
 ## Example usage
 
 ```ts
-import { sendTextWithButtons } from "ws-cloud-api/messaging";
+import { sendTextWithButtons } from 'ws-cloud-api/messaging'
 
 sendTextWithButtons({
-  to: "573123456789",
+  to: '573123456789',
   message: {
-    text: "This is a test message with buttons",
+    text: 'This is a test message with buttons',
     buttons: [
-      {
-        title: "Button 1",
-        id: "1",
-      },
-      {
-        title: "Button 2",
-        id: "2",
-      },
-    ],
-  },
+      { title: 'Button 1', id: '1' },
+      { title: 'Button 2', id: '2' }
+    ]
+  }
 })
   .then((response) => {
     if (response.success) {
-      console.log("Message with buttons sent");
+      console.log('Message with buttons sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

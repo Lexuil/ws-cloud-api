@@ -8,12 +8,12 @@ The `sendFile` function allows you to send various types of files to a WhatsApp 
 async function sendFile({
   to,
   file,
-  config,
+  config
 }: {
-  to: string;
-  file: Blob;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  file: Blob
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:
@@ -33,22 +33,19 @@ async function sendFile({
 ## Example usage
 
 ```ts
-import { sendFile } from "ws-cloud-api/messaging";
-import fs from "fs";
-import path from "path";
+import { sendFile } from 'ws-cloud-api/messaging'
+import fs from 'fs'
+import path from 'path'
 
-const file = new Blob([fs.readFileSync(path.join(__dirname, "/file.pdf"))], {
-  type: "application/pdf",
-});
-
-sendFile({
-  to: "573123456789",
-  file: file,
+const file = new Blob([fs.readFileSync(path.join(__dirname, '/file.pdf'))], {
+  type: 'application/pdf'
 })
+
+sendFile({ to: '573123456789', file: file })
   .then((response) => {
     if (response.success) {
-      console.log("File sent");
+      console.log('File sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

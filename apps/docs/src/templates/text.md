@@ -40,11 +40,7 @@ async function sendTextTemplate({
 ```ts
 import { sendTextTemplate } from 'ws-cloud-api/templates'
 
-sendTextTemplate({
-  to: '573123456789',
-  templateName: 'hello_world',
-  language: 'en_US'
-})
+sendTextTemplate({ to: '573123456789', templateName: 'hello_world', language: 'en_US' })
   .then((response) => {
     if (response.success) {
       console.log('Template message sent')
@@ -64,15 +60,9 @@ sendTextTemplate({
   templateName: 'login_code',
   language: 'en_US',
   parameters: [
-    {
-      type: ParametersTypes.Text,
-      text: 'John Doe',
-    },
-    {
-      type: ParametersTypes.Text,
-      text: '123456',
-    },
-  ],
+    { type: ParametersTypes.Text, text: 'John Doe' },
+    { type: ParametersTypes.Text, text: '123456' }
+  ]
 })
   .then((response) => {
     if (response.success) {

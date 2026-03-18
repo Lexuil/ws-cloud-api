@@ -11,13 +11,13 @@ async function sendText({
   to,
   message,
   previewUrl,
-  config,
+  config
 }: {
-  to: string;
-  message: string;
-  previewUrl?: boolean;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  message: string
+  previewUrl?: boolean
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:

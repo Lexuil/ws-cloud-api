@@ -10,12 +10,12 @@ The `sendVideo` function allows you to send a video to a WhatsApp number using a
 async function sendVideo({
   to,
   link,
-  config,
+  config
 }: {
-  to: string;
-  link: string;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  link: string
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 > [!NOTE]
@@ -35,16 +35,13 @@ async function sendVideo({
 ## Example usage
 
 ```ts
-import { sendVideo } from "ws-cloud-api/messaging";
+import { sendVideo } from 'ws-cloud-api/messaging'
 
-sendVideo({
-  to: "573123456789",
-  link: "https://example.com/video.mp4",
-})
+sendVideo({ to: '573123456789', link: 'https://example.com/video.mp4' })
   .then((response) => {
     if (response.success) {
-      console.log("Video sent");
+      console.log('Video sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

@@ -1,5 +1,6 @@
-import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+import { defineStore } from 'pinia'
 
 export const useConfigStore = defineStore('config', () => {
   // States
@@ -7,9 +8,5 @@ export const useConfigStore = defineStore('config', () => {
   const token = ref('')
   const phoneNumberTo = ref('')
 
-  return {
-    phoneNumberId,
-    token,
-    phoneNumberTo
-  }
+  return { phoneNumberId, phoneNumberTo, token }
 })

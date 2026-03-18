@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { reactive } from 'vue'
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,15 +13,14 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { reactive } from 'vue'
+import { Textarea } from '@/components/ui/textarea'
 import { useMessagesStore } from '@/stores/messagesStore'
 
 const form = reactive({
-  text: '',
   buttonText: '',
-  lists: Array.from({ length: 10 }, () => ({ title: '', description: '' }))
+  lists: Array.from({ length: 10 }, () => ({ description: '', title: '' })),
+  text: ''
 })
 
 const { addMessage } = useMessagesStore()
@@ -27,16 +28,20 @@ const { addMessage } = useMessagesStore()
 function addListMessage(): void {
   const { text, buttonText, lists } = form
 
-  if (text === '' || buttonText === '' || lists[0].title === '') return
+  if (text === '' || buttonText === '' || lists[0].title === '') {
+    return
+  }
   addMessage({
-    id: Date.now(),
-    type: 'list',
-    text,
     buttonText,
-    list: lists.filter(list => list.title !== '').map(item => ({
-      title: item.title,
-      description: item.description
-    }))
+    id: Date.now(),
+    list: lists
+      .filter((list) => list.title !== '')
+      .map((item) => ({
+        description: item.description,
+        title: item.title
+      })),
+    text,
+    type: 'list'
   })
   resetForm()
 }
@@ -84,7 +89,8 @@ function resetForm(): void {
               <Label
                 for="text"
                 class="block mt-3"
-              >Text</Label>
+                >Text</Label
+              >
               <Textarea
                 id="text"
                 v-model="form.text"
@@ -97,7 +103,8 @@ function resetForm(): void {
               <Label
                 for="buttonText"
                 class="block mt-3"
-              >Button Text</Label>
+                >Button Text</Label
+              >
               <Input
                 id="buttonText"
                 v-model="form.buttonText"
@@ -119,7 +126,8 @@ function resetForm(): void {
                 <Label
                   :for="`title${index + 1}`"
                   class="block mt-3"
-                >Title {{ index + 1 }}</Label>
+                  >Title {{ index + 1 }}</Label
+                >
                 <Input
                   :id="`title${index + 1}`"
                   v-model="list.title"
@@ -130,7 +138,8 @@ function resetForm(): void {
                 <Label
                   :for="`description${index + 1}`"
                   class="block mt-3"
-                >Description {{ index + 1 }}</Label>
+                  >Description {{ index + 1 }}</Label
+                >
                 <Textarea
                   :id="`description${index + 1}`"
                   v-model="list.description"

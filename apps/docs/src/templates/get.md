@@ -10,14 +10,14 @@ async function getTemplates({
   limit,
   after,
   before,
-  config,
+  config
 }: {
-  fields?: templateFields[];
-  limit?: number;
-  after?: string;
-  before?: string;
-  config?: WsConfig;
-} = {}): Promise<SendTemplateRequestResponse>;
+  fields?: templateFields[]
+  limit?: number
+  after?: string
+  before?: string
+  config?: WsConfig
+} = {}): Promise<SendTemplateRequestResponse>
 ```
 
 ## Parameters:
@@ -56,10 +56,7 @@ getTemplates()
 ```ts
 import { getTemplates } from 'ws-cloud-api/templates'
 
-getTemplates({
-  fields: ['name', 'language'],
-  limit: 10,
-})
+getTemplates({ fields: ['name', 'language'], limit: 10 })
   .then((response) => {
     if (!response.success) {
       console.error('Failed to retrieve templates')

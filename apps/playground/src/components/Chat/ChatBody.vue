@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DeleteMessageButton from '@/components/Chat/Messages/DeleteMessageButton.vue'
 import { useMessagesStore } from '@/stores/messagesStore'
+
 import ChatMessage from './Messages/ChatMessage.vue'
 
 const messages = useMessagesStore()
@@ -9,7 +10,7 @@ const messages = useMessagesStore()
 <template>
   <div
     class="w-full h-[42.7rem] chat-background bg-repeat bg-size-[24rem] px-10 py-2 overflow-auto relative"
-    style="scrollbar-width: thin;"
+    style="scrollbar-width: thin"
   >
     <ol>
       <li
@@ -22,9 +23,7 @@ const messages = useMessagesStore()
           time="2:45 p.m"
         />
 
-        <DeleteMessageButton
-          :message-id="message.id"
-        />
+        <DeleteMessageButton :message-id="message.id" />
       </li>
     </ol>
   </div>

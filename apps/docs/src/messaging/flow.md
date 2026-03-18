@@ -9,19 +9,13 @@ async function sendFlowMessage({
   to,
   flow,
   draft,
-  config,
+  config
 }: {
-  to: string;
-  flow: {
-    id: string;
-    text: string;
-    token: string;
-    ctaText: string;
-    defaultScreen: string;
-  };
-  draft?: boolean;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  flow: { id: string; text: string; token: string; ctaText: string; defaultScreen: string }
+  draft?: boolean
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:
@@ -40,27 +34,26 @@ async function sendFlowMessage({
 - **Success:** True for success, false for fail.
 - **Response:** Information about the message sent, like the message ID, delivery status, and more.
 
-
 ## Example usage
 
 ```ts
-import { sendFlowMessage } from "ws-cloud-api/messaging";
+import { sendFlowMessage } from 'ws-cloud-api/messaging'
 
 sendFlowMessage({
-  to: "573123456789",
+  to: '573123456789',
   flow: {
-    id: process.env.FLOW_MESSAGE_ID ?? "",
-    text: "Test flow message",
-    token: "exampleToken",
-    ctaText: "View Flow",
-    defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? "",
+    id: process.env.FLOW_MESSAGE_ID ?? '',
+    text: 'Test flow message',
+    token: 'exampleToken',
+    ctaText: 'View Flow',
+    defaultScreen: process.env.FLOW_MESSAGE_DEFAULT_SCREEN ?? ''
   },
-  draft: false,
+  draft: false
 })
   .then((response) => {
     if (response.success) {
-      console.log("Message with WhatsApp flow sent");
+      console.log('Message with WhatsApp flow sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

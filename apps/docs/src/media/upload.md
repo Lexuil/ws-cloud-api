@@ -5,20 +5,13 @@
 The `uploadMedia` function allows you to upload media (such as images, videos, or documents) to WhatsApp using a Blob file.
 
 ```ts
-async function uploadMedia({
-  media,
-  config,
-}: {
-  media: Blob;
-  config?: WsConfig;
-}): Promise<string>;
+async function uploadMedia({ media, config }: { media: Blob; config?: WsConfig }): Promise<string>
 ```
 
 ## Parameters:
 
 - `media`: The Blob file to upload.
 - `config`: Optional configuration settings.
-
 
 ## Return
 
@@ -35,12 +28,10 @@ import fs from 'fs'
 import path from 'path'
 
 const mediaBlob = new Blob([fs.readFileSync(path.join(__dirname, '/image.jpg'))], {
-  type: 'image/jpeg',
+  type: 'image/jpeg'
 })
 
-uploadMedia({
-  media: mediaBlob,
-})
+uploadMedia({ media: mediaBlob })
   .then((mediaId) => {
     if (mediaId) {
       console.log('Media uploaded successfully, ID: ' + mediaId)

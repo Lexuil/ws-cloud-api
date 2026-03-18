@@ -12,7 +12,7 @@ defineProps<{
         :src="link"
         alt="Image"
         class="w-full h-full object-cover"
-      >
+      />
       <span class="h-10 absolute bottom-0 w-full bg-linear-to-t from-gray-950/50 to-transparent" />
     </div>
     <div class="relative text-[0.68rem] text-white">
@@ -23,6 +23,6 @@ defineProps<{
 
 <style scoped>
 .gradient {
-  background-image: linear-gradient(to top,rgba(11,20,26,.5),rgba(11,20,26,0));
+  background-image: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
 }
 </style>

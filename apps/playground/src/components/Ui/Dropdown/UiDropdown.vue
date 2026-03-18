@@ -15,9 +15,7 @@ defineProps<{
     @click="menuIsOpen = !menuIsOpen"
   >
     <!-- Trigger -->
-    <summary
-      :class="triggerClass"
-    >
+    <summary :class="triggerClass">
       <slot name="trigger" />
     </summary>
 

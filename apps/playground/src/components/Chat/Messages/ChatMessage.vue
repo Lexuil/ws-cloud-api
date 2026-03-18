@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import TextMessage from './TextMessage.vue'
-import ImageMessage from './ImageMessage.vue'
-import VideoMessage from './VideoMessage.vue'
+import type { Message } from '@/stores/messagesStore'
+
 import ButtonsMessage from './ButtonsMessage.vue'
+import ImageMessage from './ImageMessage.vue'
 import ListMessage from './ListMessage.vue'
-import { type Message } from '@/stores/messagesStore'
+import TextMessage from './TextMessage.vue'
+import VideoMessage from './VideoMessage.vue'
 
 defineProps<{
   message: Message
@@ -19,14 +20,16 @@ defineProps<{
     :time="time"
   />
   <ImageMessage
-    v-else-if="message.type === 'image' ||
-      (message.type === 'file' && message.file.type.includes('image'))"
+    v-else-if="
+      message.type === 'image' || (message.type === 'file' && message.file.type.includes('image'))
+    "
     :link="message.link"
     :time="time"
   />
   <VideoMessage
-    v-else-if="message.type === 'video' ||
-      (message.type === 'file' && message.file.type.includes('video'))"
+    v-else-if="
+      message.type === 'video' || (message.type === 'file' && message.file.type.includes('video'))
+    "
     :link="message.link"
     :time="time"
   />

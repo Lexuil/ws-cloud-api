@@ -7,11 +7,11 @@ The `getMedia` function allows you to retrieve media content as a Blob using its
 ```ts
 async function getMedia({
   mediaUrl,
-  config,
+  config
 }: {
-  mediaUrl: string;
-  config?: WsConfig;
-}): Promise<Blob>;
+  mediaUrl: string
+  config?: WsConfig
+}): Promise<Blob>
 ```
 
 ## Parameters:

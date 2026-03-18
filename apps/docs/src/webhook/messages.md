@@ -3,28 +3,23 @@
 The `handleWebhook` function processes the incoming messages from WhatsApp and returns the message type.
 
 ```ts
-function handleWebhook (input: WsRequest): {
-  type: 'statusUpdate'
-  messageId: string
-  userId: string
-  status: MessageStatus.Read | MessageStatus.Delivered | MessageStatus.Sent | MessageStatus.Failed
-} | {
-  type: 'message'
-  from: string
-  message: string
-  source: Source
-} | {
-  type: 'voiceAudio'
-  from: string
-  audio: {
-    id: string
-    mimeType: string
-  }
-} | {
-  type: 'flowReply'
-  from: string
-  data: Record<string, unknown>
-} | undefined
+function handleWebhook(
+  input: WsRequest
+):
+  | {
+      type: 'statusUpdate'
+      messageId: string
+      userId: string
+      status:
+        | MessageStatus.Read
+        | MessageStatus.Delivered
+        | MessageStatus.Sent
+        | MessageStatus.Failed
+    }
+  | { type: 'message'; from: string; message: string; source: Source }
+  | { type: 'voiceAudio'; from: string; audio: { id: string; mimeType: string } }
+  | { type: 'flowReply'; from: string; data: Record<string, unknown> }
+  | undefined
 ```
 
 ## Parameters
@@ -107,13 +102,9 @@ app.post('/whatsapp-webhook', async (req, res) => {
   }
 
   if (message.type === 'voiceAudio') {
-    const audioUrl = await getMediaUrl({
-      mediaId: message.audio.id
-    })
+    const audioUrl = await getMediaUrl({ mediaId: message.audio.id })
 
-    const audioFile = await getMedia({
-      mediaUrl: audioUrl
-    })
+    const audioFile = await getMedia({ mediaUrl: audioUrl })
 
     console.log('New voice message', message.from, ' --- ', audioFile)
   }

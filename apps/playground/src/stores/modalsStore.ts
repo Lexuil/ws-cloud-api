@@ -1,5 +1,6 @@
-import { defineStore } from 'pinia'
 import { ref } from 'vue'
+
+import { defineStore } from 'pinia'
 
 export const useModalsStore = defineStore('modals', () => {
   // States
@@ -11,7 +12,7 @@ export const useModalsStore = defineStore('modals', () => {
   }
 
   function closeModal(modal: string): void {
-    modals.value = modals.value.filter(m => m !== modal)
+    modals.value = modals.value.filter((m) => m !== modal)
   }
 
   function closeAllModals(): void {
@@ -22,11 +23,5 @@ export const useModalsStore = defineStore('modals', () => {
     return modals.value.includes(modal)
   }
 
-  return {
-    modals,
-    openModal,
-    closeModal,
-    closeAllModals,
-    showModal
-  }
+  return { closeAllModals, closeModal, modals, openModal, showModal }
 })

@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "Ws Cloud API"
-  text: "WhatsApp Cloud API for NodeJS"
+  name: 'Ws Cloud API'
+  text: 'WhatsApp Cloud API for NodeJS'
   tagline: Simple to use and tiny
   actions:
     - theme: brand
@@ -31,4 +31,3 @@ features:
     title: Handle webhook events
     details: Manage incoming events like message deliveries and user interactions in real time.
 ---
-

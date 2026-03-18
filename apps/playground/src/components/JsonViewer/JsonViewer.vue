@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { codeToHtml } from 'shiki'
-import { useMessagesStore } from '@/stores/messagesStore'
 import { ref, watch } from 'vue'
+
+import { codeToHtml } from 'shiki'
+
+import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 const html = ref('')

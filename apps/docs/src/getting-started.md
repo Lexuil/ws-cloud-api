@@ -35,10 +35,7 @@ $ bun add ws-cloud-api
 ```ts
 import { sendText } from 'ws-cloud-api/messaging'
 
-sendText({
-  to: process.env.PHONE_NUMBER_RECIPIENT,
-  message: 'This is a test message'
-})
+sendText({ to: process.env.PHONE_NUMBER_RECIPIENT, message: 'This is a test message' })
   .then((response) => {
     if (response.success) {
       console.log('Message sent')
@@ -55,14 +52,14 @@ import { sendTextTemplate } from 'ws-cloud-api/templates'
 sendTextTemplate({
   to: process.env.PHONE_NUMBER_RECIPIENT,
   templateName: 'hello_world',
-  language: 'en_US',
+  language: 'en_US'
 })
   .then((response) => {
     if (response.success) {
       console.log('Template sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```
 
 ### Handle webhook events
@@ -89,10 +86,7 @@ app.post('/whatsapp-webhook', async (req, res) => {
     }
 
     if (event?.type === 'flowReply') {
-      console.log(
-        `New flow reply from ${event.from}:\n\n`,
-        JSON.stringify(event.flow, null, 2)
-      )
+      console.log(`New flow reply from ${event.from}:\n\n`, JSON.stringify(event.flow, null, 2))
     }
 
     res.status(200)
@@ -104,5 +98,5 @@ app.post('/whatsapp-webhook', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server start`)
-});
+})
 ```

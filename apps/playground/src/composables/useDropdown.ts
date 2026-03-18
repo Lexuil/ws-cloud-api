@@ -1,5 +1,7 @@
+import { ref } from 'vue'
+import type { Ref } from 'vue'
+
 import { onClickOutside } from '@vueuse/core'
-import { type Ref, ref } from 'vue'
 
 export default function (): {
   menu: Ref<HTMLDetailsElement | null>
@@ -18,9 +20,5 @@ export default function (): {
     menu.value?.removeAttribute('open')
   }
 
-  return {
-    menu,
-    menuIsOpen,
-    closeMenu
-  }
+  return { closeMenu, menu, menuIsOpen }
 }

@@ -11,15 +11,15 @@ async function sendMediaTemplate({
   language,
   headerParameters,
   bodyParameters,
-  config,
+  config
 }: {
-  to: string;
-  templateName: string;
-  language: string;
-  headerParameters: TemplateHeaderParameter;
-  bodyParameters?: TemplateBodyParameter[];
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  templateName: string
+  language: string
+  headerParameters: TemplateHeaderParameter
+  bodyParameters?: TemplateBodyParameter[]
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:
@@ -47,12 +47,7 @@ sendMediaTemplate({
   to: '573123456789',
   templateName: 'media_template',
   language: 'en_US',
-  headerParameters: {
-    type: 'image',
-    image: {
-      link: 'https://example.com/image.jpg'
-    }
-  }
+  headerParameters: { type: 'image', image: { link: 'https://example.com/image.jpg' } }
 })
   .then((response) => {
     if (response.success) {
@@ -72,22 +67,11 @@ sendMediaTemplate({
   to: '573123456789',
   templateName: 'media_template_with_body',
   language: 'en_US',
-  headerParameters: {
-    type: 'image',
-    image: {
-      link: 'https://example.com/image.jpg'
-    }
-  },
+  headerParameters: { type: 'image', image: { link: 'https://example.com/image.jpg' } },
   bodyParameters: [
-    {
-      type: ParametersTypes.Text,
-      text: 'John Doe',
-    },
-    {
-      type: ParametersTypes.Text,
-      text: '123456',
-    },
-  ],
+    { type: ParametersTypes.Text, text: 'John Doe' },
+    { type: ParametersTypes.Text, text: '123456' }
+  ]
 })
   .then((response) => {
     if (response.success) {

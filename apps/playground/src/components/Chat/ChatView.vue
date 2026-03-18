@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ChatHeader from '@/components/Chat/ChatHeader.vue'
 import ChatBody from '@/components/Chat/ChatBody.vue'
+import ChatHeader from '@/components/Chat/ChatHeader.vue'
 import ChatInput from '@/components/Chat/ChatInput/ChatInput.vue'
 </script>
 
@@ -17,6 +17,8 @@ import ChatInput from '@/components/Chat/ChatInput/ChatInput.vue'
 
 <style scoped>
 * {
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-family:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji' !important;
 }
 </style>

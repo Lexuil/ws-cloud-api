@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import AddTextMessageInput from './AddTextMessageInput.vue'
+
+import type { Message } from '@/stores/messagesStore'
+
+import { useMessagesStore } from '@/stores/messagesStore'
+
 import AddMediaMessageInput from './AddMediaMessageInput.vue'
-import { useMessagesStore, type Message } from '@/stores/messagesStore'
+import AddTextMessageInput from './AddTextMessageInput.vue'
 
 const messages = useMessagesStore()
 const type = ref<Message['type']>('text')
@@ -12,15 +16,14 @@ function addMessage(): void {
   if (type.value === 'text') {
     messages.addMessage({
       id: Date.now(),
-      type: type.value,
-      text: content.value
+      text: content.value,
+      type: type.value
     })
-  }
-  else if (type.value === 'image' || type.value === 'video') {
+  } else if (type.value === 'image' || type.value === 'video') {
     messages.addMessage({
       id: Date.now(),
-      type: type.value,
-      link: content.value
+      link: content.value,
+      type: type.value
     })
   }
   content.value = ''
@@ -32,30 +35,18 @@ function addMessage(): void {
     class="flex flex-col items-center gap-3 w-full sm:w-96 h-fit border border-gray-300 p-5 rounded-md"
     @submit.prevent="addMessage"
   >
-    <h2 class="text-2xl font-bold">
-      Add message
-    </h2>
+    <h2 class="text-2xl font-bold">Add message</h2>
 
     <select
       v-model="type"
       name="type"
       class="border border-gray-300 rounded-md p-2 w-full"
     >
-      <option value="text">
-        Text
-      </option>
-      <option value="image">
-        Image
-      </option>
-      <option value="audio">
-        Audio
-      </option>
-      <option value="video">
-        Video
-      </option>
-      <option value="document">
-        Document
-      </option>
+      <option value="text">Text</option>
+      <option value="image">Image</option>
+      <option value="audio">Audio</option>
+      <option value="video">Video</option>
+      <option value="document">Document</option>
     </select>
 
     <AddTextMessageInput

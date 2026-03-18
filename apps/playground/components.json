@@ -10,8 +10,5 @@
     "cssVariables": true
   },
   "framework": "vite",
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils"
-  }
+  "aliases": { "components": "@/components", "utils": "@/lib/utils" }
 }

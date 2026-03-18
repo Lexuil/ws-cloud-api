@@ -80,21 +80,17 @@ export async function sendText({
 ### Example usage:
 
 ```ts
-import { sendText } from 'ws-cloud-api/messaging';
+import { sendText } from 'ws-cloud-api/messaging'
 
 sendText({
   to: 'recipient_phone_number',
   message: 'Hello, this is a test message!',
-  config: {
-    apiVersion: '19.0',
-    phoneNumberId: '987654321098765',
-    token: 'your-optional-token'
-  }
+  config: { apiVersion: '19.0', phoneNumberId: '987654321098765', token: 'your-optional-token' }
 })
   .then((response) => {
     if (response.success) {
-      console.log('Message sent successfully');
+      console.log('Message sent successfully')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

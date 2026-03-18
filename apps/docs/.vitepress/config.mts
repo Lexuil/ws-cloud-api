@@ -2,11 +2,12 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "Ws Cloud API",
-  description: "WhatsApp Cloud API for NodeJS",
+  description: 'WhatsApp Cloud API for NodeJS',
   srcDir: './src',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/logo.svg',
+
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Docs', link: '/getting-started' },
@@ -60,18 +61,10 @@ export default defineConfig({
           { text: 'Messages', link: '/webhook/messages' }
         ]
       },
-      {
-        text: 'Limitations',
-        items: [
-          { text: 'Media', link: '/limitations/media' }
-        ]
-      }
+      { text: 'Limitations', items: [{ text: 'Media', link: '/limitations/media' }] }
     ],
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/Lexuil/ws-cloud-api' }
-    ],
-
-    logo: '/logo.svg'
-  }
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Lexuil/ws-cloud-api' }]
+  },
+  title: 'Ws Cloud API'
 })

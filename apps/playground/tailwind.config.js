@@ -11,76 +11,61 @@ export const content = [
   './src/**/*.{ts,tsx,vue}'
 ]
 export const theme = {
-  container: {
-    center: true,
-    padding: '2rem',
-    screens: {
-      '2xl': '1400px'
-    }
-  },
+  container: { center: true, padding: '2rem', screens: { '2xl': '1400px' } },
   extend: {
+    animation: {
+      'accordion-down': 'accordion-down 0.2s ease-out',
+      'accordion-up': 'accordion-up 0.2s ease-out',
+      'collapsible-down': 'collapsible-down 0.2s ease-in-out',
+      'collapsible-up': 'collapsible-up 0.2s ease-in-out'
+    },
+    borderRadius: {
+      lg: 'var(--radius)',
+      md: 'calc(var(--radius) - 2px)',
+      sm: 'calc(var(--radius) - 4px)',
+      xl: 'calc(var(--radius) + 4px)'
+    },
     colors: {
-      border: 'hsl(var(--border))',
-      input: 'hsl(var(--input))',
-      ring: 'hsl(var(--ring))',
+      accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
       background: 'hsl(var(--background))',
-      foreground: 'hsl(var(--foreground))',
-      primary: {
-        DEFAULT: 'hsl(var(--primary))',
-        foreground: 'hsl(var(--primary-foreground))'
-      },
-      secondary: {
-        DEFAULT: 'hsl(var(--secondary))',
-        foreground: 'hsl(var(--secondary-foreground))'
-      },
+      border: 'hsl(var(--border))',
+      'box-background': 'var(--box-background)',
+      'box-text': 'var(--box-text)',
+      card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
       destructive: {
         DEFAULT: 'hsl(var(--destructive))',
         foreground: 'hsl(var(--destructive-foreground))'
       },
-      muted: {
-        DEFAULT: 'hsl(var(--muted))',
-        foreground: 'hsl(var(--muted-foreground))'
-      },
-      accent: {
-        DEFAULT: 'hsl(var(--accent))',
-        foreground: 'hsl(var(--accent-foreground))'
-      },
-      popover: {
-        DEFAULT: 'hsl(var(--popover))',
-        foreground: 'hsl(var(--popover-foreground))'
-      },
-      card: {
-        DEFAULT: 'hsl(var(--card))',
-        foreground: 'hsl(var(--card-foreground))'
-      },
-      error: 'var(--error)',
       disabled: 'var(--disabled)',
+      error: 'var(--error)',
+      foreground: 'hsl(var(--foreground))',
+      input: 'hsl(var(--input))',
+      muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
+      popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },
+      primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+      ring: 'hsl(var(--ring))',
+      secondary: {
+        DEFAULT: 'hsl(var(--secondary))',
+        foreground: 'hsl(var(--secondary-foreground))'
+      },
       'sub-background': 'var(--sub-background)',
-      'box-text': 'var(--box-text)',
-      'box-background': 'var(--box-background)',
-      'ws-ui-bg': 'var(--ws-ui-bg)',
-      'ws-button-bg': 'var(--ws-button-bg)',
-      'ws-ui-text': 'var(--ws-ui-text)',
-      'ws-mute': 'var(--ws-mute)',
       'ws-avatar': 'var(--ws-avatar)',
       'ws-avatar-bg': 'var(--ws-avatar-bg)',
-      'ws-icon': 'var(--ws-icon)',
+      'ws-button-bg': 'var(--ws-button-bg)',
       'ws-file-input-bg': 'var(--ws-file-input-bg)',
       'ws-hover': 'var(--ws-hover)',
-      'ws-time': 'var(--ws-time)',
+      'ws-icon': 'var(--ws-icon)',
       'ws-link': 'var(--ws-link)',
-      'ws-message-bg': 'var(--ws-message-bg)',
       'ws-list-bg': 'var(--ws-list-bg)',
+      'ws-list-description': 'var(--ws-list-description)',
       'ws-list-header': 'var(--ws-list-header)',
       'ws-list-hover': 'var(--ws-list-hover)',
       'ws-list-title': 'var(--ws-list-title)',
-      'ws-list-description': 'var(--ws-list-description)'
-    },
-    borderRadius: {
-      xl: 'calc(var(--radius) + 4px)',
-      lg: 'var(--radius)',
-      md: 'calc(var(--radius) - 2px)',
-      sm: 'calc(var(--radius) - 4px)'
+      'ws-message-bg': 'var(--ws-message-bg)',
+      'ws-mute': 'var(--ws-mute)',
+      'ws-time': 'var(--ws-time)',
+      'ws-ui-bg': 'var(--ws-ui-bg)',
+      'ws-ui-text': 'var(--ws-ui-text)'
     },
     keyframes: {
       'accordion-down': {
@@ -99,12 +84,6 @@ export const theme = {
         from: { height: 'var(--radix-collapsible-content-height)' },
         to: { height: 0 }
       }
-    },
-    animation: {
-      'accordion-down': 'accordion-down 0.2s ease-out',
-      'accordion-up': 'accordion-up 0.2s ease-out',
-      'collapsible-down': 'collapsible-down 0.2s ease-in-out',
-      'collapsible-up': 'collapsible-up 0.2s ease-in-out'
     }
   }
 }

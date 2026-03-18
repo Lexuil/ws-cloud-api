@@ -29,19 +29,12 @@ The `sendInteractiveListMessage` and `sendInteractiveSectionListMessage` functio
 async function sendInteractiveListMessage({
   to,
   list,
-  config,
+  config
 }: {
-  to: string;
-  list: {
-    text: string;
-    buttonText: string;
-    list: Array<{
-      title: string;
-      description?: string;
-    }>;
-  };
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  list: { text: string; buttonText: string; list: Array<{ title: string; description?: string }> }
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ### Parameters:
@@ -60,31 +53,25 @@ async function sendInteractiveListMessage({
 ### Example usage
 
 ```ts
-import { sendInteractiveListMessage } from "ws-cloud-api/messaging";
+import { sendInteractiveListMessage } from 'ws-cloud-api/messaging'
 
 sendInteractiveListMessage({
-  to: "573123456789",
+  to: '573123456789',
   list: {
-    text: "Please select an option",
-    buttonText: "Select",
+    text: 'Please select an option',
+    buttonText: 'Select',
     list: [
-      {
-        title: "Option 1",
-        description: "Description 1",
-      },
-      {
-        title: "Option 2",
-        description: "Description 2",
-      },
-    ],
-  },
+      { title: 'Option 1', description: 'Description 1' },
+      { title: 'Option 2', description: 'Description 2' }
+    ]
+  }
 })
   .then((response) => {
     if (response.success) {
-      console.log("Message with interactive list sent");
+      console.log('Message with interactive list sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```
 
 ## `sendInteractiveSectionListMessage`
@@ -93,22 +80,16 @@ sendInteractiveListMessage({
 async function sendInteractiveSectionListMessage({
   to,
   list,
-  config,
+  config
 }: {
-  to: string;
+  to: string
   list: {
-    text: string;
-    buttonText: string;
-    sections: Array<{
-      sectionTitle: string;
-      list: Array<{
-        title: string;
-        description?: string;
-      }>;
-    }>;
-  };
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+    text: string
+    buttonText: string
+    sections: Array<{ sectionTitle: string; list: Array<{ title: string; description?: string }> }>
+  }
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ### Parameters:
@@ -127,49 +108,37 @@ async function sendInteractiveSectionListMessage({
 ### Example usage
 
 ```ts
-import { sendInteractiveSectionListMessage } from "ws-cloud-api/messaging";
+import { sendInteractiveSectionListMessage } from 'ws-cloud-api/messaging'
 
 sendInteractiveSectionListMessage({
-  to: "573123456789",
+  to: '573123456789',
   list: {
-    text: "Select an option from the sectioned list",
-    buttonText: "Choose",
+    text: 'Select an option from the sectioned list',
+    buttonText: 'Choose',
     sections: [
       {
-        sectionTitle: "Section 1",
+        sectionTitle: 'Section 1',
         list: [
-          {
-            title: "Item 1",
-            description: "Description 1",
-          },
-          {
-            title: "Item 2",
-            description: "Description 2",
-          },
-        ],
+          { title: 'Item 1', description: 'Description 1' },
+          { title: 'Item 2', description: 'Description 2' }
+        ]
       },
       {
-        sectionTitle: "Section 2",
+        sectionTitle: 'Section 2',
         list: [
-          {
-            title: "Item 3",
-            description: "Description 3",
-          },
-          {
-            title: "Item 4",
-            description: "Description 4",
-          },
-        ],
-      },
-    ],
-  },
+          { title: 'Item 3', description: 'Description 3' },
+          { title: 'Item 4', description: 'Description 4' }
+        ]
+      }
+    ]
+  }
 })
   .then((response) => {
     if (response.success) {
-      console.log("Message with sectioned list sent");
+      console.log('Message with sectioned list sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```
 
 ## Limitations

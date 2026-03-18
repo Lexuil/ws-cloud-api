@@ -1,10 +1,11 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+
 import './style.css'
+import { createPinia } from 'pinia'
+
 import App from './App.vue'
 
 const pinia = createPinia()
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const app = createApp(App)
 
 app.use(pinia)

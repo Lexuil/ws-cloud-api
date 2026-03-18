@@ -1,15 +1,19 @@
-import { type Message } from '@/stores/messagesStore'
-import {
-  sendText,
-  sendImage,
-  sendVideo,
-  sendFile,
-  sendButtonMessage,
-  sendInteractiveListMessage
-} from 'ws-cloud-api/messaging'
-import { useConfigStore } from '@/stores/configStore'
+import { computed, ref } from 'vue'
+import type { Ref, ComputedRef } from 'vue'
+
 import { toast } from 'vue-sonner'
-import { type Ref, computed, ref, type ComputedRef } from 'vue'
+import {
+  sendButtonMessage,
+  sendFile,
+  sendImage,
+  sendInteractiveListMessage,
+  sendText,
+  sendVideo
+} from 'ws-cloud-api/messaging'
+
+import type { Message } from '@/stores/messagesStore'
+
+import { useConfigStore } from '@/stores/configStore'
 
 export default function (): {
   sendingMessages: Ref<boolean>
@@ -20,95 +24,77 @@ export default function (): {
 
   const sendingMessages = ref(false)
 
-  const availableToSend = computed(() => {
-    return config.phoneNumberId === '' ||
+  const availableToSend = computed(
+    () =>
+      config.phoneNumberId === '' ||
       config.token === '' ||
       config.phoneNumberTo === '' ||
       sendingMessages.value
-  })
+  )
 
   async function sendMessages(messages: Message[]): Promise<void> {
-    if (sendingMessages.value) return
+    if (sendingMessages.value) {
+      return
+    }
 
     sendingMessages.value = true
     const paymentToast = toast.loading('Sending messages...')
 
-    const wsConfig = {
-      phoneNumberId: config.phoneNumberId,
-      token: config.token
-    }
+    const wsConfig = { phoneNumberId: config.phoneNumberId, token: config.token }
 
     for (const message of messages) {
       switch (message.type) {
-        case 'text':
+        case 'text': {
           await sendText({
+            config: wsConfig,
             message: message.text,
-            to: config.phoneNumberTo,
             previewUrl: true,
-            config: wsConfig
+            to: config.phoneNumberTo
           })
           break
-        case 'image':
-          await sendImage({
-            link: message.link,
-            to: config.phoneNumberTo,
-            config: wsConfig
-          })
-          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        case 'image': {
+          await sendImage({ config: wsConfig, link: message.link, to: config.phoneNumberTo })
+          await new Promise((resolve) => setTimeout(resolve, 1000))
           break
-        case 'video':
-          await sendVideo({
-            link: message.link,
-            to: config.phoneNumberTo,
-            config: wsConfig
-          })
-          await new Promise(resolve => setTimeout(resolve, 3000))
+        }
+        case 'video': {
+          await sendVideo({ config: wsConfig, link: message.link, to: config.phoneNumberTo })
+          await new Promise((resolve) => setTimeout(resolve, 3000))
           break
-        case 'file':
-          await sendFile({
-            file: message.file,
-            to: config.phoneNumberTo,
-            config: wsConfig
-          })
-          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        case 'file': {
+          await sendFile({ config: wsConfig, file: message.file, to: config.phoneNumberTo })
+          await new Promise((resolve) => setTimeout(resolve, 1000))
           break
-        case 'button':
+        }
+        case 'button': {
           await sendButtonMessage({
+            config: wsConfig,
             message: {
               text: message.text,
               buttons: message.buttons
-                .filter(button => button !== '')
-                .map(button => ({
-                  id: button,
-                  title: button
-                }))
+                .filter((button) => button !== '')
+                .map((button) => ({ id: button, title: button }))
             },
-            to: config.phoneNumberTo,
-            config: wsConfig
+            to: config.phoneNumberTo
           })
           break
-        case 'list':
+        }
+        case 'list': {
           await sendInteractiveListMessage({
-            list: {
-              ...message,
-              list: message.list.filter(item => item.title !== '')
-            },
-            to: config.phoneNumberTo,
-            config: wsConfig
+            config: wsConfig,
+            list: { ...message, list: message.list.filter((item) => item.title !== '') },
+            to: config.phoneNumberTo
           })
           break
+        }
       }
     }
 
-    toast.success('Messages sent!', {
-      id: paymentToast
-    })
+    toast.success('Messages sent!', { id: paymentToast })
     sendingMessages.value = false
   }
 
-  return {
-    sendingMessages,
-    availableToSend,
-    sendMessages
-  }
+  return { availableToSend, sendMessages, sendingMessages }
 }

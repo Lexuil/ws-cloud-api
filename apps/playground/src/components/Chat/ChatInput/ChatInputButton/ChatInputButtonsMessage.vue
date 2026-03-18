@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { reactive } from 'vue'
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,16 +13,15 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { reactive } from 'vue'
+import { Textarea } from '@/components/ui/textarea'
 import { useMessagesStore } from '@/stores/messagesStore'
 
 const form = reactive<Record<string, string>>({
-  text: '',
   button1: '',
   button2: '',
-  button3: ''
+  button3: '',
+  text: ''
 })
 
 const { addMessage } = useMessagesStore()
@@ -28,13 +29,15 @@ const { addMessage } = useMessagesStore()
 function addButtonMessage(): void {
   const { text, button1, button2, button3 } = form
 
-  if (text === '' || button1 === '') return
+  if (text === '' || button1 === '') {
+    return
+  }
 
   addMessage({
+    buttons: [button1, button2, button3],
     id: Date.now(),
-    type: 'button',
     text,
-    buttons: [button1, button2, button3]
+    type: 'button'
   })
 
   form.text = ''
@@ -115,9 +118,7 @@ function addButtonMessage(): void {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction @click="addButtonMessage">
-          Add
-        </AlertDialogAction>
+        <AlertDialogAction @click="addButtonMessage"> Add </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

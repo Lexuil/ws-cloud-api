@@ -1,4 +1,4 @@
-export type Wildcard = '*' | '~' | '_' | '```' | '`' | string & {}
+export type Wildcard = '*' | '~' | '_' | '```' | '`' | (string & {})
 
 export interface IRule {
   wildcard: Wildcard
@@ -17,40 +17,20 @@ function execRule(text: string, rule: IRule): string {
 }
 
 function parseText(text: string, rules: IRule[]): string {
-  const final: string = rules.reduce(
-    (transformed, rule) => {
-      return execRule(transformed, rule)
-    },
-    text
-  )
+  const final: string = rules.reduce((transformed, rule) => execRule(transformed, rule), text)
 
   return final.replace(/\n/gi, '<br>')
 }
 
 export const whatsappRules: IRule[] = [
-  {
-    closeTag: '</strong>',
-    openTag: '<strong>',
-    wildcard: '*'
-  },
-  {
-    closeTag: '</i>',
-    openTag: '<i>',
-    wildcard: '_'
-  },
-  {
-    closeTag: '</s>',
-    openTag: '<s>',
-    wildcard: '~'
-  },
+  { closeTag: '</strong>', openTag: '<strong>', wildcard: '*' },
+  { closeTag: '</i>', openTag: '<i>', wildcard: '_' },
+  { closeTag: '</s>', openTag: '<s>', wildcard: '~' },
+  { closeTag: '</code>', openTag: '<code>', wildcard: '```' },
   {
     closeTag: '</code>',
-    openTag: '<code>',
-    wildcard: '```'
-  },
-  {
-    closeTag: '</code>',
-    openTag: '<code style=\'background-color: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.2rem;\'>',
+    openTag:
+      "<code style='background-color: #f0f0f0; padding: 0.2rem 0.4rem; border-radius: 0.2rem;'>",
     wildcard: '`'
   }
 ]

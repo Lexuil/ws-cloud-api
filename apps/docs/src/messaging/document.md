@@ -12,14 +12,14 @@ async function sendDocument({
   link,
   filename,
   caption,
-  config,
+  config
 }: {
-  to: string;
-  link: string;
-  filename: string;
-  caption?: string;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  link: string
+  filename: string
+  caption?: string
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:
@@ -38,18 +38,18 @@ async function sendDocument({
 ## Example usage
 
 ```ts
-import { sendDocument } from "ws-cloud-api/messaging";
+import { sendDocument } from 'ws-cloud-api/messaging'
 
 sendDocument({
-  to: "573123456789",
-  link: "https://example.com/document.pdf",
-  filename: "document.pdf",
-  caption: "Example document",
+  to: '573123456789',
+  link: 'https://example.com/document.pdf',
+  filename: 'document.pdf',
+  caption: 'Example document'
 })
   .then((response) => {
     if (response.success) {
-      console.log("Document sent");
+      console.log('Document sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

@@ -7,11 +7,11 @@ The `getMediaUrl` function allows you to retrieve the URL of uploaded media usin
 ```ts
 async function getMediaUrl({
   mediaId,
-  config,
+  config
 }: {
-  mediaId: string;
-  config?: WsConfig;
-}): Promise<string>;
+  mediaId: string
+  config?: WsConfig
+}): Promise<string>
 ```
 
 ## Parameters:

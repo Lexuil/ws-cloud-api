@@ -10,12 +10,12 @@ The `sendAudio` function allows you to send an audio file to a WhatsApp number u
 async function sendAudio({
   to,
   link,
-  config,
+  config
 }: {
-  to: string;
-  link: string;
-  config?: WsConfig;
-}): Promise<SendMessageResponse>;
+  to: string
+  link: string
+  config?: WsConfig
+}): Promise<SendMessageResponse>
 ```
 
 ## Parameters:
@@ -24,25 +24,21 @@ async function sendAudio({
 - `link`: The URL of the audio file to send.
 - `config`: Optional configuration settings.
 
-
 ## Return
+
 - **Success:** True for success, false for fail.
 - **Response:** Information about the message sent, like the message ID, delivery status, and more.
-
 
 ## Example usage
 
 ```ts
-import { sendAudio } from "ws-cloud-api/messaging";
+import { sendAudio } from 'ws-cloud-api/messaging'
 
-sendAudio({
-  to: "573123456789",
-  link: "https://example.com/audio.mp3",
-})
+sendAudio({ to: '573123456789', link: 'https://example.com/audio.mp3' })
   .then((response) => {
     if (response.success) {
-      console.log("Audio sent");
+      console.log('Audio sent')
     }
   })
-  .catch(console.error);
+  .catch(console.error)
 ```

@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
 import { Send } from 'lucide-vue-next'
-import { useMessagesStore } from '@/stores/messagesStore'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import useSendMessages from '@/composables/useSendMessages'
+import { useMessagesStore } from '@/stores/messagesStore'
 
 const messages = useMessagesStore()
 const { sendMessages, sendingMessages, availableToSend } = useSendMessages()

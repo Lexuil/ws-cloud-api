@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useColorMode } from '@vueuse/core'
 import { Moon, Sun } from 'lucide-vue-next'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -28,15 +29,9 @@ const mode = useColorMode()
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem @click="mode = 'light'">
-        Light
-      </DropdownMenuItem>
-      <DropdownMenuItem @click="mode = 'dark'">
-        Dark
-      </DropdownMenuItem>
-      <DropdownMenuItem @click="mode = 'auto'">
-        System
-      </DropdownMenuItem>
+      <DropdownMenuItem @click="mode = 'light'"> Light </DropdownMenuItem>
+      <DropdownMenuItem @click="mode = 'dark'"> Dark </DropdownMenuItem>
+      <DropdownMenuItem @click="mode = 'auto'"> System </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

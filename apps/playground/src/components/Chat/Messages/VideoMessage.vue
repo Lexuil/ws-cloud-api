@@ -17,9 +17,7 @@ defineProps<{
       <div
         class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
       >
-        <span
-          class="block bg-black/50 rounded-full w-14 h-14 relative"
-        >
+        <span class="block bg-black/50 rounded-full w-14 h-14 relative">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white"
@@ -46,6 +44,6 @@ defineProps<{
 
 <style scoped>
 .gradient {
-  background-image: linear-gradient(to top,rgba(11,20,26,.5),rgba(11,20,26,0));
+  background-image: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
 }
 </style>
