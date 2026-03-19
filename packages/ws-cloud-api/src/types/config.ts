@@ -1,10 +1,15 @@
-import type { Logger } from './logger'
+import { type } from 'arktype'
 
-export interface WsConfig {
-  apiVersion?: string
-  phoneNumberId?: string
-  businessId?: string
-  token?: string
-  logger?: Logger
-  fetch?: typeof fetch
-}
+import Logger from '@/core/logger'
+
+const wsConfigSchema = type({
+  'apiVersion?': type('/^v\\d+\\.\\d+$/'),
+  'businessId?': 'string',
+  'logger?': type.instanceOf(Logger),
+  'phoneNumberId?': 'string',
+  'token?': 'string'
+})
+
+type WsConfig = typeof wsConfigSchema.infer
+
+export { type WsConfig, wsConfigSchema }

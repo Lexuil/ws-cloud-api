@@ -1,42 +1,29 @@
-import 'dotenv/config'
 import fs from 'fs'
 import path from 'path'
-import {
-  sendAudio,
-  sendButtonMessage,
-  sendCTAButtonMessage,
-  sendContact,
-  sendDocument,
-  sendFile,
-  sendFlowMessage,
-  sendImage,
-  sendInteractiveListMessage,
-  sendInteractiveSectionListMessage,
-  sendText,
-  sendTypingIndicator,
-  sendVideo
-} from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
 const phoneNumberToTest = process.env.PHONE_NUMBER_RECIPIENT ?? ''
-const messageType = process.argv[2]
+const [__, ___, messageType] = process.argv
+
+const wsApi = new WsApi()
 
 const messageFunctions: Record<string, () => Promise<boolean>> = {
   audio: async () => {
-    const response = await sendAudio({
+    const response = await wsApi.sendAudio({
       link: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   buttons: async () => {
-    const response = await sendButtonMessage({
+    const response = await wsApi.sendButtonMessage({
       message: {
         buttons: [
           { id: '1', title: 'Button 1' },
@@ -47,16 +34,16 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   contact: async () => {
-    const response = await sendContact({
+    const response = await wsApi.sendContact({
       contacts: [
         {
           name: { first_name: 'Test', formatted_name: 'Test 1', last_name: 'Test 1' },
@@ -70,61 +57,61 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   'cta-button': async () => {
-    const response = await sendCTAButtonMessage({
+    const response = await wsApi.sendCTAButtonMessage({
       message: { buttonText: 'CTA button', text: 'CTA button', url: 'https://www.google.com' },
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   document: async () => {
-    const response = await sendDocument({
+    const response = await wsApi.sendDocument({
       caption: 'Test document',
       filename: 'dummy.pdf',
       link: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   file: async () => {
     const image = new Blob([fs.readFileSync(path.join(__dirname, '/assets/kirby.jpg'))], {
       type: 'image/jpeg'
     })
 
-    const response = await sendFile({ file: image, to: phoneNumberToTest })
+    const response = await wsApi.sendFile({ file: image, to: phoneNumberToTest })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   flow: async () => {
-    const response = await sendFlowMessage({
+    const response = await wsApi.sendFlowMessage({
       draft: true,
       flow: {
         ctaText: 'View flow',
@@ -136,30 +123,30 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   image: async () => {
-    const response = await sendImage({
+    const response = await wsApi.sendImage({
       link: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   list: async () => {
-    const response = await sendInteractiveListMessage({
+    const response = await wsApi.sendInteractiveListMessage({
       list: {
         buttonText: 'List button',
         list: [
@@ -171,16 +158,16 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   'section-list': async () => {
-    const response = await sendInteractiveSectionListMessage({
+    const response = await wsApi.sendInteractiveSectionListMessage({
       list: {
         buttonText: 'Section list button',
         sections: [
@@ -204,49 +191,52 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   text: async () => {
-    const response = await sendText({ message: 'Test message from library', to: phoneNumberToTest })
+    const response = await wsApi.sendText({
+      message: 'Test message from library',
+      to: phoneNumberToTest
+    })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   'typing-indicator': async (): Promise<boolean> => {
-    const response = await sendTypingIndicator({ input: { messageId: 'wamid.HBgMNTczM' } })
+    const response = await wsApi.sendTypingIndicator({ input: { messageId: 'wamid.HBgMNTczM' } })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   },
   video: async () => {
-    const response = await sendVideo({
+    const response = await wsApi.sendVideo({
       link: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
       to: phoneNumberToTest
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       console.error('Error:', response.error)
     } else {
-      console.log(response.response)
+      console.log(response.value)
     }
 
-    return response.success
+    return response.isOk()
   }
 }
 

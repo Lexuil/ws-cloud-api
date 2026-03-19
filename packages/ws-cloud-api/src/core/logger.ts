@@ -1,25 +1,20 @@
-import type { Logger } from '../types/logger'
+export default class Logger {
+  readonly debug: (...args: unknown[]) => void
+  readonly error: (...args: unknown[]) => void
+  readonly info: (...args: unknown[]) => void
+  readonly warn: (...args: unknown[]) => void
 
-function noop(): void {}
-
-function normalizeLogger(input?: Logger): Logger {
-  if (!input) {
-    return {
-      debug: noop,
-      error: (...args: unknown[]) => console.error(...args),
-      info: (...args: unknown[]) => console.info(...args),
-      warn: (...args: unknown[]) => console.warn(...args)
+  constructor(input?: Logger) {
+    if (input) {
+      this.debug = (...args: unknown[]) => input.debug(...args)
+      this.error = (...args: unknown[]) => input.error(...args)
+      this.info = (...args: unknown[]) => input.info(...args)
+      this.warn = (...args: unknown[]) => input.warn(...args)
+    } else {
+      this.debug = (...args: unknown[]) => console.debug(...args)
+      this.error = (...args: unknown[]) => console.error(...args)
+      this.info = (...args: unknown[]) => console.info(...args)
+      this.warn = (...args: unknown[]) => console.warn(...args)
     }
   }
-
-  return {
-    debug: input.debug ?? noop,
-    error: input.error ?? noop,
-    info: input.info ?? noop,
-    warn: input.warn ?? noop
-  }
-}
-
-export default function createLogger(logger?: Logger): Logger {
-  return normalizeLogger(logger)
 }

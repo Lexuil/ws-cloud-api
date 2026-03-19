@@ -33,22 +33,6 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./media": {
-      "import": "./dist/media.mjs",
-      "require": "./dist/media.cjs"
-    },
-    "./messaging": {
-      "import": "./dist/messaging.mjs",
-      "require": "./dist/messaging.cjs"
-    },
-    "./templates": {
-      "import": "./dist/templates.mjs",
-      "require": "./dist/templates.cjs"
-    },
-    "./webhook": {
-      "import": "./dist/webhook.mjs",
-      "require": "./dist/webhook.cjs"
-    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -60,7 +44,9 @@
     "test:media": "jiti ./src/test/media.ts"
   },
   "dependencies": {
-    "cross-fetch": "4.1.0"
+    "arktype": "2.2.0",
+    "neverthrow": "8.2.0",
+    "ofetch": "1.5.1"
   },
   "devDependencies": {
     "@types/node": "catalog:",

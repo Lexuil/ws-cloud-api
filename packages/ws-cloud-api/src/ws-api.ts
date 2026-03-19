@@ -1,8 +1,11 @@
+import type { Result } from 'neverthrow'
+
+import { err, ok } from 'neverthrow'
+
 import type { ResolvedConfig } from './core/config'
 import type { HttpResponse, RequestMethod } from './core/http'
 import type { WsConfig } from './types/config'
 import type { MessageStatus } from './types/enums'
-import type { Logger } from './types/logger'
 import type {
   Button,
   ButtonInteractive,
@@ -28,14 +31,10 @@ import type {
 import type { WebhookSubscribeQuery, WsRequest } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
-import { resolveConfig } from './core/config'
+import { API_ENDPOINT, resolveConfig } from './core/config'
 import { createHttpClient } from './core/http'
-import createLogger from './core/logger'
+import Logger from './core/logger'
 import { InteractiveTypes, MessageTypes } from './types/enums'
-
-type SendMessageResponse =
-  | { success: false; error: unknown }
-  | { success: true; response: MessageResponse }
 
 type Source = 'user' | 'button' | 'list' | 'flow'
 
@@ -62,11 +61,11 @@ class WsApi {
 
   constructor(config?: WsConfig) {
     this.config = resolveConfig(config)
-    this.logger = createLogger(config?.logger)
+    this.logger = new Logger(config?.logger)
     this.http = createHttpClient(this.config, this.logger)
   }
 
-  async sendRequest({
+  async sendRequest<T = unknown>({
     id,
     body,
     path,
@@ -80,14 +79,14 @@ class WsApi {
     query?: string
     method: RequestMethod | (string & NonNullable<unknown>)
     headers?: Record<string, string>
-  }): Promise<HttpResponse> {
+  }): Promise<HttpResponse<T>> {
     let preparedBody = undefined
     if (body !== undefined) {
       preparedBody =
         body instanceof FormData || typeof body === 'string' ? body : JSON.stringify(body)
     }
 
-    return await this.http.request({ body: preparedBody ?? null, headers, id, method, path, query })
+    return await this.http.request({ body: preparedBody, headers, id, method, path, query })
   }
 
   // Messaging ----------------------------------------------------------------
@@ -97,22 +96,24 @@ class WsApi {
   }: {
     to: string
     body: WSBody
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const postBody = { messaging_product: 'whatsapp', to, ...body }
 
-    const requestResponse = await this.sendRequest({
+    const requestResponse = await this.sendRequest<MessageResponse>({
       body: postBody,
       id: 'phoneNumberId',
       method: 'POST',
       path: 'messages'
     })
 
-    if (!requestResponse.success) {
+    if (requestResponse.isErr()) {
       const msgType = typeof body.type === 'string' ? body.type : 'unknown'
       this.logger.error?.(`Failed to send ${msgType} message`, requestResponse.error)
     }
 
-    return requestResponse as SendMessageResponse
+    return requestResponse.isOk()
+      ? ok(requestResponse.value.response)
+      : err({ error: requestResponse.error })
   }
 
   async sendText({
@@ -123,7 +124,7 @@ class WsApi {
     to: string
     message: string
     previewUrl?: boolean
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
         type: MessageTypes.Text,
@@ -139,7 +140,7 @@ class WsApi {
   }: {
     to: string
     contacts: Contact[]
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: { type: MessageTypes.Contacts, [MessageTypes.Contacts]: contacts },
       to
@@ -158,18 +159,30 @@ class WsApi {
     link: string
     filename?: string
     caption?: string
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
-      body: { type, [type]: { caption, filename, link } } as unknown as MediaBody,
+      body: { type, [type]: { caption, filename, link } },
       to
     })
   }
 
-  async sendImage({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+  async sendImage({
+    to,
+    link
+  }: {
+    to: string
+    link: string
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendSimpleMedia({ link, to, type: MessageTypes.Image })
   }
 
-  async sendVideo({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+  async sendVideo({
+    to,
+    link
+  }: {
+    to: string
+    link: string
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendSimpleMedia({ link, to, type: MessageTypes.Video })
   }
 
@@ -183,27 +196,34 @@ class WsApi {
     link: string
     filename: string
     caption?: string
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendSimpleMedia({ caption, filename, link, to, type: MessageTypes.Document })
   }
 
-  async sendAudio({ to, link }: { to: string; link: string }): Promise<SendMessageResponse> {
+  async sendAudio({
+    to,
+    link
+  }: {
+    to: string
+    link: string
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendSimpleMedia({ link, to, type: MessageTypes.Audio })
   }
 
-  async sendFile({ to, file }: { to: string; file: Blob }): Promise<SendMessageResponse> {
+  async sendFile({
+    to,
+    file
+  }: {
+    to: string
+    file: Blob
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     try {
       const mediaId = await this.uploadMedia({ media: file })
-      const [mimeType] = file.type.split('/')
+      const [mimeType] = file.type.split('/') as MediaBody['type']
       const type =
-        mimeType === 'text' || mimeType === 'application'
-          ? MessageTypes.Document
-          : (mimeType as MediaBody['type'])
+        mimeType === 'text' || mimeType === 'application' ? MessageTypes.Document : mimeType
 
-      return await this.sendMessageRequest({
-        body: { type, [type]: { id: mediaId } } as unknown as MediaBody,
-        to
-      })
+      return await this.sendMessageRequest({ body: { type, [type]: { id: mediaId } }, to })
     } catch (error) {
       this.logger.error?.('Failed to send file', error)
       return { error, success: false }
@@ -220,7 +240,7 @@ class WsApi {
   }: {
     to: string
     message: { text: string; buttons: Button[] }
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const body: ButtonInteractive = {
       action: { buttons: [] },
       body: { text: message.text },
@@ -240,7 +260,7 @@ class WsApi {
   }: {
     to: string
     message: { text: string; buttonText: string; url: string }
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const body: CTAButtonInteractive = {
       action: {
         name: InteractiveTypes.CTAButton,
@@ -258,7 +278,7 @@ class WsApi {
   }: {
     to: string
     list: { text: string; buttonText: string; list: { title: string; description: string }[] }
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const body: ListInteractive = {
       action: { button: list.buttonText, sections: [{ rows: [], title: list.buttonText }] },
       body: { text: list.text },
@@ -282,7 +302,7 @@ class WsApi {
       buttonText: string
       sections: { sectionTitle: string; list: { title: string; description: string }[] }[]
     }
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const body: ListInteractive = {
       action: { button: list.buttonText, sections: [] },
       body: { text: list.text },
@@ -315,7 +335,7 @@ class WsApi {
       initDataExchange?: boolean
     }
     draft?: boolean
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const body: FlowInteractive = {
       action: {
         name: 'flow',
@@ -341,7 +361,7 @@ class WsApi {
     input
   }: {
     input: { messageId: string }
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     const postBody = {
       message_id: input.messageId,
       messaging_product: 'whatsapp',
@@ -349,35 +369,37 @@ class WsApi {
       typing_indicator: { type: 'text' }
     }
 
-    const requestResponse = await this.sendRequest({
+    const requestResponse = await this.sendRequest<MessageResponse>({
       body: postBody,
       id: 'phoneNumberId',
       method: 'POST',
       path: 'messages'
     })
 
-    if (!requestResponse.success) {
+    if (requestResponse.isErr()) {
       this.logger.error?.('Failed to send typing indicator', requestResponse.error)
     }
 
-    return requestResponse as SendMessageResponse
+    return requestResponse.isOk()
+      ? ok(requestResponse.value.response)
+      : err({ error: requestResponse.error })
   }
 
   // Media --------------------------------------------------------------------
-  async mediaRequest(body: BodyInit): Promise<unknown> {
-    const response = await this.http.request({
+  async mediaRequest(body: BodyInit): Promise<{ id: string } | undefined> {
+    const response = await this.http.request<{ id: string }>({
       body,
       id: 'phoneNumberId',
       method: 'POST',
       path: 'media'
     })
 
-    if (!response.success) {
+    if (response.isErr()) {
       this.logger.error?.('Failed to make media request', response.error)
-      return false
+      return
     }
 
-    return response.response
+    return response.value.response
   }
 
   async uploadMedia({ media }: { media: Blob }): Promise<string> {
@@ -395,8 +417,8 @@ class WsApi {
     formData.append('type', media.type)
     formData.append('messaging_product', 'whatsapp')
 
-    const mediaRequestResponse = (await this.mediaRequest(formData)) as { id: string }
-    return mediaRequestResponse.id
+    const mediaRequestResponse = await this.mediaRequest(formData)
+    return mediaRequestResponse?.id ?? '' // FIXME
   }
 
   async getMediaUrl({ mediaId }: { mediaId: string }): Promise<string> {
@@ -407,10 +429,9 @@ class WsApi {
 
     const { apiVersion, token } = this.config
 
-    const response = await this.http.fetchImpl(
-      `https://graph.facebook.com/v${apiVersion}/${mediaId}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
+    const response = await this.http.fetch(`${API_ENDPOINT}/${apiVersion}/${mediaId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
 
     if (!response.ok) {
       this.logger.error?.('Failed to get media url', { status: response.status })
@@ -428,7 +449,7 @@ class WsApi {
 
     const { token } = this.config
 
-    const response = await this.http.fetchImpl(mediaUrl, {
+    const response = await this.http.fetch(mediaUrl, {
       headers: { Authorization: `Bearer ${token}` }
     })
     return await response.blob()
@@ -445,7 +466,7 @@ class WsApi {
     templateName: string
     language: string
     parameters?: TemplateBodyParameter[]
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
         type: MessageTypes.Template,
@@ -471,7 +492,7 @@ class WsApi {
     language: string
     headerParameters: TemplateHeaderParameter
     bodyParameters?: TemplateBodyParameter[]
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
         type: MessageTypes.Template,
@@ -500,7 +521,7 @@ class WsApi {
     language: string
     flow: TemplateFlowParameter['action']
     bodyParameters?: TemplateBodyParameter[]
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
         type: MessageTypes.Template,
@@ -532,7 +553,7 @@ class WsApi {
     templateName: string
     language: string
     code: string
-  }): Promise<SendMessageResponse> {
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
         type: MessageTypes.Template,
@@ -561,22 +582,22 @@ class WsApi {
   }: {
     query?: string
     body?: string
-    method?: string
+    method?: RequestMethod
   }): Promise<{ success: true; data: T } | { success: false; error: unknown }> {
-    const requestResponse = await this.sendRequest({
+    const requestResponse = await this.sendRequest<T>({
       body,
       id: 'businessId',
-      method: method as RequestMethod,
+      method,
       path: 'message_templates',
       query
     })
 
-    if (!requestResponse.success) {
+    if (requestResponse.isErr()) {
       this.logger.error?.('Failed to handle template request', requestResponse.error)
-      return requestResponse
+      return { error: requestResponse.error, success: false }
     }
 
-    return { data: requestResponse.response as T, success: true }
+    return { data: requestResponse.value.response, success: true }
   }
 
   async getTemplates({

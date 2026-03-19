@@ -34,7 +34,8 @@ export default defineConfig({
       'no-duplicate-imports': ['error', { allowSeparateTypeImports: true }],
       'no-magic-numbers': ['error', { ignoreArrayIndexes: true }],
       'no-ternary': 'off',
-      'sort-imports': 'off'
+      'sort-imports': 'off',
+      'unicorn/prefer-string-raw': 'off'
     }
   },
   staged: { '*': 'vp check --fix' }

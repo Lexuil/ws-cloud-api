@@ -4,13 +4,7 @@ import { defineConfig as definePackConfig } from 'vite-plus/pack'
 export default defineConfig({
   pack: definePackConfig({
     dts: { tsgo: true },
-    entry: [
-      'src/index.ts',
-      'src/media.ts',
-      'src/messaging.ts',
-      'src/templates.ts',
-      'src/webhook.ts'
-    ],
+    entry: ['src/index.ts'],
     exports: true,
     format: ['cjs', 'esm']
   }),

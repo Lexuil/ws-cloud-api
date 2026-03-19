@@ -1,7 +1,13 @@
-import fetchFallback from 'cross-fetch'
+import type { Result } from 'neverthrow'
+
+import { err, ok } from 'neverthrow'
+// oxlint-disable max-statements
+import { ofetch } from 'ofetch'
 
 import type { Logger } from '../types/logger'
 import type { ResolvedConfig } from './config'
+
+import { API_ENDPOINT } from './config'
 
 type RequestMethod =
   | 'POST'
@@ -19,29 +25,34 @@ interface HttpRequestOptions {
   path: string
   query?: string
   method: RequestMethod | (string & NonNullable<unknown>)
-  body?: BodyInit | null
+  body?: BodyInit
   headers?: Record<string, string>
 }
 
-type HttpResponse = { success: true; response: unknown } | { success: false; error: unknown }
+type HttpResponse<T = unknown> = Result<{ response: T }, { error: unknown }>
 
 interface HttpClient {
-  request: (options: HttpRequestOptions) => Promise<HttpResponse>
-  fetchImpl: typeof fetch
+  request: <T = unknown>(options: HttpRequestOptions) => Promise<HttpResponse<T>>
+  fetch: typeof ofetch
 }
 
 function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
-  const fetchImpl = config.fetch ?? (typeof fetch !== 'undefined' ? fetch : fetchFallback)
-
-  const request: HttpClient['request'] = async ({ id, path, query, method, body, headers }) => {
+  async function request<T = unknown>({
+    id,
+    path,
+    query,
+    method,
+    body,
+    headers
+  }: HttpRequestOptions): Promise<HttpResponse<T>> {
     const requestId = id === 'phoneNumberId' ? config.phoneNumberId : config.businessId
 
     if (typeof requestId !== 'string') {
-      return { error: 'Missing request ID', success: false }
+      return err({ error: 'Missing request ID' })
     }
 
     if (typeof config.token !== 'string') {
-      return { error: 'Missing token', success: false }
+      return err({ error: 'Missing token' })
     }
 
     try {
@@ -54,34 +65,27 @@ function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
       Object.assign(mergedHeaders, headers)
 
       const queryStr = typeof query === 'string' ? `?${query}` : ''
-      const fetchUrl = `https://graph.facebook.com/v${config.apiVersion}/${requestId}/${path}${queryStr}`
-      const response = await fetchImpl(fetchUrl, {
-        body: body ?? undefined,
-        headers: mergedHeaders,
-        method
-      })
-
-      if (!response.ok) {
-        logger.error?.('HTTP request failed', {
-          status: response.status,
-          statusText: response.statusText
-        })
-        return { error: response, success: false }
-      }
+      const fetchUrl = `${API_ENDPOINT}/${config.apiVersion}/${requestId}/${path}${queryStr}`
 
       try {
-        const json = (await response.json()) as unknown
-        return { response: json, success: true }
-      } catch {
-        return { response, success: true }
+        const response = await ofetch(fetchUrl, {
+          body: body ?? undefined,
+          headers: mergedHeaders,
+          method
+        })
+
+        return ok({ response })
+      } catch (error) {
+        logger.error?.('HTTP request threw', error)
+        return err({ error })
       }
     } catch (error) {
       logger.error?.('HTTP request threw', error)
-      return { error, success: false }
+      return err({ error })
     }
   }
 
-  return { fetchImpl, request }
+  return { fetch: ofetch, request }
 }
 
 export {
