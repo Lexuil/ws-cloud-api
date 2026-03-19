@@ -1,27 +1,24 @@
 import type { Result } from 'neverthrow'
 
+import { type } from 'arktype'
 import { err, ok } from 'neverthrow'
+
+import type {
+  Request,
+  Contact,
+  InteractiveMessageRequest,
+  TemplateBody,
+  TemplateFlowButton,
+  TemplateAuthButton,
+  TemplateMediaHeader
+} from '@/types/request'
+import type { MediaResponse, MessageResponse } from '@/types/response'
 
 import type { ResolvedConfig } from './core/config'
 import type { HttpResponse, RequestMethod } from './core/http'
 import type { WsConfig } from './types/config'
 import type { MessageStatus } from './types/enums'
-import type {
-  Button,
-  ButtonInteractive,
-  CTAButtonInteractive,
-  Contact,
-  FlowInteractive,
-  Interactive,
-  InteractiveBody,
-  ListInteractive,
-  MediaBody,
-  MessageResponse,
-  WSBody,
-  TemplateBodyParameter,
-  TemplateFlowParameter,
-  TemplateHeaderParameter
-} from './types/messages'
+import type { Button } from './types/messages'
 import type {
   CreateTemplate,
   CreateTemplateResponse,
@@ -31,28 +28,15 @@ import type {
 import type { WebhookSubscribeQuery, WsRequest } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
-import { API_ENDPOINT, resolveConfig } from './core/config'
+import { resolveConfig } from './core/config'
 import { createHttpClient } from './core/http'
 import Logger from './core/logger'
-import { InteractiveTypes, MessageTypes } from './types/enums'
+import { mediaTypeSchema, mimeTypeSchema } from './types/media'
+
+const baseMessageRequest = { messaging_product: 'whatsapp', recipient_type: 'individual' } as const
+const baseIterativeMessageRequest = { ...baseMessageRequest, type: 'interactive' } as const
 
 type Source = 'user' | 'button' | 'list' | 'flow'
-
-const supportedFiles = {
-  audio: ['audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus'],
-  document: [
-    'text/plain',
-    'application/pdf',
-    'application/vnd.ms-powerpoint',
-    'application/msword',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  ],
-  image: ['image/jpeg', 'image/png'],
-  video: ['video/mp4', 'video/3gp']
-}
 
 class WsApi {
   private readonly config: ResolvedConfig
@@ -73,9 +57,9 @@ class WsApi {
     method,
     headers
   }: {
-    id: 'phoneNumberId' | 'businessId'
-    body?: unknown
-    path: 'messages' | 'message_templates' | (string & NonNullable<unknown>)
+    id: 'phoneNumberId' | 'businessId' | (string & NonNullable<unknown>)
+    body?: Request
+    path?: 'messages' | 'message_templates' | (string & NonNullable<unknown>)
     query?: string
     method: RequestMethod | (string & NonNullable<unknown>)
     headers?: Record<string, string>
@@ -91,16 +75,12 @@ class WsApi {
 
   // Messaging ----------------------------------------------------------------
   async sendMessageRequest({
-    to,
     body
   }: {
-    to: string
-    body: WSBody
+    body: Request
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const postBody = { messaging_product: 'whatsapp', to, ...body }
-
     const requestResponse = await this.sendRequest<MessageResponse>({
-      body: postBody,
+      body: body,
       id: 'phoneNumberId',
       method: 'POST',
       path: 'messages'
@@ -108,7 +88,7 @@ class WsApi {
 
     if (requestResponse.isErr()) {
       const msgType = typeof body.type === 'string' ? body.type : 'unknown'
-      this.logger.error?.(`Failed to send ${msgType} message`, requestResponse.error)
+      this.logger.error(`Failed to send ${msgType} message`, requestResponse.error)
     }
 
     return requestResponse.isOk()
@@ -127,10 +107,11 @@ class WsApi {
   }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
       body: {
-        type: MessageTypes.Text,
-        [MessageTypes.Text]: { body: message, preview_url: previewUrl }
-      },
-      to
+        ...baseMessageRequest,
+        text: { body: message, preview_url: previewUrl },
+        to,
+        type: 'text'
+      }
     })
   }
 
@@ -142,252 +123,252 @@ class WsApi {
     contacts: Contact[]
   }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
-      body: { type: MessageTypes.Contacts, [MessageTypes.Contacts]: contacts },
-      to
-    })
-  }
-
-  private async sendSimpleMedia({
-    to,
-    type,
-    link,
-    filename,
-    caption
-  }: {
-    to: string
-    type: MediaBody['type']
-    link: string
-    filename?: string
-    caption?: string
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
-      body: { type, [type]: { caption, filename, link } },
-      to
+      body: { ...baseMessageRequest, contacts, to, type: 'contacts' }
     })
   }
 
   async sendImage({
     to,
-    link
+    data
   }: {
     to: string
-    link: string
+    data: Extract<Request, { type: 'image' }>['image']
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Image })
+    return await this.sendMessageRequest({
+      body: { ...baseMessageRequest, image: data, to, type: 'image' }
+    })
   }
 
   async sendVideo({
     to,
-    link
+    data
   }: {
     to: string
-    link: string
+    data: Extract<Request, { type: 'video' }>['video']
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Video })
+    return await this.sendMessageRequest({
+      body: { ...baseMessageRequest, to, type: 'video', video: data }
+    })
   }
 
   async sendDocument({
     to,
-    link,
-    filename,
-    caption
+    data
   }: {
     to: string
-    link: string
-    filename: string
-    caption?: string
+    data: Extract<Request, { type: 'document' }>['document']
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendSimpleMedia({ caption, filename, link, to, type: MessageTypes.Document })
+    return await this.sendMessageRequest({
+      body: { ...baseMessageRequest, document: data, to, type: 'document' }
+    })
   }
 
   async sendAudio({
     to,
-    link
+    data
   }: {
     to: string
-    link: string
+    data: Extract<Request, { type: 'audio' }>['audio']
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendSimpleMedia({ link, to, type: MessageTypes.Audio })
+    return await this.sendMessageRequest({
+      body: { ...baseMessageRequest, audio: data, to, type: 'audio' }
+    })
   }
 
+  // oxlint-disable-next-line max-statements
   async sendFile({
     to,
-    file
+    data
   }: {
     to: string
-    file: Blob
+    data: { file: Blob; caption?: string; filename?: string }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
     try {
-      const mediaId = await this.uploadMedia({ media: file })
-      const [mimeType] = file.type.split('/') as MediaBody['type']
-      const type =
-        mimeType === 'text' || mimeType === 'application' ? MessageTypes.Document : mimeType
+      const mediaId = await this.uploadMedia({ media: data.file })
 
-      return await this.sendMessageRequest({ body: { type, [type]: { id: mediaId } }, to })
+      if (mediaId.isErr()) {
+        this.logger.error('Failed to upload media for file message', mediaId.error)
+        return err({ error: mediaId.error })
+      }
+
+      const [mimeType] = data.file.type.split('/')
+      const mediaType = mediaTypeSchema(
+        mimeType === 'text' || mimeType === 'application' ? 'document' : mimeType
+      )
+
+      if (mediaType instanceof type.errors) {
+        throw new Error('Unsupported media type')
+      }
+
+      switch (mediaType) {
+        case 'image': {
+          return await this.sendImage({
+            data: { caption: data.caption, id: mediaId.value.mediaId },
+            to
+          })
+        }
+        case 'video': {
+          return await this.sendVideo({
+            data: { caption: data.caption, id: mediaId.value.mediaId },
+            to
+          })
+        }
+        case 'audio': {
+          return await this.sendAudio({ data: { id: mediaId.value.mediaId }, to })
+        }
+        case 'document': {
+          return await this.sendDocument({
+            data: { filename: data.filename, id: mediaId.value.mediaId },
+            to
+          })
+        }
+        default: {
+          throw new Error('Unsupported media type')
+        }
+      }
     } catch (error) {
-      this.logger.error?.('Failed to send file', error)
-      return { error, success: false }
+      this.logger.error('Failed to send file', error)
+      return err({ error })
     }
-  }
-
-  private generateInteractiveBody(input: Interactive): InteractiveBody {
-    return { interactive: input, type: MessageTypes.Interactive }
   }
 
   async sendButtonMessage({
     to,
-    message
+    data
   }: {
     to: string
-    message: { text: string; buttons: Button[] }
+    data:
+      | Extract<InteractiveMessageRequest['interactive'], { type: 'button' }>
+      | { text: string; buttons: Button[]; footer?: string }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const body: ButtonInteractive = {
-      action: { buttons: [] },
-      body: { text: message.text },
-      type: InteractiveTypes.Button
-    }
-
-    for (const button of message.buttons) {
-      body.action.buttons.push({ reply: button, type: 'reply' })
-    }
-
-    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
+    return 'text' in data
+      ? await this.sendMessageRequest({
+          body: {
+            ...baseIterativeMessageRequest,
+            interactive: {
+              action: { buttons: data.buttons.map((button) => ({ reply: button, type: 'reply' })) },
+              body: { text: data.text },
+              footer: data.footer ? { text: data.footer } : undefined,
+              type: 'button'
+            },
+            to
+          }
+        })
+      : await this.sendMessageRequest({
+          body: { ...baseIterativeMessageRequest, interactive: data, to }
+        })
   }
 
   async sendCTAButtonMessage({
     to,
-    message
+    data
   }: {
     to: string
-    message: { text: string; buttonText: string; url: string }
+    data:
+      | Extract<InteractiveMessageRequest['interactive'], { type: 'cta_url' }>
+      | { text: string; buttonText: string; url: string; footer?: string }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const body: CTAButtonInteractive = {
-      action: {
-        name: InteractiveTypes.CTAButton,
-        parameters: { display_text: message.buttonText, url: message.url }
-      },
-      body: { text: message.text },
-      type: InteractiveTypes.CTAButton
-    }
-    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
+    return 'text' in data
+      ? await this.sendMessageRequest({
+          body: {
+            ...baseIterativeMessageRequest,
+            interactive: {
+              action: {
+                name: 'cta_url',
+                parameters: { display_text: data.buttonText, url: data.url }
+              },
+              body: { text: data.text },
+              footer: data.footer ? { text: data.footer } : undefined,
+              type: 'cta_url'
+            },
+            to
+          }
+        })
+      : await this.sendMessageRequest({
+          body: { ...baseIterativeMessageRequest, interactive: data, to }
+        })
   }
 
   async sendInteractiveListMessage({
     to,
-    list
+    data
   }: {
     to: string
-    list: { text: string; buttonText: string; list: { title: string; description: string }[] }
+    data:
+      | Extract<InteractiveMessageRequest['interactive'], { type: 'list' }>
+      | {
+          text: string
+          buttonText: string
+          list: { sectionTitle: string; listItems: { title: string; description: string }[] }[]
+        }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const body: ListInteractive = {
-      action: { button: list.buttonText, sections: [{ rows: [], title: list.buttonText }] },
-      body: { text: list.text },
-      type: InteractiveTypes.List
-    }
-
-    for (const listItem of list.list) {
-      body.action.sections[0].rows.push({ id: listItem.description, ...listItem })
-    }
-
-    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
-  }
-
-  async sendInteractiveSectionListMessage({
-    to,
-    list
-  }: {
-    to: string
-    list: {
-      text: string
-      buttonText: string
-      sections: { sectionTitle: string; list: { title: string; description: string }[] }[]
-    }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const body: ListInteractive = {
-      action: { button: list.buttonText, sections: [] },
-      body: { text: list.text },
-      type: InteractiveTypes.List
-    }
-
-    for (let sectionIndex = 0; sectionIndex < list.sections.length; sectionIndex++) {
-      body.action.sections.push({ rows: [], title: list.sections[sectionIndex].sectionTitle })
-
-      for (const listItem of list.sections[sectionIndex].list) {
-        body.action.sections[sectionIndex].rows.push({ id: listItem.description, ...listItem })
-      }
-    }
-
-    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
+    return 'text' in data
+      ? await this.sendMessageRequest({
+          body: {
+            ...baseIterativeMessageRequest,
+            interactive: {
+              action: {
+                button: data.buttonText,
+                sections: data.list.map((section) => ({
+                  rows: section.listItems.map((item) => ({ id: item.title, ...item })),
+                  title: section.sectionTitle
+                }))
+              },
+              body: { text: data.text },
+              type: 'list'
+            },
+            to
+          }
+        })
+      : await this.sendMessageRequest({
+          body: { ...baseIterativeMessageRequest, interactive: data, to }
+        })
   }
 
   async sendFlowMessage({
     to,
-    flow,
-    draft
+    data
   }: {
     to: string
-    flow: {
-      id: string
+    data: {
       text: string
-      token: string
-      ctaText: string
-      defaultScreen: string
-      initDataExchange?: boolean
+      parameters: Extract<
+        InteractiveMessageRequest['interactive'],
+        { type: 'flow_message' }
+      >['action']['parameters']
     }
-    draft?: boolean
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const body: FlowInteractive = {
-      action: {
-        name: 'flow',
-        parameters: {
-          flow_action: flow.initDataExchange === true ? 'data_exchange' : 'navigate',
-          flow_action_payload:
-            flow.initDataExchange === true ? undefined : { screen: flow.defaultScreen },
-          flow_cta: flow.ctaText,
-          flow_id: flow.id,
-          flow_message_version: '3',
-          flow_token: flow.token,
-          mode: draft === true ? 'draft' : 'published'
-        }
-      },
-      body: { text: flow.text },
-      type: InteractiveTypes.Flow
-    }
-
-    return await this.sendMessageRequest({ body: this.generateInteractiveBody(body), to })
+    return await this.sendMessageRequest({
+      body: {
+        ...baseIterativeMessageRequest,
+        body: { text: data.text },
+        interactive: {
+          action: { name: 'flow', parameters: data.parameters },
+          type: 'flow_message'
+        },
+        to
+      }
+    })
   }
 
   async sendTypingIndicator({
-    input
+    data
   }: {
-    input: { messageId: string }
+    data: { messageId: string }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    const postBody = {
-      message_id: input.messageId,
-      messaging_product: 'whatsapp',
-      status: 'read',
-      typing_indicator: { type: 'text' }
-    }
-
-    const requestResponse = await this.sendRequest<MessageResponse>({
-      body: postBody,
-      id: 'phoneNumberId',
-      method: 'POST',
-      path: 'messages'
+    return await this.sendMessageRequest({
+      body: {
+        ...baseMessageRequest,
+        message_id: data.messageId,
+        status: 'read',
+        typing_indicator: { type: 'text' }
+      }
     })
-
-    if (requestResponse.isErr()) {
-      this.logger.error?.('Failed to send typing indicator', requestResponse.error)
-    }
-
-    return requestResponse.isOk()
-      ? ok(requestResponse.value.response)
-      : err({ error: requestResponse.error })
   }
 
   // Media --------------------------------------------------------------------
-  async mediaRequest(body: BodyInit): Promise<{ id: string } | undefined> {
-    const response = await this.http.request<{ id: string }>({
+  async mediaRequest(body: BodyInit): Promise<Result<MediaResponse, { error: unknown }>> {
+    const response = await this.http.request<MediaResponse>({
       body,
       id: 'phoneNumberId',
       method: 'POST',
@@ -395,184 +376,129 @@ class WsApi {
     })
 
     if (response.isErr()) {
-      this.logger.error?.('Failed to make media request', response.error)
-      return
+      this.logger.error('Failed to make media request', response.error)
+      return err({ error: response.error })
     }
 
-    return response.value.response
+    return ok(response.value.response)
   }
 
-  async uploadMedia({ media }: { media: Blob }): Promise<string> {
-    if (
-      !supportedFiles.image.includes(media.type) &&
-      !supportedFiles.document.includes(media.type) &&
-      !supportedFiles.audio.includes(media.type) &&
-      !supportedFiles.video.includes(media.type)
-    ) {
+  async uploadMedia({
+    media
+  }: {
+    media: Blob
+  }): Promise<Result<{ mediaId: string }, { error: unknown }>> {
+    const mimeType = mimeTypeSchema(media.type)
+
+    if (mimeType instanceof type.errors) {
       throw new Error('Unsupported media type')
     }
 
     const formData = new FormData()
     formData.append('file', media)
-    formData.append('type', media.type)
+    formData.append('type', mimeType)
     formData.append('messaging_product', 'whatsapp')
 
     const mediaRequestResponse = await this.mediaRequest(formData)
-    return mediaRequestResponse?.id ?? '' // FIXME
+
+    return mediaRequestResponse.match(
+      (value) => ok({ mediaId: value.id }),
+      ({ error }) => {
+        this.logger.error('Failed to upload media', error)
+        return err({ error: error })
+      }
+    )
   }
 
-  async getMediaUrl({ mediaId }: { mediaId: string }): Promise<string> {
-    if (typeof this.config.token !== 'string') {
-      this.logger.error?.('Missing token for media request')
-      return ''
-    }
-
-    const { apiVersion, token } = this.config
-
-    const response = await this.http.fetch(`${API_ENDPOINT}/${apiVersion}/${mediaId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+  async getMediaUrl({
+    mediaId
+  }: {
+    mediaId: string
+  }): Promise<Result<{ mediaUrl: string }, { error: unknown }>> {
+    const response = await this.sendRequest<{ id: string; url: string }>({
+      id: mediaId,
+      method: 'GET'
     })
 
-    if (!response.ok) {
-      this.logger.error?.('Failed to get media url', { status: response.status })
-      return ''
-    }
-
-    const parsed = (await response.json()) as { id: string; url: string }
-    return parsed.url
+    return response.match(
+      (value) => ok({ mediaUrl: value.response.url }),
+      ({ error }) => {
+        this.logger.error('Failed to get media URL', error)
+        return err({ error })
+      }
+    )
   }
 
-  async getMedia({ mediaUrl }: { mediaUrl: string }): Promise<Blob> {
-    if (typeof this.config.token !== 'string') {
-      throw new Error('Missing token for media download')
+  async getMedia({ mediaUrl }: { mediaUrl: string }): Promise<Result<Blob, { error: unknown }>> {
+    try {
+      const response = await this.http.fetch(mediaUrl, {
+        headers: { Authorization: `Bearer ${this.config.token}` },
+        responseType: 'blob'
+      })
+      return ok(response)
+    } catch (error) {
+      this.logger.error('Failed to get media', error)
+      return err({ error })
     }
-
-    const { token } = this.config
-
-    const response = await this.http.fetch(mediaUrl, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    return await response.blob()
   }
 
   // Templates ----------------------------------------------------------------
-  async sendTextTemplate({
+  async sendTemplate({
     to,
-    templateName,
-    language,
-    parameters
+    data
   }: {
     to: string
-    templateName: string
-    language: string
-    parameters?: TemplateBodyParameter[]
+    data: Extract<Request, { type: 'template' }>['template']
   }): Promise<Result<MessageResponse, { error: unknown }>> {
     return await this.sendMessageRequest({
-      body: {
-        type: MessageTypes.Template,
-        [MessageTypes.Template]: {
-          components: [{ parameters, type: 'body' }],
-          language: { code: language, policy: 'deterministic' },
-          name: templateName
-        }
-      },
-      to
+      body: { ...baseMessageRequest, template: data, to, type: 'template' }
     })
+  }
+
+  async sendTextTemplate({
+    to,
+    data
+  }: {
+    to: string
+    data: Extract<Request, { type: 'template' }>['template'] & { components: [TemplateBody] }
+  }): Promise<Result<MessageResponse, { error: unknown }>> {
+    return await this.sendTemplate({ data, to })
   }
 
   async sendMediaTemplate({
     to,
-    templateName,
-    language,
-    headerParameters,
-    bodyParameters
+    data
   }: {
     to: string
-    templateName: string
-    language: string
-    headerParameters: TemplateHeaderParameter
-    bodyParameters?: TemplateBodyParameter[]
+    data: Extract<Request, { type: 'template' }>['template'] & {
+      components: [TemplateMediaHeader, TemplateBody]
+    }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
-      body: {
-        type: MessageTypes.Template,
-        [MessageTypes.Template]: {
-          components: [
-            { parameters: [headerParameters], type: 'header' },
-            { parameters: bodyParameters, type: 'body' }
-          ],
-          language: { code: language, policy: 'deterministic' },
-          name: templateName
-        }
-      },
-      to
-    })
+    return await this.sendTemplate({ data, to })
   }
 
   async sendFlowTemplate({
     to,
-    templateName,
-    language,
-    flow,
-    bodyParameters
+    data
   }: {
     to: string
-    templateName: string
-    language: string
-    flow: TemplateFlowParameter['action']
-    bodyParameters?: TemplateBodyParameter[]
+    data: Extract<Request, { type: 'template' }>['template'] & {
+      components: [TemplateBody, TemplateFlowButton]
+    }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
-      body: {
-        type: MessageTypes.Template,
-        [MessageTypes.Template]: {
-          components: [
-            { parameters: bodyParameters, type: 'body' },
-            {
-              index: '0',
-              parameters: [{ action: flow, type: 'action' }],
-              sub_type: 'flow',
-              type: 'button'
-            }
-          ],
-          language: { code: language, policy: 'deterministic' },
-          name: templateName
-        }
-      },
-      to
-    })
+    return await this.sendTemplate({ data, to })
   }
 
   async sendAuthTemplate({
     to,
-    templateName,
-    language,
-    code
+    data
   }: {
     to: string
-    templateName: string
-    language: string
-    code: string
+    data: Extract<Request, { type: 'template' }>['template'] & {
+      components: [TemplateBody, TemplateAuthButton]
+    }
   }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
-      body: {
-        type: MessageTypes.Template,
-        [MessageTypes.Template]: {
-          components: [
-            { parameters: [{ text: code, type: 'text' }], type: 'body' },
-            {
-              index: '0',
-              parameters: [{ text: code, type: 'text' }],
-              sub_type: 'url',
-              type: 'button'
-            }
-          ],
-          language: { code: language, policy: 'deterministic' },
-          name: templateName
-        }
-      },
-      to
-    })
+    return await this.sendTemplate({ data, to })
   }
 
   async sendTemplateRequest<T>({
@@ -593,7 +519,7 @@ class WsApi {
     })
 
     if (requestResponse.isErr()) {
-      this.logger.error?.('Failed to handle template request', requestResponse.error)
+      this.logger.error('Failed to handle template request', requestResponse.error)
       return { error: requestResponse.error, success: false }
     }
 
