@@ -3,6 +3,7 @@ import type { Result } from 'neverthrow'
 import { type } from 'arktype'
 import { err, ok } from 'neverthrow'
 
+import type { ErrorBuilder } from '@/core/error-handler'
 import type {
   Request,
   Contact,
@@ -13,6 +14,8 @@ import type {
   TemplateMediaHeader
 } from '@/types/request'
 import type { MediaResponse, MessageResponse } from '@/types/response'
+
+import { errorHandlerResult } from '@/core/error-handler'
 
 import type { ResolvedConfig } from './core/config'
 import type { HttpResponse, RequestMethod } from './core/http'
@@ -63,14 +66,32 @@ class WsApi {
     query?: string
     method: RequestMethod | (string & NonNullable<unknown>)
     headers?: Record<string, string>
-  }): Promise<HttpResponse<T>> {
+  }): Promise<Result<HttpResponse<T>, ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' }>>> {
     let preparedBody = undefined
     if (body !== undefined) {
       preparedBody =
         body instanceof FormData || typeof body === 'string' ? body : JSON.stringify(body)
     }
 
-    return await this.http.request({ body: preparedBody, headers, id, method, path, query })
+    const result = await this.http.request<T>({
+      body: preparedBody,
+      headers,
+      id,
+      method,
+      path,
+      query
+    })
+
+    if (result.isErr()) {
+      return errorHandlerResult(result.error, this.logger, {
+        HTTP_REQUEST_ERROR: {
+          code: 'HTTP_REQUEST_ERROR',
+          extraParams: { body, error: result.error }
+        }
+      })
+    }
+
+    return ok(result.value)
   }
 
   // Messaging ----------------------------------------------------------------
@@ -78,7 +99,7 @@ class WsApi {
     body
   }: {
     body: Request
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_REQUEST_ERROR' }>>> {
     const requestResponse = await this.sendRequest<MessageResponse>({
       body: body,
       id: 'phoneNumberId',
@@ -87,13 +108,15 @@ class WsApi {
     })
 
     if (requestResponse.isErr()) {
-      const msgType = typeof body.type === 'string' ? body.type : 'unknown'
-      this.logger.error(`Failed to send ${msgType} message`, requestResponse.error)
+      return errorHandlerResult(requestResponse.error, this.logger, {
+        HTTP_REQUEST_ERROR: {
+          code: 'SEND_REQUEST_ERROR',
+          extraParams: { body, error: requestResponse.error }
+        }
+      })
     }
 
-    return requestResponse.isOk()
-      ? ok(requestResponse.value.response)
-      : err({ error: requestResponse.error })
+    return ok(requestResponse.value.response)
   }
 
   async sendText({
@@ -104,8 +127,8 @@ class WsApi {
     to: string
     message: string
     previewUrl?: boolean
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEXT_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: {
         ...baseMessageRequest,
         text: { body: message, preview_url: previewUrl },
@@ -113,6 +136,16 @@ class WsApi {
         type: 'text'
       }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_TEXT_MESSAGE_ERROR',
+          extraParams: { body: { message, previewUrl } }
+        }
+      })
+    }
+    return ok(response.value)
   }
 
   async sendContact({
@@ -121,10 +154,21 @@ class WsApi {
   }: {
     to: string
     contacts: Contact[]
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_CONTACT_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, contacts, to, type: 'contacts' }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_CONTACT_MESSAGE_ERROR',
+          extraParams: { body: { contacts }, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendImage({
@@ -133,10 +177,21 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'image' }>['image']
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_IMAGE_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, image: data, to, type: 'image' }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_IMAGE_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendVideo({
@@ -145,10 +200,21 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'video' }>['video']
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_VIDEO_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, to, type: 'video', video: data }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_VIDEO_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendDocument({
@@ -157,10 +223,21 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'document' }>['document']
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_DOCUMENT_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, document: data, to, type: 'document' }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_DOCUMENT_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendAudio({
@@ -169,10 +246,21 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'audio' }>['audio']
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_AUDIO_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, audio: data, to, type: 'audio' }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_AUDIO_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   // oxlint-disable-next-line max-statements
@@ -182,13 +270,32 @@ class WsApi {
   }: {
     to: string
     data: { file: Blob; caption?: string; filename?: string }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
+  }): Promise<
+    Result<
+      MessageResponse,
+      ErrorBuilder<{
+        code:
+          | 'UNSUPPORTED_MEDIA_TYPE'
+          | 'UPLOAD_MEDIA_ERROR'
+          | 'SEND_FILE_MESSAGE_ERROR'
+          | 'SEND_IMAGE_MESSAGE_ERROR'
+          | 'SEND_VIDEO_MESSAGE_ERROR'
+          | 'SEND_AUDIO_MESSAGE_ERROR'
+          | 'SEND_DOCUMENT_MESSAGE_ERROR'
+      }>
+    >
+  > {
     try {
       const mediaId = await this.uploadMedia({ media: data.file })
 
       if (mediaId.isErr()) {
-        this.logger.error('Failed to upload media for file message', mediaId.error)
-        return err({ error: mediaId.error })
+        return errorHandlerResult(mediaId.error, this.logger, {
+          UNSUPPORTED_MEDIA_TYPE: { code: 'UNSUPPORTED_MEDIA_TYPE', extraParams: { data } },
+          UPLOAD_MEDIA_ERROR: {
+            code: 'UPLOAD_MEDIA_ERROR',
+            extraParams: { data: { error: mediaId.error } }
+          }
+        })
       }
 
       const [mimeType] = data.file.type.split('/')
@@ -223,12 +330,11 @@ class WsApi {
           })
         }
         default: {
-          throw new Error('Unsupported media type')
+          return err({ code: 'UNEXPECTED_ERROR', data })
         }
       }
     } catch (error) {
-      this.logger.error('Failed to send file', error)
-      return err({ error })
+      return err({ code: 'UNEXPECTED_ERROR', data: { error, ...data } })
     }
   }
 
@@ -240,10 +346,11 @@ class WsApi {
     data:
       | Extract<InteractiveMessageRequest['interactive'], { type: 'button' }>
       | { text: string; buttons: Button[]; footer?: string }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return 'text' in data
-      ? await this.sendMessageRequest({
-          body: {
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_BUTTON_MESSAGE_ERROR' }>>> {
+    let body: Extract<Request, { type: 'interactive' }> | undefined = undefined
+    body =
+      'text' in data
+        ? {
             ...baseIterativeMessageRequest,
             interactive: {
               action: { buttons: data.buttons.map((button) => ({ reply: button, type: 'reply' })) },
@@ -253,10 +360,20 @@ class WsApi {
             },
             to
           }
-        })
-      : await this.sendMessageRequest({
-          body: { ...baseIterativeMessageRequest, interactive: data, to }
-        })
+        : { ...baseIterativeMessageRequest, interactive: data, to }
+
+    const response = await this.sendMessageRequest({ body })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_BUTTON_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendCTAButtonMessage({
@@ -267,10 +384,11 @@ class WsApi {
     data:
       | Extract<InteractiveMessageRequest['interactive'], { type: 'cta_url' }>
       | { text: string; buttonText: string; url: string; footer?: string }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return 'text' in data
-      ? await this.sendMessageRequest({
-          body: {
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_BUTTON_MESSAGE_ERROR' }>>> {
+    let body: Extract<Request, { type: 'interactive' }> | undefined = undefined
+    body =
+      'text' in data
+        ? {
             ...baseIterativeMessageRequest,
             interactive: {
               action: {
@@ -283,10 +401,20 @@ class WsApi {
             },
             to
           }
-        })
-      : await this.sendMessageRequest({
-          body: { ...baseIterativeMessageRequest, interactive: data, to }
-        })
+        : { ...baseIterativeMessageRequest, interactive: data, to }
+
+    const response = await this.sendMessageRequest({ body })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_BUTTON_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendInteractiveListMessage({
@@ -301,10 +429,13 @@ class WsApi {
           buttonText: string
           list: { sectionTitle: string; listItems: { title: string; description: string }[] }[]
         }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return 'text' in data
-      ? await this.sendMessageRequest({
-          body: {
+  }): Promise<
+    Result<MessageResponse, ErrorBuilder<{ code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR' }>>
+  > {
+    let body: Extract<Request, { type: 'interactive' }> | undefined = undefined
+    body =
+      'text' in data
+        ? {
             ...baseIterativeMessageRequest,
             interactive: {
               action: {
@@ -319,10 +450,20 @@ class WsApi {
             },
             to
           }
-        })
-      : await this.sendMessageRequest({
-          body: { ...baseIterativeMessageRequest, interactive: data, to }
-        })
+        : { ...baseIterativeMessageRequest, interactive: data, to }
+
+    const response = await this.sendMessageRequest({ body })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendFlowMessage({
@@ -337,8 +478,8 @@ class WsApi {
         { type: 'flow_message' }
       >['action']['parameters']
     }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_FLOW_MESSAGE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: {
         ...baseIterativeMessageRequest,
         body: { text: data.text },
@@ -349,14 +490,25 @@ class WsApi {
         to
       }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_FLOW_MESSAGE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendTypingIndicator({
     data
   }: {
     data: { messageId: string }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TYPING_INDICATOR_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: {
         ...baseMessageRequest,
         message_id: data.messageId,
@@ -364,10 +516,23 @@ class WsApi {
         typing_indicator: { type: 'text' }
       }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_TYPING_INDICATOR_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   // Media --------------------------------------------------------------------
-  async mediaRequest(body: BodyInit): Promise<Result<MediaResponse, { error: unknown }>> {
+  async mediaRequest(
+    body: BodyInit
+  ): Promise<Result<MediaResponse, ErrorBuilder<{ code: 'MEDIA_REQUEST_ERROR' }>>> {
     const response = await this.http.request<MediaResponse>({
       body,
       id: 'phoneNumberId',
@@ -376,22 +541,27 @@ class WsApi {
     })
 
     if (response.isErr()) {
-      this.logger.error('Failed to make media request', response.error)
-      return err({ error: response.error })
+      return err({ code: 'MEDIA_REQUEST_ERROR', extraParams: { error: response.error } })
     }
 
     return ok(response.value.response)
   }
 
+  // oxlint-disable-next-line max-statements
   async uploadMedia({
     media
   }: {
     media: Blob
-  }): Promise<Result<{ mediaId: string }, { error: unknown }>> {
+  }): Promise<
+    Result<
+      { mediaId: string },
+      ErrorBuilder<{ code: 'UNSUPPORTED_MEDIA_TYPE' | 'UPLOAD_MEDIA_ERROR' }>
+    >
+  > {
     const mimeType = mimeTypeSchema(media.type)
 
     if (mimeType instanceof type.errors) {
-      throw new Error('Unsupported media type')
+      return err({ code: 'UNSUPPORTED_MEDIA_TYPE', data: { mimeType } })
     }
 
     const formData = new FormData()
@@ -401,35 +571,42 @@ class WsApi {
 
     const mediaRequestResponse = await this.mediaRequest(formData)
 
-    return mediaRequestResponse.match(
-      (value) => ok({ mediaId: value.id }),
-      ({ error }) => {
-        this.logger.error('Failed to upload media', error)
-        return err({ error: error })
-      }
-    )
+    if (mediaRequestResponse.isErr()) {
+      return errorHandlerResult(mediaRequestResponse.error, this.logger, {
+        MEDIA_REQUEST_ERROR: {
+          code: 'UPLOAD_MEDIA_ERROR',
+          extraParams: { error: mediaRequestResponse.error }
+        }
+      })
+    }
+
+    return ok({ mediaId: mediaRequestResponse.value.id })
   }
 
   async getMediaUrl({
     mediaId
   }: {
     mediaId: string
-  }): Promise<Result<{ mediaUrl: string }, { error: unknown }>> {
+  }): Promise<Result<{ mediaUrl: string }, ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' }>>> {
     const response = await this.sendRequest<{ id: string; url: string }>({
       id: mediaId,
       method: 'GET'
     })
 
-    return response.match(
-      (value) => ok({ mediaUrl: value.response.url }),
-      ({ error }) => {
-        this.logger.error('Failed to get media URL', error)
-        return err({ error })
-      }
-    )
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        HTTP_REQUEST_ERROR: { code: 'GET_MEDIA_URL_ERROR', extraParams: { error: response.error } }
+      })
+    }
+
+    return ok({ mediaUrl: response.value.response.url })
   }
 
-  async getMedia({ mediaUrl }: { mediaUrl: string }): Promise<Result<Blob, { error: unknown }>> {
+  async getMedia({
+    mediaUrl
+  }: {
+    mediaUrl: string
+  }): Promise<Result<Blob, ErrorBuilder<{ code: 'GET_MEDIA_ERROR' }>>> {
     try {
       const response = await this.http.fetch(mediaUrl, {
         headers: { Authorization: `Bearer ${this.config.token}` },
@@ -437,8 +614,7 @@ class WsApi {
       })
       return ok(response)
     } catch (error) {
-      this.logger.error('Failed to get media', error)
-      return err({ error })
+      return err({ code: 'GET_MEDIA_ERROR', extraParams: { error } })
     }
   }
 
@@ -449,10 +625,21 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'template' }>['template']
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendMessageRequest({
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEMPLATE_ERROR' }>>> {
+    const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, template: data, to, type: 'template' }
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: 'SEND_TEMPLATE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendTextTemplate({
@@ -461,8 +648,19 @@ class WsApi {
   }: {
     to: string
     data: Extract<Request, { type: 'template' }>['template'] & { components: [TemplateBody] }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendTemplate({ data, to })
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEXT_TEMPLATE_ERROR' }>>> {
+    const response = await this.sendTemplate({ data, to })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_TEMPLATE_ERROR: {
+          code: 'SEND_TEXT_TEMPLATE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendMediaTemplate({
@@ -473,8 +671,19 @@ class WsApi {
     data: Extract<Request, { type: 'template' }>['template'] & {
       components: [TemplateMediaHeader, TemplateBody]
     }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendTemplate({ data, to })
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_MEDIA_TEMPLATE_ERROR' }>>> {
+    const response = await this.sendTemplate({ data, to })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_TEMPLATE_ERROR: {
+          code: 'SEND_MEDIA_TEMPLATE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendFlowTemplate({
@@ -485,8 +694,19 @@ class WsApi {
     data: Extract<Request, { type: 'template' }>['template'] & {
       components: [TemplateBody, TemplateFlowButton]
     }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendTemplate({ data, to })
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_FLOW_TEMPLATE_ERROR' }>>> {
+    const response = await this.sendTemplate({ data, to })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_TEMPLATE_ERROR: {
+          code: 'SEND_FLOW_TEMPLATE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendAuthTemplate({
@@ -497,8 +717,19 @@ class WsApi {
     data: Extract<Request, { type: 'template' }>['template'] & {
       components: [TemplateBody, TemplateAuthButton]
     }
-  }): Promise<Result<MessageResponse, { error: unknown }>> {
-    return await this.sendTemplate({ data, to })
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_AUTH_TEMPLATE_ERROR' }>>> {
+    const response = await this.sendTemplate({ data, to })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_TEMPLATE_ERROR: {
+          code: 'SEND_AUTH_TEMPLATE_ERROR',
+          extraParams: { data, error: response.error }
+        }
+      })
+    }
+
+    return ok(response.value)
   }
 
   async sendTemplateRequest<T>({
@@ -681,10 +912,21 @@ class WsApi {
       }
 
       const mediaUrl = await this.getMediaUrl({ mediaId: media.id })
-      const mediaBlob = await this.getMedia({ mediaUrl })
+
+      if (mediaUrl.isErr()) {
+        this.logger.error('Failed to get media URL for incoming media message', mediaUrl.error)
+        return err({ error: mediaUrl.error })
+      }
+
+      const mediaBlob = await this.getMedia({ mediaUrl: mediaUrl.value.mediaUrl })
+
+      if (mediaBlob.isErr()) {
+        this.logger.error('Failed to get media blob for incoming media message', mediaBlob.error)
+        return err({ error: mediaBlob.error })
+      }
 
       return {
-        blob: mediaBlob,
+        blob: mediaBlob.value,
         from: messageObject.from,
         id: messageObject.id,
         message: media.caption,

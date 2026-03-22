@@ -7,6 +7,7 @@ import { ofetch } from 'ofetch'
 import type { Logger } from '@/types/logger'
 
 import type { ResolvedConfig } from './config'
+import type { ErrorBuilder } from './error-handler'
 
 import { API_ENDPOINT } from './config'
 
@@ -30,14 +31,23 @@ interface HttpRequestOptions {
   headers?: Record<string, string>
 }
 
-type HttpResponse<T = unknown> = Result<{ response: T }, { error: unknown }>
+interface HttpResponse<T = unknown> {
+  response: T
+}
 
 interface HttpClient {
-  request: <T = unknown>(options: HttpRequestOptions) => Promise<HttpResponse<T>>
+  request: <T = unknown>(
+    options: HttpRequestOptions
+  ) => Promise<
+    Result<
+      HttpResponse<T>,
+      ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' } | { code: 'UNEXPECTED_ERROR' }>
+    >
+  >
   fetch: typeof ofetch
 }
 
-function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
+function createHttpClient(config: ResolvedConfig, _logger: Logger): HttpClient {
   async function request<T = unknown>({
     id,
     path,
@@ -45,7 +55,9 @@ function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
     method,
     body,
     headers
-  }: HttpRequestOptions): Promise<HttpResponse<T>> {
+  }: HttpRequestOptions): Promise<
+    Result<HttpResponse<T>, ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' }>>
+  > {
     const requestId = id === 'phoneNumberId' ? config.phoneNumberId : (config.businessId ?? id)
 
     try {
@@ -61,7 +73,7 @@ function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
       const fetchUrl = `${API_ENDPOINT}/${config.apiVersion}/${requestId}${path ? `/${path}` : ''}${queryStr}`
 
       try {
-        const response = await ofetch(fetchUrl, {
+        const response = await ofetch<T>(fetchUrl, {
           body: body ?? undefined,
           headers: mergedHeaders,
           method
@@ -69,12 +81,10 @@ function createHttpClient(config: ResolvedConfig, logger: Logger): HttpClient {
 
         return ok({ response })
       } catch (error) {
-        logger.error?.('HTTP request threw', error)
-        return err({ error })
+        return err({ code: 'HTTP_REQUEST_ERROR', extraParams: { error } })
       }
     } catch (error) {
-      logger.error?.('HTTP client request threw', error)
-      return err({ error })
+      return err({ code: 'UNEXPECTED_ERROR', extraParams: { error } })
     }
   }
 
