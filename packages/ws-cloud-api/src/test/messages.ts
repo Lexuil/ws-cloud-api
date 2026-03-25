@@ -229,6 +229,7 @@ if (messageType in messageFunctions) {
       if (success) {
         console.log('Message sent')
       }
+      return
     })
     .catch(console.error)
 } else {

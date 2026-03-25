@@ -5,15 +5,28 @@ import { err, ok } from 'neverthrow'
 
 import type { ErrorBuilder } from '@/core/error-handler'
 import type {
+  TemplateBody,
+  TemplateFlowButton,
+  TemplateFields,
+  TemplateLanguageCode
+} from '@/types/entities/template'
+import type {
   Request,
   Contact,
   InteractiveMessageRequest,
-  TemplateBody,
-  TemplateFlowButton,
-  TemplateAuthButton,
-  TemplateMediaHeader
+  TemplatesRequest,
+  CreateTemplateRequest,
+  SendTemplateRequest,
+  SendTemplateBody,
+  SendTemplateHeader,
+  SendTemplateButtonParameter
 } from '@/types/request'
-import type { MediaResponse, MessageResponse } from '@/types/response'
+import type {
+  CreateTemplateResponse,
+  GetTemplatesResponse,
+  MediaResponse,
+  MessageResponse
+} from '@/types/response'
 
 import { errorHandlerResult } from '@/core/error-handler'
 
@@ -22,12 +35,6 @@ import type { HttpResponse, RequestMethod } from './core/http'
 import type { WsConfig } from './types/config'
 import type { MessageStatus } from './types/enums'
 import type { Button } from './types/messages'
-import type {
-  CreateTemplate,
-  CreateTemplateResponse,
-  Templates,
-  templateFields
-} from './types/templates'
 import type { WebhookSubscribeQuery, WsRequest } from './types/webhook'
 import type { Message } from './types/webhook/messages'
 
@@ -624,7 +631,7 @@ class WsApi {
     data
   }: {
     to: string
-    data: Extract<Request, { type: 'template' }>['template']
+    data: SendTemplateRequest['template']
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEMPLATE_ERROR' }>>> {
     const response = await this.sendMessageRequest({
       body: { ...baseMessageRequest, template: data, to, type: 'template' }
@@ -647,7 +654,7 @@ class WsApi {
     data
   }: {
     to: string
-    data: Extract<Request, { type: 'template' }>['template'] & { components: [TemplateBody] }
+    data: SendTemplateRequest['template'] & { components?: [SendTemplateBody] }
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEXT_TEMPLATE_ERROR' }>>> {
     const response = await this.sendTemplate({ data, to })
 
@@ -668,9 +675,7 @@ class WsApi {
     data
   }: {
     to: string
-    data: Extract<Request, { type: 'template' }>['template'] & {
-      components: [TemplateMediaHeader, TemplateBody]
-    }
+    data: SendTemplateRequest['template'] & { components: [SendTemplateHeader, SendTemplateBody] }
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_MEDIA_TEMPLATE_ERROR' }>>> {
     const response = await this.sendTemplate({ data, to })
 
@@ -691,8 +696,8 @@ class WsApi {
     data
   }: {
     to: string
-    data: Extract<Request, { type: 'template' }>['template'] & {
-      components: [TemplateBody, TemplateFlowButton]
+    data: SendTemplateRequest['template'] & {
+      components: (SendTemplateBody | Extract<SendTemplateButtonParameter, { sub_type: 'flow' }>)[]
     }
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_FLOW_TEMPLATE_ERROR' }>>> {
     const response = await this.sendTemplate({ data, to })
@@ -714,11 +719,24 @@ class WsApi {
     data
   }: {
     to: string
-    data: Extract<Request, { type: 'template' }>['template'] & {
-      components: [TemplateBody, TemplateAuthButton]
-    }
+    data: { name: string; language: TemplateLanguageCode; code: string }
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_AUTH_TEMPLATE_ERROR' }>>> {
-    const response = await this.sendTemplate({ data, to })
+    const response = await this.sendTemplate({
+      data: {
+        components: [
+          { parameters: [{ text: data.code, type: 'text' }], type: 'body' },
+          {
+            index: '0',
+            parameters: [{ text: data.code, type: 'text' }],
+            sub_type: 'url',
+            type: 'button'
+          }
+        ],
+        language: { code: data.language },
+        name: data.name
+      },
+      to
+    })
 
     if (response.isErr()) {
       return errorHandlerResult(response.error, this.logger, {
@@ -738,9 +756,9 @@ class WsApi {
     method = 'GET'
   }: {
     query?: string
-    body?: string
+    body?: TemplatesRequest
     method?: RequestMethod
-  }): Promise<{ success: true; data: T } | { success: false; error: unknown }> {
+  }): Promise<Result<{ response: T }, ErrorBuilder<{ code: 'TEMPLATE_REQUEST_ERROR' }>>> {
     const requestResponse = await this.sendRequest<T>({
       body,
       id: 'businessId',
@@ -750,20 +768,25 @@ class WsApi {
     })
 
     if (requestResponse.isErr()) {
-      this.logger.error('Failed to handle template request', requestResponse.error)
-      return { error: requestResponse.error, success: false }
+      return errorHandlerResult(requestResponse.error, this.logger, {
+        HTTP_REQUEST_ERROR: {
+          code: 'TEMPLATE_REQUEST_ERROR',
+          extraParams: { body, error: requestResponse.error, method, query }
+        }
+      })
     }
 
-    return { data: requestResponse.value.response, success: true }
+    return ok(requestResponse.value)
   }
 
+  // oxlint-disable-next-line max-statements
   async getTemplates({
     fields,
     limit,
     after,
     before
-  }: { fields?: templateFields[]; limit?: number; after?: string; before?: string } = {}): Promise<
-    { success: true; data: Templates } | { success: false; error: unknown }
+  }: { fields?: TemplateFields[]; limit?: number; after?: string; before?: string } = {}): Promise<
+    Result<{ response: GetTemplatesResponse }, ErrorBuilder<{ code: 'GET_TEMPLATE_ERROR' }>>
   > {
     const queryParams: { fields?: string; limit?: string; after?: string; before?: string } = {}
     if (fields !== undefined) {
@@ -779,22 +802,44 @@ class WsApi {
       queryParams.before = before
     }
 
-    return await this.sendTemplateRequest<Templates>({
+    const response = await this.sendTemplateRequest<GetTemplatesResponse>({
       query: new URLSearchParams(queryParams).toString()
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        TEMPLATE_REQUEST_ERROR: {
+          code: 'GET_TEMPLATE_ERROR',
+          extraParams: { error: response.error, queryParams }
+        }
+      })
+    }
+
+    return ok({ response: response.value.response })
   }
 
   async createTemplate({
     template
   }: {
-    template: CreateTemplate
+    template: CreateTemplateRequest
   }): Promise<
-    { success: true; data: CreateTemplateResponse } | { success: false; error: unknown }
+    Result<{ response: CreateTemplateResponse }, ErrorBuilder<{ code: 'CREATE_TEMPLATE_ERROR' }>>
   > {
-    return await this.sendTemplateRequest<CreateTemplateResponse>({
-      body: JSON.stringify(template),
+    const response = await this.sendTemplateRequest<CreateTemplateResponse>({
+      body: template,
       method: 'POST'
     })
+
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        TEMPLATE_REQUEST_ERROR: {
+          code: 'CREATE_TEMPLATE_ERROR',
+          extraParams: { error: response.error, template }
+        }
+      })
+    }
+
+    return ok({ response: response.value.response })
   }
 
   // Webhook ------------------------------------------------------------------

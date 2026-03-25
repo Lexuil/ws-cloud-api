@@ -1,5 +1,12 @@
 import { type } from 'arktype'
 
+import {
+  templateCategorySchema,
+  templateComponentSchema,
+  templateLanguageCodeSchema,
+  templateParameterSchema
+} from './entities/template'
+
 const MIN_ITEMS_ONE = 1
 const MIN_ITEMS_TWO = 2
 const MIN_STRING_EXCLUSIVE = 0
@@ -410,171 +417,6 @@ const interactiveMessageRequestSchema = interactiveCTAUrlMessageRequestSchema
 
 type InteractiveMessageRequest = typeof interactiveMessageRequestSchema.infer
 
-const templateParameterTypeSchema = type('"text" | "currency" | "date_time"')
-
-type TemplateParameterType = typeof templateParameterTypeSchema.infer
-
-const templateNamedParameterSchema = type({
-  name: 'string > 0',
-  text: `string > ${MIN_STRING_EXCLUSIVE}`,
-  type: templateParameterTypeSchema
-})
-
-type TemplateNamedParameter = typeof templateNamedParameterSchema.infer
-
-const templatePositionalParameterSchema = type({
-  text: 'string > 0',
-  type: templateParameterTypeSchema
-})
-
-type TemplatePositionalParameter = typeof templatePositionalParameterSchema.infer
-
-const templateParameterSchema = templateNamedParameterSchema
-  .array()
-  .or(templatePositionalParameterSchema.array())
-
-type TemplateParameter = typeof templateParameterSchema.infer
-
-const templateTextHeaderSchema = type({ parameters: templateParameterSchema, type: '"text"' })
-
-type TemplateTextHeader = typeof templateTextHeaderSchema.infer
-
-const templateMediaHeaderSchema = type({ type: '"video"', video: mediaByIdOrLinkSchema })
-  .or(
-    type({
-      document: mediaByIdOrLinkSchema.and(type({ 'filename?': 'string' })),
-      type: '"document"'
-    })
-  )
-  .or(type({ image: mediaByIdOrLinkSchema, type: '"image"' }))
-
-type TemplateMediaHeader = typeof templateMediaHeaderSchema.infer
-
-const templateLocationHeaderSchema = type({
-  location: type({
-    address: 'string > 0',
-    latitude: 'number | string.numeric',
-    longitude: 'number | string.numeric',
-    name: nonEmptyStringSchema
-  }),
-  type: '"location"'
-})
-
-type TemplateLocationHeader = typeof templateLocationHeaderSchema.infer
-
-const templateBodySchema = type({ parameters: templateParameterSchema, type: '"body"' })
-
-type TemplateBody = typeof templateBodySchema.infer
-
-const templateHeaderSchema = templateTextHeaderSchema
-  .or(templateMediaHeaderSchema)
-  .or(templateLocationHeaderSchema)
-
-type TemplateHeader = typeof templateHeaderSchema.infer
-
-const templateFlowButtonSchema = type({
-  index: '0',
-  parameters: type([type({ action: type('"flow"'), type: type('"action"') })]),
-  sub_type: type('"flow"'),
-  type: type('"button"')
-})
-
-type TemplateFlowButton = typeof templateFlowButtonSchema.infer
-
-const templateAuthButtonSchema = type({
-  index: '0',
-  parameters: type([type({ code: 'string > 0', type: type('"text"') })]),
-  sub_type: type('"url"'),
-  type: type('"button"')
-})
-
-type TemplateAuthButton = typeof templateAuthButtonSchema.infer
-
-const templateComponentSchema = templateHeaderSchema
-  .or(templateBodySchema)
-  .or(templateFlowButtonSchema)
-  .or(templateAuthButtonSchema)
-
-type TemplateComponent = typeof templateComponentSchema.infer
-
-const languageCodes = [
-  'af',
-  'sq',
-  'ar',
-  'az',
-  'bn',
-  'bg',
-  'ca',
-  'zh_CN',
-  'zh_HK',
-  'zh_TW',
-  'hr',
-  'cs',
-  'da',
-  'nl',
-  'en',
-  'en_GB',
-  'en_US',
-  'et',
-  'fil',
-  'fi',
-  'fr',
-  'ka',
-  'de',
-  'el',
-  'gu',
-  'ha',
-  'he',
-  'hi',
-  'hu',
-  'id',
-  'ga',
-  'it',
-  'ja',
-  'kn',
-  'kk',
-  'rw_RW',
-  'ko',
-  'ky_KG',
-  'lo',
-  'lv',
-  'lt',
-  'mk',
-  'ms',
-  'ml',
-  'mr',
-  'nb',
-  'fa',
-  'pl',
-  'pt_BR',
-  'pt_PT',
-  'pa',
-  'ro',
-  'ru',
-  'sr',
-  'sk',
-  'sl',
-  'es',
-  'es_AR',
-  'es_ES',
-  'es_MX',
-  'sw',
-  'sv',
-  'ta',
-  'te',
-  'th',
-  'tr',
-  'uk',
-  'ur',
-  'uz',
-  'vi',
-  'zu'
-] as const
-
-const templateLanguageCodeSchema = type.enumerated(...languageCodes)
-
-type TemplateLanguageCode = typeof templateLanguageCodeSchema.infer
-
 const templateMessageRequestSchema = baseRequestSchema.and(
   type({
     template: type({
@@ -588,13 +430,6 @@ const templateMessageRequestSchema = baseRequestSchema.and(
 
 type TemplateMessageRequest = typeof templateMessageRequestSchema.infer
 
-const markMessageAsReadRequestSchema = type({
-  message_id: 'string > 0',
-  messaging_product: '"whatsapp"',
-  status: '"read"',
-  type: 'undefined'
-})
-
 const messageRequestSchema = textMessageRequestSchema
   .or(mediaMessageRequestSchema)
   .or(stickerMessageRequestSchema)
@@ -607,6 +442,87 @@ const messageRequestSchema = textMessageRequestSchema
   .or(templateMessageRequestSchema)
 
 type MessageRequest = typeof messageRequestSchema.infer
+
+const createTemplateRequestSchema = type({
+  category: templateCategorySchema,
+  components: templateComponentSchema.array(),
+  language: templateLanguageCodeSchema,
+  name: 'string > 0'
+})
+
+type CreateTemplateRequest = typeof createTemplateRequestSchema.infer
+
+const deleteTemplateSchema = type({ name: 'string > 0' }).or(type({ id: 'string > 0' }))
+
+type DeleteTemplate = typeof deleteTemplateSchema.infer
+
+const sendTemplateHeaderSchema = type({
+  parameters: type({ image: mediaByIdOrLinkSchema, type: '"image"' })
+    .or(type({ type: '"video"', video: mediaByIdOrLinkSchema }))
+    .or(type({ document: mediaByIdOrLinkSchema, type: '"document"' }))
+    .or(type({ text: interactiveHeaderTextSchema, type: '"text"' }))
+    .array(),
+  type: '"header"'
+})
+
+type SendTemplateHeader = typeof sendTemplateHeaderSchema.infer
+
+const sendTemplateBodySchema = type({ 'parameters?': templateParameterSchema, type: '"body"' })
+
+type SendTemplateBody = typeof sendTemplateBodySchema.infer
+
+const sendTemplateUrlButtonSchema = type({
+  parameters: templateParameterSchema,
+  sub_type: '"url"',
+  type: '"button"'
+})
+
+type SendTemplateUrlButton = typeof sendTemplateUrlButtonSchema.infer
+
+const sendTemplateFlowButtonSchema = type({
+  index: 'string',
+  parameters: type({
+    action: type({ 'flow_action_data?': 'object', 'flow_token?': 'string' }),
+    type: '"action"'
+  }).array(),
+  sub_type: '"flow"',
+  type: '"button"'
+})
+
+type SendTemplateFlowButton = typeof sendTemplateFlowButtonSchema.infer
+
+const sendTemplateButtonParameterSchema = sendTemplateUrlButtonSchema
+  .or(sendTemplateFlowButtonSchema)
+  .and(type({ index: 'string' }))
+
+type SendTemplateButtonParameter = typeof sendTemplateButtonParameterSchema.infer
+
+const sendTemplateRequestSchema = baseRequestSchema.and(
+  type({
+    template: type({
+      'components?': type(
+        sendTemplateHeaderSchema.or(sendTemplateBodySchema).or(sendTemplateButtonParameterSchema)
+      ).array(),
+      language: type({ code: templateLanguageCodeSchema, 'policy?': '"deterministic"' }),
+      name: 'string > 0'
+    })
+  })
+)
+
+type SendTemplateRequest = typeof sendTemplateRequestSchema.infer
+
+const templatesRequestSchema = createTemplateRequestSchema
+  .or(deleteTemplateSchema)
+  .or(sendTemplateRequestSchema)
+
+type TemplatesRequest = typeof templatesRequestSchema.infer
+
+const markMessageAsReadRequestSchema = type({
+  message_id: 'string > 0',
+  messaging_product: '"whatsapp"',
+  status: '"read"',
+  type: 'undefined'
+})
 
 type MarkMessageAsReadRequest = typeof markMessageAsReadRequestSchema.infer
 
@@ -623,7 +539,7 @@ const statusRequestSchema = markMessageAsReadRequestSchema.or(typingIndicatorReq
 
 type StatusRequest = typeof statusRequestSchema.infer
 
-const requestSchema = messageRequestSchema.or(statusRequestSchema)
+const requestSchema = messageRequestSchema.or(templatesRequestSchema).or(statusRequestSchema)
 
 type Request = typeof requestSchema.infer
 
@@ -667,34 +583,26 @@ export {
   interactiveFlowMessageRequest,
   type InteractiveMessageRequest,
   interactiveMessageRequestSchema,
-  templateParameterTypeSchema,
-  type TemplateParameterType,
-  templateNamedParameterSchema,
-  type TemplateNamedParameter,
-  templatePositionalParameterSchema,
-  type TemplatePositionalParameter,
-  templateParameterSchema,
-  type TemplateParameter,
-  templateTextHeaderSchema,
-  type TemplateTextHeader,
-  templateMediaHeaderSchema,
-  type TemplateMediaHeader,
-  templateLocationHeaderSchema,
-  type TemplateLocationHeader,
-  templateHeaderSchema,
-  type TemplateHeader,
-  templateFlowButtonSchema,
-  type TemplateFlowButton,
-  templateAuthButtonSchema,
-  type TemplateAuthButton,
-  templateComponentSchema,
-  type TemplateComponent,
-  templateBodySchema,
-  type TemplateBody,
-  templateLanguageCodeSchema,
-  type TemplateLanguageCode,
   type TemplateMessageRequest,
   templateMessageRequestSchema,
+  type CreateTemplateRequest,
+  createTemplateRequestSchema,
+  type DeleteTemplate,
+  deleteTemplateSchema,
+  type SendTemplateRequest,
+  sendTemplateRequestSchema,
+  type SendTemplateHeader,
+  sendTemplateHeaderSchema,
+  type SendTemplateBody,
+  sendTemplateBodySchema,
+  type SendTemplateUrlButton,
+  sendTemplateUrlButtonSchema,
+  type SendTemplateFlowButton,
+  sendTemplateFlowButtonSchema,
+  type SendTemplateButtonParameter,
+  sendTemplateButtonParameterSchema,
+  type TemplatesRequest,
+  templatesRequestSchema,
   type MarkMessageAsReadRequest,
   markMessageAsReadRequestSchema,
   type TypingIndicatorRequest,

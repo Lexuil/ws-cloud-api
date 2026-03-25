@@ -1,5 +1,7 @@
 import { type } from 'arktype'
 
+import { templateSchema } from './entities/template'
+
 const MIN_ITEMS_ONE = 1
 
 const messageContactSchema = type({ input: 'string > 0', wa_id: 'string > 0' })
@@ -26,9 +28,24 @@ const mediaResponseSchema = type({ id: 'string > 0' })
 
 type MediaResponse = typeof mediaResponseSchema.infer
 
-const responseSchema = sendMessageResponseSchema.or(markMessageAsReadResponseSchema)
+const messageResponseSchema = sendMessageResponseSchema.or(markMessageAsReadResponseSchema)
 
-type MessageResponse = typeof responseSchema.infer
+type MessageResponse = typeof messageResponseSchema.infer
+
+const getTemplatesSchema = type({
+  data: templateSchema.array(),
+  paging: type({ cursors: type({ after: 'string > 0', before: 'string > 0' }), next: 'string.url' })
+})
+
+type GetTemplatesResponse = typeof getTemplatesSchema.infer
+
+const createTemplateResponseSchema = type({
+  category: templateSchema.get('category'),
+  id: templateSchema.get('id'),
+  status: templateSchema.get('status')
+})
+
+type CreateTemplateResponse = typeof createTemplateResponseSchema.infer
 
 export {
   type SendMessageResponse,
@@ -38,5 +55,9 @@ export {
   type MediaResponse,
   mediaResponseSchema,
   type MessageResponse,
-  responseSchema
+  messageResponseSchema,
+  type GetTemplatesResponse,
+  getTemplatesSchema,
+  type CreateTemplateResponse,
+  createTemplateResponseSchema
 }
