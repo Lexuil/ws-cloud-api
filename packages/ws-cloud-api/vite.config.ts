@@ -6,7 +6,8 @@ export default defineConfig({
     dts: { tsgo: true },
     entry: ['src/index.ts'],
     exports: true,
-    format: ['cjs', 'esm']
+    format: ['cjs', 'esm'],
+    ignoreWatch: ['src/test/**']
   }),
   run: {
     tasks: {

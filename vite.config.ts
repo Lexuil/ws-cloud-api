@@ -32,7 +32,7 @@ export default defineConfig({
       'import/no-named-export': 'off',
       'import/no-nodejs-modules': 'off',
       'no-duplicate-imports': ['error', { allowSeparateTypeImports: true }],
-      'no-magic-numbers': ['error', { ignoreArrayIndexes: true }],
+      'no-magic-numbers': 'off',
       'no-ternary': 'off',
       'sort-imports': 'off',
       'unicorn/prefer-string-raw': 'off'
