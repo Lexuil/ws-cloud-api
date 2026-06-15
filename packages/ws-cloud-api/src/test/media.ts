@@ -1,32 +1,47 @@
-import 'dotenv/config'
-import fs from 'fs'
-import path from 'path'
-import { getMedia, getMediaUrl, uploadMedia } from 'ws-cloud-api/media'
+import fs from 'node:fs'
+import path from 'node:path'
+import logger from 'pino'
+import { WsApi } from 'ws-cloud-api'
 
-const blob = new Blob([fs.readFileSync(path.join(__dirname, '/assets/kirby.jpg'))], {
-  type: 'image/jpeg'
+const assetsDir = path.join(import.meta.dirname, 'assets')
+const blob = new Blob([fs.readFileSync(path.join(assetsDir, 'kirby.jpg'))], { type: 'image/jpeg' })
+
+const customLogger = logger()
+
+const wsApi = new WsApi({
+  logger: {
+    debug: customLogger.debug.bind(customLogger),
+    error: customLogger.error.bind(customLogger),
+    info: customLogger.info.bind(customLogger),
+    log: customLogger.info.bind(customLogger),
+    warn: customLogger.warn.bind(customLogger)
+  }
 })
 
-uploadMedia({ media: blob })
-  .then((mediaId) => {
-    console.log('console media id: ' + mediaId)
+try {
+  const upload = await wsApi.uploadMedia({ media: blob })
+  if (upload.isErr()) {
+    throw upload.error
+  }
+  const { mediaId } = upload.value
+  console.log('mediaId:', mediaId)
 
-    getMediaUrl({ mediaId })
-      .then((mediaUrl) => {
-        console.log('console media url: ' + mediaUrl)
+  const urlResult = await wsApi.getMediaUrl({ mediaId })
+  if (urlResult.isErr()) {
+    throw urlResult.error
+  }
+  const { mediaUrl } = urlResult.value
+  console.log('mediaUrl:', mediaUrl)
 
-        getMedia({ mediaUrl })
-          .then((blob) => {
-            // Save the blob to a file
-            blob
-              .arrayBuffer()
-              .then((buffer) => {
-                fs.writeFileSync(path.join(__dirname, '/assets/kirby2.jpg'), Buffer.from(buffer))
-              })
-              .catch(console.error)
-          })
-          .catch(console.error)
-      })
-      .catch(console.error)
-  })
-  .catch(console.error)
+  const blobResult = await wsApi.getMedia({ mediaUrl })
+  if (blobResult.isErr()) {
+    throw blobResult.error
+  }
+
+  const buffer = Buffer.from(await blobResult.value.arrayBuffer())
+  fs.writeFileSync(path.join(assetsDir, 'kirby2.jpg'), buffer)
+  console.log('Saved kirby2.jpg')
+} catch (error) {
+  console.error(error)
+  process.exit(1)
+}

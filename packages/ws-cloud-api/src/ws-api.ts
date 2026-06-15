@@ -572,7 +572,7 @@ class WsApi {
     }
 
     const formData = new FormData()
-    formData.append('file', media)
+    formData.append('file', media, 'file')
     formData.append('type', mimeType)
     formData.append('messaging_product', 'whatsapp')
 

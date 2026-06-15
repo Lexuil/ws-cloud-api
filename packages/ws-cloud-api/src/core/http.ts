@@ -58,7 +58,13 @@ function createHttpClient(config: ResolvedConfig, _logger: Logger): HttpClient {
   }: HttpRequestOptions): Promise<
     Result<HttpResponse<T>, ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' }>>
   > {
-    const requestId = id === 'phoneNumberId' ? config.phoneNumberId : (config.businessId ?? id)
+    let requestId = id
+
+    if (id === 'phoneNumberId') {
+      requestId = config.phoneNumberId
+    } else if (id === 'businessId') {
+      requestId = config.businessId
+    }
 
     try {
       const mergedHeaders: Record<string, string> = { Authorization: `Bearer ${config.token}` }
