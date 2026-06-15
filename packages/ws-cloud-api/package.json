@@ -38,10 +38,10 @@
   "scripts": {
     "release": "bumpp",
     "prepublishOnly": "pnpm run build",
-    "test:messages": "jiti ./src/test/messages.ts",
-    "test:webhook": "jiti ./src/test/webhook.ts",
-    "test:templates": "jiti ./src/test/templates.ts",
-    "test:media": "jiti ./src/test/media.ts"
+    "test:messages": "bun run ./src/test/messages.ts",
+    "test:webhook": "bun run ./src/test/webhook.ts",
+    "test:templates": "bun run ./src/test/templates.ts",
+    "test:media": "bun run ./src/test/media.ts"
   },
   "dependencies": {
     "arktype": "2.2.0",

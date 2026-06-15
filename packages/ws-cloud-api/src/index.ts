@@ -1,6 +1,9 @@
 // Core API
 export { WsApi, defaultWsApi } from './ws-api'
 
+// Export core types
+export type { HttpClient, HttpResponse, RequestMethod } from './core/http'
+
 // Export all types
 export type * from './types/messages'
 export type * from './types/config'

@@ -31,7 +31,7 @@ import type {
 import { errorHandlerResult } from '@/core/error-handler'
 
 import type { ResolvedConfig } from './core/config'
-import type { HttpResponse, RequestMethod } from './core/http'
+import type { HttpClient, HttpResponse, RequestMethod } from './core/http'
 import type { WsConfig } from './types/config'
 import type { MessageStatus } from './types/enums'
 import type { Button } from './types/messages'
@@ -51,12 +51,12 @@ type Source = 'user' | 'button' | 'list' | 'flow'
 class WsApi {
   private readonly config: ResolvedConfig
   private readonly logger: Logger
-  private readonly http: ReturnType<typeof createHttpClient>
+  private readonly http: HttpClient
 
-  constructor(config?: WsConfig) {
+  constructor(config?: WsConfig, options?: { http?: HttpClient }) {
     this.config = resolveConfig(config)
     this.logger = new Logger(config?.logger)
-    this.http = createHttpClient(this.config, this.logger)
+    this.http = options?.http ?? createHttpClient(this.config, this.logger)
   }
 
   async sendRequest<T = unknown>({
@@ -858,61 +858,64 @@ class WsApi {
   async handleWebhook(
     input: WsRequest
   ): Promise<
-    | {
-        type: 'statusUpdate'
-        messageId: string
-        userId: string
-        status:
-          | MessageStatus.Read
-          | MessageStatus.Delivered
-          | MessageStatus.Sent
-          | MessageStatus.Failed
-      }
-    | { type: 'message'; from: string; id: string; message: string; source: Source }
-    | {
-        type: 'media'
-        from: string
-        id: string
-        blob: Blob
-        mimeType: string
-        message: string
-        source: Source
-      }
-    | { type: 'flowReply'; from: string; id: string; data: Record<string, unknown> }
-    | { type: 'reaction'; from: string; id: string; emoji: string }
-    | undefined
+    Result<
+      | {
+          type: 'statusUpdate'
+          messageId: string
+          userId: string
+          status:
+            | MessageStatus.Read
+            | MessageStatus.Delivered
+            | MessageStatus.Sent
+            | MessageStatus.Failed
+        }
+      | { type: 'message'; from: string; id: string; message: string; source: Source }
+      | {
+          type: 'media'
+          from: string
+          id: string
+          blob: Blob
+          mimeType: string
+          message: string
+          source: Source
+        }
+      | { type: 'flowReply'; from: string; id: string; data: Record<string, unknown> }
+      | { type: 'reaction'; from: string; id: string; emoji: string }
+      | undefined,
+      ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' | 'GET_MEDIA_ERROR' }>
+    >
   > {
     if (
       input.object === undefined ||
       input.entry[0].changes[0].value.metadata.phone_number_id !== this.config.phoneNumberId
     ) {
-      return undefined
+      return ok(undefined)
     }
 
     const webhookValue = input.entry[0].changes[0].value
 
     if ('statuses' in webhookValue) {
-      return {
+      return ok({
         messageId: webhookValue.statuses[0].id,
         status: webhookValue.statuses[0].status,
         type: 'statusUpdate',
         userId: webhookValue.statuses[0].recipient_id
-      }
+      })
     }
 
     const [messageObject] = webhookValue.messages
 
     if (messageObject.type === 'reaction') {
-      return {
+      return ok({
         emoji: messageObject.reaction.emoji,
         from: messageObject.from,
         id: messageObject.reaction.message_id,
         type: 'reaction'
-      }
+      })
     }
 
     if (messageObject.type === 'interactive' && messageObject.interactive.type === 'nfm_reply') {
-      return {
+      return ok({
         data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as Record<
           string,
           unknown
@@ -920,7 +923,7 @@ class WsApi {
         from: messageObject.from,
         id: messageObject.id,
         type: 'flowReply'
-      }
+      })
     }
 
     if (['image', 'video', 'document', 'sticker', 'audio'].includes(messageObject.type)) {
@@ -960,17 +963,17 @@ class WsApi {
 
       if (mediaUrl.isErr()) {
         this.logger.error('Failed to get media URL for incoming media message', mediaUrl.error)
-        return err({ error: mediaUrl.error })
+        return err({ code: 'GET_MEDIA_URL_ERROR', extraParams: { error: mediaUrl.error } })
       }
 
       const mediaBlob = await this.getMedia({ mediaUrl: mediaUrl.value.mediaUrl })
 
       if (mediaBlob.isErr()) {
         this.logger.error('Failed to get media blob for incoming media message', mediaBlob.error)
-        return err({ error: mediaBlob.error })
+        return err({ code: 'GET_MEDIA_ERROR', extraParams: { error: mediaBlob.error } })
       }
 
-      return {
+      return ok({
         blob: mediaBlob.value,
         from: messageObject.from,
         id: messageObject.id,
@@ -978,10 +981,14 @@ class WsApi {
         mimeType: media.mimeType,
         source: 'user',
         type: 'media'
-      }
+      })
     }
 
-    return { from: messageObject.from, type: 'message', ...this.getMessageText(messageObject) }
+    return ok({
+      from: messageObject.from,
+      type: 'message',
+      ...this.getMessageText(messageObject)
+    })
   }
 
   private getMessageText(message: Message): { id: string; message: string; source: Source } {

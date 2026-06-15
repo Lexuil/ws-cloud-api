@@ -14,7 +14,7 @@ function strJson(json: object) {
     return JSON.stringify(json, undefined, JSON_PARSE_SPACE)
   } catch (error) {
     console.error('Error parsing JSON:', error)
-    return
+    return undefined
   }
 }
 
@@ -49,7 +49,7 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
             type: 'buttons'
           }
         ],
-        language: { code: 'es' },
+        language: 'es',
         name: `test_${Date.now()}`
       }
     })
