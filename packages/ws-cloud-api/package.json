@@ -38,10 +38,12 @@
   "scripts": {
     "release": "bumpp",
     "prepublishOnly": "pnpm run build",
-    "test:messages": "bun run ./src/test/messages.ts",
-    "test:webhook": "bun run ./src/test/webhook.ts",
-    "test:templates": "bun run ./src/test/templates.ts",
-    "test:media": "bun run ./src/test/media.ts"
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:watch": "vitest",
+    "smoke:media": "bun run ./scripts/smoke/media.ts",
+    "smoke:messages": "bun run ./scripts/smoke/messages.ts",
+    "smoke:templates": "bun run ./scripts/smoke/templates.ts"
   },
   "dependencies": {
     "arktype": "2.2.0",

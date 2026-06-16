@@ -7,7 +7,7 @@ export default defineConfig({
     entry: ['src/index.ts'],
     exports: true,
     format: ['cjs', 'esm'],
-    ignoreWatch: ['src/test/**']
+    ignoreWatch: ['src/__tests__/**']
   }),
   run: {
     tasks: {

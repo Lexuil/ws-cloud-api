@@ -51,7 +51,7 @@ class WsApi {
   constructor(config?: WsConfig, options?: { http?: HttpClient }) {
     this.config = resolveConfig(config)
     this.logger = new Logger(config?.logger)
-    this.http = options?.http ?? createHttpClient(this.config, this.logger)
+    this.http = options?.http ?? createHttpClient(this.config)
   }
 
   async sendRequest<T = unknown>({
@@ -68,7 +68,12 @@ class WsApi {
     query?: string
     method: RequestMethod | (string & NonNullable<unknown>)
     headers?: Record<string, string>
-  }): Promise<Result<HttpResponse<T>, ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' }>>> {
+  }): Promise<
+    Result<
+      HttpResponse<T>,
+      ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' } | { code: 'UNEXPECTED_ERROR' }>
+    >
+  > {
     let preparedBody = undefined
     if (body !== undefined) {
       preparedBody =
@@ -139,15 +144,7 @@ class WsApi {
       }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_TEXT_MESSAGE_ERROR',
-          extraParams: { body: { message, previewUrl } }
-        }
-      })
-    }
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_TEXT_MESSAGE_ERROR', { body: { message, previewUrl } })
   }
 
   async sendContact({
@@ -161,16 +158,7 @@ class WsApi {
       body: { ...baseMessageRequest, contacts, to, type: 'contacts' }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_CONTACT_MESSAGE_ERROR',
-          extraParams: { body: { contacts }, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_CONTACT_MESSAGE_ERROR', { body: { contacts } })
   }
 
   async sendImage({
@@ -184,16 +172,7 @@ class WsApi {
       body: { ...baseMessageRequest, image: data, to, type: 'image' }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_IMAGE_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_IMAGE_MESSAGE_ERROR', { data })
   }
 
   async sendVideo({
@@ -207,16 +186,7 @@ class WsApi {
       body: { ...baseMessageRequest, to, type: 'video', video: data }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_VIDEO_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_VIDEO_MESSAGE_ERROR', { data })
   }
 
   async sendDocument({
@@ -230,16 +200,7 @@ class WsApi {
       body: { ...baseMessageRequest, document: data, to, type: 'document' }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_DOCUMENT_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_DOCUMENT_MESSAGE_ERROR', { data })
   }
 
   async sendAudio({
@@ -253,16 +214,7 @@ class WsApi {
       body: { ...baseMessageRequest, audio: data, to, type: 'audio' }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_AUDIO_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_AUDIO_MESSAGE_ERROR', { data })
   }
 
   // oxlint-disable-next-line max-statements
@@ -276,68 +228,66 @@ class WsApi {
     Result<
       MessageResponse,
       ErrorBuilder<{
-        code:
-          | 'UNSUPPORTED_MEDIA_TYPE'
-          | 'UPLOAD_MEDIA_ERROR'
-          | 'SEND_FILE_MESSAGE_ERROR'
-          | 'SEND_IMAGE_MESSAGE_ERROR'
-          | 'SEND_VIDEO_MESSAGE_ERROR'
-          | 'SEND_AUDIO_MESSAGE_ERROR'
-          | 'SEND_DOCUMENT_MESSAGE_ERROR'
+        code: 'UNSUPPORTED_MEDIA_TYPE' | 'UPLOAD_MEDIA_ERROR' | 'SEND_FILE_MESSAGE_ERROR'
       }>
     >
   > {
-    try {
-      const mediaId = await this.uploadMedia({ media: data.file })
+    const mediaId = await this.uploadMedia({ media: data.file })
 
-      if (mediaId.isErr()) {
-        return errorHandlerResult(mediaId.error, this.logger, {
-          UNSUPPORTED_MEDIA_TYPE: { code: 'UNSUPPORTED_MEDIA_TYPE', extraParams: { data } },
-          UPLOAD_MEDIA_ERROR: {
-            code: 'UPLOAD_MEDIA_ERROR',
-            extraParams: { data: { error: mediaId.error } }
-          }
-        })
-      }
-
-      const [mimeType] = data.file.type.split('/')
-      const mediaType = mediaTypeSchema(
-        mimeType === 'text' || mimeType === 'application' ? 'document' : mimeType
-      )
-
-      if (mediaType instanceof type.errors) {
-        throw new Error('Unsupported media type')
-      }
-
-      switch (mediaType) {
-        case 'image': {
-          return await this.sendImage({
-            data: { caption: data.caption, id: mediaId.value.mediaId },
-            to
-          })
+    if (mediaId.isErr()) {
+      return errorHandlerResult(mediaId.error, this.logger, {
+        UNSUPPORTED_MEDIA_TYPE: { code: 'UNSUPPORTED_MEDIA_TYPE', extraParams: { data } },
+        UPLOAD_MEDIA_ERROR: {
+          code: 'UPLOAD_MEDIA_ERROR',
+          extraParams: { data: { error: mediaId.error } }
         }
-        case 'video': {
-          return await this.sendVideo({
-            data: { caption: data.caption, id: mediaId.value.mediaId },
-            to
-          })
-        }
-        case 'audio': {
-          return await this.sendAudio({ data: { id: mediaId.value.mediaId }, to })
-        }
-        case 'document': {
-          return await this.sendDocument({
-            data: { filename: data.filename, id: mediaId.value.mediaId },
-            to
-          })
-        }
-        default: {
-          return err({ code: 'UNEXPECTED_ERROR', data })
-        }
-      }
-    } catch (error) {
-      return err({ code: 'UNEXPECTED_ERROR', data: { error, ...data } })
+      })
     }
+
+    const [mimeType] = data.file.type.split('/')
+    const mediaType = mediaTypeSchema(
+      mimeType === 'text' || mimeType === 'application' ? 'document' : mimeType
+    )
+
+    if (mediaType instanceof type.errors) {
+      return err({ code: 'UNSUPPORTED_MEDIA_TYPE', data })
+    }
+
+    const mediaIdValue = mediaId.value.mediaId
+    let inner: Result<MessageResponse, ErrorBuilder<{ code: string }>> | undefined = undefined
+    switch (mediaType) {
+      case 'image': {
+        inner = await this.sendImage({ data: { caption: data.caption, id: mediaIdValue }, to })
+        break
+      }
+      case 'video': {
+        inner = await this.sendVideo({ data: { caption: data.caption, id: mediaIdValue }, to })
+        break
+      }
+      case 'audio': {
+        inner = await this.sendAudio({ data: { id: mediaIdValue }, to })
+        break
+      }
+      case 'document': {
+        inner = await this.sendDocument({ data: { filename: data.filename, id: mediaIdValue }, to })
+        break
+      }
+      default: {
+        return err({ code: 'SEND_FILE_MESSAGE_ERROR', data })
+      }
+    }
+    if (inner === undefined) {
+      return err({ code: 'SEND_FILE_MESSAGE_ERROR', data })
+    }
+    if (inner.isOk()) {
+      return ok(inner.value)
+    }
+    return errorHandlerResult(inner.error, this.logger, {
+      SEND_AUDIO_MESSAGE_ERROR: { code: 'SEND_FILE_MESSAGE_ERROR' },
+      SEND_DOCUMENT_MESSAGE_ERROR: { code: 'SEND_FILE_MESSAGE_ERROR' },
+      SEND_IMAGE_MESSAGE_ERROR: { code: 'SEND_FILE_MESSAGE_ERROR' },
+      SEND_VIDEO_MESSAGE_ERROR: { code: 'SEND_FILE_MESSAGE_ERROR' }
+    })
   }
 
   async sendButtonMessage({
@@ -348,7 +298,7 @@ class WsApi {
     data:
       | Extract<InteractiveMessageRequest['interactive'], { type: 'button' }>
       | { text: string; buttons: Button[]; footer?: string }
-  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_BUTTON_MESSAGE_ERROR' }>>> {
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_REPLY_BUTTON_MESSAGE_ERROR' }>>> {
     let body: Extract<Request, { type: 'interactive' }> | undefined = undefined
     body =
       'text' in data
@@ -366,16 +316,7 @@ class WsApi {
 
     const response = await this.sendMessageRequest({ body })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_BUTTON_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_REPLY_BUTTON_MESSAGE_ERROR', { data })
   }
 
   async sendCTAButtonMessage({
@@ -386,7 +327,7 @@ class WsApi {
     data:
       | Extract<InteractiveMessageRequest['interactive'], { type: 'cta_url' }>
       | { text: string; buttonText: string; url: string; footer?: string }
-  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_BUTTON_MESSAGE_ERROR' }>>> {
+  }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_CTA_URL_MESSAGE_ERROR' }>>> {
     let body: Extract<Request, { type: 'interactive' }> | undefined = undefined
     body =
       'text' in data
@@ -407,16 +348,7 @@ class WsApi {
 
     const response = await this.sendMessageRequest({ body })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_BUTTON_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_CTA_URL_MESSAGE_ERROR', { data })
   }
 
   async sendInteractiveListMessage({
@@ -456,16 +388,7 @@ class WsApi {
 
     const response = await this.sendMessageRequest({ body })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR', { data })
   }
 
   async sendFlowMessage({
@@ -493,16 +416,7 @@ class WsApi {
       }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_FLOW_MESSAGE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_FLOW_MESSAGE_ERROR', { data })
   }
 
   async sendTypingIndicator({
@@ -519,16 +433,7 @@ class WsApi {
       }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_TYPING_INDICATOR_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_TYPING_INDICATOR_ERROR', { data })
   }
 
   // Media --------------------------------------------------------------------
@@ -543,7 +448,9 @@ class WsApi {
     })
 
     if (response.isErr()) {
-      return err({ code: 'MEDIA_REQUEST_ERROR', extraParams: { error: response.error } })
+      return errorHandlerResult(response.error, this.logger, {
+        HTTP_REQUEST_ERROR: { code: 'MEDIA_REQUEST_ERROR', extraParams: { error: response.error } }
+      })
     }
 
     return ok(response.value.response)
@@ -615,8 +522,10 @@ class WsApi {
         responseType: 'blob'
       })
       return ok(response)
-    } catch (error) {
-      return err({ code: 'GET_MEDIA_ERROR', extraParams: { error } })
+    } catch (error: unknown) {
+      return errorHandlerResult({ code: 'GET_MEDIA_ERROR', extraParams: { error } }, this.logger, {
+        GET_MEDIA_ERROR: { code: 'GET_MEDIA_ERROR' }
+      })
     }
   }
 
@@ -632,16 +541,7 @@ class WsApi {
       body: { ...baseMessageRequest, template: data, to, type: 'template' }
     })
 
-    if (response.isErr()) {
-      return errorHandlerResult(response.error, this.logger, {
-        SEND_REQUEST_ERROR: {
-          code: 'SEND_TEMPLATE_ERROR',
-          extraParams: { data, error: response.error }
-        }
-      })
-    }
-
-    return ok(response.value)
+    return this.mapSendError(response, 'SEND_TEMPLATE_ERROR', { data })
   }
 
   async sendTextTemplate({
@@ -878,7 +778,7 @@ class WsApi {
       | { type: 'flowReply'; from: string; id: string; data: Record<string, unknown> }
       | { type: 'reaction'; from: string; id: string; emoji: string }
       | undefined,
-      ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' | 'GET_MEDIA_ERROR' }>
+      ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' | 'GET_MEDIA_ERROR' | 'INVALID_FLOW_REPLY' }>
     >
   > {
     if (
@@ -911,12 +811,24 @@ class WsApi {
     }
 
     if (messageObject.type === 'interactive' && messageObject.interactive.type === 'nfm_reply') {
+      const responseJson = messageObject.interactive.nfm_reply.response_json
+      let parsed: unknown = undefined
+      try {
+        parsed = JSON.parse(responseJson)
+      } catch (error: unknown) {
+        return err({
+          code: 'INVALID_FLOW_REPLY',
+          extraParams: { error, got: responseJson, reason: 'invalid JSON' }
+        })
+      }
+      if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return err({
+          code: 'INVALID_FLOW_REPLY',
+          extraParams: { got: typeof parsed, reason: 'expected JSON object' }
+        })
+      }
       return ok({
-        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-        data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as Record<
-          string,
-          unknown
-        >,
+        data: { ...parsed },
         from: messageObject.from,
         id: messageObject.id,
         type: 'flowReply'
@@ -959,15 +871,17 @@ class WsApi {
       const mediaUrl = await this.getMediaUrl({ mediaId: media.id })
 
       if (mediaUrl.isErr()) {
-        this.logger.error('Failed to get media URL for incoming media message', mediaUrl.error)
-        return err({ code: 'GET_MEDIA_URL_ERROR', extraParams: { error: mediaUrl.error } })
+        return errorHandlerResult(mediaUrl.error, this.logger, {
+          GET_MEDIA_URL_ERROR: { code: 'GET_MEDIA_URL_ERROR' }
+        })
       }
 
       const mediaBlob = await this.getMedia({ mediaUrl: mediaUrl.value.mediaUrl })
 
       if (mediaBlob.isErr()) {
-        this.logger.error('Failed to get media blob for incoming media message', mediaBlob.error)
-        return err({ code: 'GET_MEDIA_ERROR', extraParams: { error: mediaBlob.error } })
+        return errorHandlerResult(mediaBlob.error, this.logger, {
+          GET_MEDIA_ERROR: { code: 'GET_MEDIA_ERROR' }
+        })
       }
 
       return ok({
@@ -991,11 +905,12 @@ class WsApi {
         return { id, message: message.text.body, source: 'user' }
       }
       case 'interactive': {
-        if (message.interactive.type === 'nfm_reply') {
-          return { id, message: 'Flow message', source: 'flow' }
-        }
         if (message.interactive.type === 'list_reply') {
           return { id, message: message.interactive.list_reply.id, source: 'list' }
+        }
+        if (message.interactive.type === 'nfm_reply') {
+          // Unreachable at runtime — handleWebhook returns flowReply for nfm_reply first.
+          return { id, message: 'Flow message', source: 'flow' }
         }
         return { id, message: message.interactive.button_reply.id, source: 'button' }
       }
@@ -1007,8 +922,34 @@ class WsApi {
       }
     }
   }
+
+  // Ponytail: 13+ call sites use this exact translate-and-log pattern; helper keeps them to one line.
+  private mapSendError<T, O extends string>(
+    response: Result<T, ErrorBuilder<{ code: 'SEND_REQUEST_ERROR' }>>,
+    outerCode: O,
+    extraParams: Record<string, unknown>
+  ): Result<T, ErrorBuilder<{ code: O }>> {
+    if (response.isErr()) {
+      return errorHandlerResult(response.error, this.logger, {
+        SEND_REQUEST_ERROR: {
+          code: outerCode,
+          extraParams: { ...extraParams, error: response.error }
+        }
+      })
+    }
+    return ok(response.value)
+  }
 }
 
-const defaultWsApi = new WsApi()
+// Ponytail: lazy construction via Proxy so importing this module never throws on missing env.
+let defaultInstance: WsApi | undefined = undefined
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion
+const defaultWsApi: WsApi = new Proxy({} as WsApi, {
+  get(_target, prop) {
+    const instance = defaultInstance ?? new WsApi()
+    defaultInstance = instance
+    return Reflect.get(instance, prop, instance)
+  }
+})
 
 export { defaultWsApi, WsApi }

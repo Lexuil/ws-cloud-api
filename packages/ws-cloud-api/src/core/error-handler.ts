@@ -1,22 +1,21 @@
-// oxlint-disable promise/prefer-await-to-then
-// oxlint-disable typescript/no-unsafe-type-assertion
+import type { Err } from 'neverthrow'
+
 // oxlint-disable max-statements
-// oxlint-disable import/group-exports
-// oxlint-disable import/exports-last
-import { err, Err } from 'neverthrow'
+// oxlint-disable typescript/no-unsafe-type-assertion
+import { err } from 'neverthrow'
 
 import type Logger from './logger'
 
 // Error structure =====================================================================================================
 // Handled errors structure
-export interface GenericHandledError {
+interface GenericHandledError {
   code: string
   data?: Record<string, unknown>
 }
 // Unhandled error
-export const unhandledErrorCode = 'UNEXPECTED_ERROR' as const
-export type UnhandledErrorCode = typeof unhandledErrorCode
-export interface BaseError {
+const unhandledErrorCode = 'UNEXPECTED_ERROR' as const
+type UnhandledErrorCode = typeof unhandledErrorCode
+interface BaseError {
   code: typeof unhandledErrorCode
   data: GenericHandledError['data']
 }
@@ -26,15 +25,29 @@ export interface BaseError {
 /**
  * Helper to build an error object type for a specific function or method that can fail.
  */
-export interface ErrorBuilder<T extends GenericHandledError> {
+interface ErrorBuilder<T extends GenericHandledError> {
   code: T['code'] | BaseError['code']
   data?: BaseError['data']
 }
 
 /**
+ * Normalize any thrown value into a plain object suitable for `extraParams`.
+ * Lets callers log `{ error: toErrorInfo(e) }` without TypeScript complaining.
+ */
+function toErrorInfo(error: unknown): { message: string; name?: string; stack?: string } {
+  if (error instanceof Error) {
+    return { message: error.message, name: error.name, stack: error.stack }
+  }
+  if (typeof error === 'string') {
+    return { message: error }
+  }
+  return { message: String(error) }
+}
+
+/**
  * Trigger a process termination with a custom error message so the system can be automatically redeployed.
  */
-export function panic(message: string, data?: Record<string, unknown>, logger?: Logger): never {
+function panic(message: string, data?: Record<string, unknown>, logger?: Logger): never {
   const error = new Error(message)
   const customError = { data, message: `PANIC!: ${message}`, trace: error.stack }
   if (logger) {
@@ -86,7 +99,7 @@ type AllowedOCodes = PanicErrorCode | UnhandledErrorCode
  * so it is recommended to include all the details in this case.
  * - If an expected error us translated to another expected error, the error is logged as a log level message.
  */
-export function errorHandler<
+function errorHandler<
   IError extends ErrorBuilder<GenericHandledError>,
   ICode extends IError['code'],
   HCode extends Exclude<ICode, ReservedErrorCodes>,
@@ -102,7 +115,18 @@ export function errorHandler<
 
   // If the error is a reserved error code, return UNHANDLED_ERROR
   if (error.code in reservedErrorCodes) {
-    return { code: unhandledErrorCode, data: error.data }
+    const handlerEntry = (
+      handlers as Record<
+        string,
+        { code?: string; extraParams?: Record<string, unknown> } | undefined
+      >
+    )[error.code]
+    const customError = {
+      code: unhandledErrorCode,
+      data: { ...error.data, ...handlerEntry?.extraParams, originalCode: error.code }
+    }
+    logger.error(customError)
+    return customError
   }
   const handler = handlers[error.code as HCode] as H[HCode]
 
@@ -146,8 +170,7 @@ export function errorHandler<
  * so it is recommended to include all the details in this case.
  * - If an expected error us translated to another expected error, the error is logged as a log level message.
  */
-
-export function errorHandlerResult<
+function errorHandlerResult<
   IError extends ErrorBuilder<GenericHandledError>,
   ICode extends IError['code'],
   HCode extends Exclude<ICode, ReservedErrorCodes>,
@@ -159,90 +182,20 @@ export function errorHandlerResult<
   // Intersect with never for the codes that should not be included in the handler
   handlers: H & Record<Exclude<keyof H, HCode>, never>
 ): Err<never, ErrorBuilder<{ code: OCode }>> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return err(errorHandler(error, logger, handlers as any)) as Err<
+  return err(errorHandler(error, logger, handlers as never)) as Err<
     never,
     ErrorBuilder<{ code: OCode }>
   >
 }
 
-// Decorators ==========================================================================================================
-
-export class ErrorExceptionError<
-  T extends GenericHandledError = GenericHandledError
-> extends Error {
-  private readonly error: T
-
-  constructor(error: T) {
-    super(error.code)
-    this.name = 'ErrorExceptionError'
-    this.error = error
-  }
-  getError(): T {
-    return this.error
-  }
-}
-
-/**
- * Generates an exception if the result is a result error
- */
-export function ThrowIfError(): MethodDecorator {
-  return (_target: unknown, _propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-    const originalMethod = descriptor.value as unknown
-
-    if (typeof originalMethod !== 'function') {
-      throw new Error(`@ThrowIfError can only be applied to methods`)
-    }
-
-    function parseResult(...args: unknown[]): unknown {
-      const [res] = args
-      if (res instanceof Err && res.isErr()) {
-        const error = res.error as GenericHandledError
-        throw new ErrorExceptionError(error)
-      }
-      return args
-    }
-
-    // oxlint-disable-next-line func-style
-    const wrappedMethod = function wrappedMethod(this: unknown, ...args: unknown[]): unknown {
-      const result = originalMethod.apply(this, args) as unknown
-      return result instanceof Promise ? result.then(parseResult) : parseResult(result)
-    }
-
-    descriptor.value = wrappedMethod
-    return descriptor
-  }
-}
-
-export function ExceptionToError(): MethodDecorator {
-  return (_target: unknown, _propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-    const originalMethod = descriptor.value as unknown
-
-    if (typeof originalMethod !== 'function') {
-      throw new Error(`@ExceptionToError can only be applied to methods`)
-    }
-
-    function handleError(error: unknown): unknown {
-      if (error instanceof ErrorExceptionError) {
-        return err(error.getError())
-      }
-      return err({ code: 'UNEXPECTED_ERROR', data: { error } })
-    }
-
-    // oxlint-disable-next-line func-style
-    const wrappedMethod = function wrappedMethod(this: unknown, ...args: unknown[]): unknown {
-      const execute = (): unknown => {
-        try {
-          return originalMethod.apply(this, args)
-        } catch (error: unknown) {
-          return handleError(error)
-        }
-      }
-      const result = execute()
-
-      return result instanceof Promise ? result.catch(handleError) : result
-    }
-    descriptor.value = wrappedMethod
-    return descriptor
-  }
+export {
+  type BaseError,
+  type ErrorBuilder,
+  errorHandler,
+  errorHandlerResult,
+  type GenericHandledError,
+  panic,
+  toErrorInfo,
+  type UnhandledErrorCode,
+  unhandledErrorCode
 }

@@ -4,10 +4,9 @@ import type { Result } from 'neverthrow'
 import { err, ok } from 'neverthrow'
 import { ofetch } from 'ofetch'
 
-import type { Logger } from '@/types/logger'
+import type { ErrorBuilder } from '@/core/error-handler'
 
 import type { ResolvedConfig } from './config'
-import type { ErrorBuilder } from './error-handler'
 
 import { API_ENDPOINT } from './config'
 
@@ -32,7 +31,7 @@ interface HttpRequestOptions {
 }
 
 interface HttpResponse<T = unknown> {
-  response: T
+  readonly response: T
 }
 
 interface HttpClient {
@@ -47,7 +46,7 @@ interface HttpClient {
   fetch: typeof ofetch
 }
 
-function createHttpClient(config: ResolvedConfig, _logger: Logger): HttpClient {
+function createHttpClient(config: ResolvedConfig): HttpClient {
   async function request<T = unknown>({
     id,
     path,
@@ -56,7 +55,10 @@ function createHttpClient(config: ResolvedConfig, _logger: Logger): HttpClient {
     body,
     headers
   }: HttpRequestOptions): Promise<
-    Result<HttpResponse<T>, ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' }>>
+    Result<
+      HttpResponse<T>,
+      ErrorBuilder<{ code: 'HTTP_REQUEST_ERROR' } | { code: 'UNEXPECTED_ERROR' }>
+    >
   > {
     let requestId = id
 
@@ -86,10 +88,10 @@ function createHttpClient(config: ResolvedConfig, _logger: Logger): HttpClient {
         })
 
         return ok({ response })
-      } catch (error) {
+      } catch (error: unknown) {
         return err({ code: 'HTTP_REQUEST_ERROR', extraParams: { error } })
       }
-    } catch (error) {
+    } catch (error: unknown) {
       return err({ code: 'UNEXPECTED_ERROR', extraParams: { error } })
     }
   }
