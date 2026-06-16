@@ -1,6 +1,8 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+allowBuilds:
+  vue-demi: true
 catalog:
   '@types/node': 24.10.4
   'typescript': 5.9.3
