@@ -4,53 +4,50 @@
 
 ![cta button message](img/cta.png)
 
-The `sendTextWithCTAButton` function allows you to send a text message with a Call-To-Action (CTA) button to a WhatsApp number.
+The `sendCTAButtonMessage` method sends a text message with a single Call-To-Action button that opens a URL on tap.
 
 ```ts
-async function sendTextWithCTAButton({
+async sendCTAButtonMessage({
   to,
-  message,
-  config
+  data
 }: {
   to: string
-  message: { text: string; buttonText: string; url: string }
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+  data:
+    | { type: 'cta_url'; action: { name: 'cta_url'; parameters: { display_text: string; url: string } }; body?: { text: string }; footer?: { text: string } }
+    | { text: string; buttonText: string; url: string; footer?: string }
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_CTA_URL_MESSAGE_ERROR' }>>>
 ```
 
-> [!NOTE]
-> Support for **header** and **footer** coming soon.
+The two union members describe the same shape, just differently styled. The simplified `{ text, buttonText, url, footer? }` form is the common case.
 
 ## Parameters
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `message.text`: The main text message content.
-- `message.buttonText`: The text displayed on the CTA button.
-- `message.url`: The URL the CTA button will link to.
-- `config`: Optional configuration settings.
+- `to`: Recipient phone number.
+- `data.text`: The body text.
+- `data.buttonText`: The text on the button (what the user taps).
+- `data.url`: The URL the button opens.
+- `data.footer`: Optional footer text.
 
 ## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code: 'SEND_CTA_URL_MESSAGE_ERROR'`.
 
 ## Example usage
 
 ```ts
-import { sendTextWithCTAButton } from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
-sendTextWithCTAButton({
+const ws = new WsApi()
+
+await ws.sendCTAButtonMessage({
   to: '573123456789',
-  message: {
+  data: {
     text: 'This is a test message with CTA button',
     buttonText: 'Visit Google',
     url: 'https://www.google.com'
   }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Message with CTA button sent')
-    }
-  })
-  .catch(console.error)
 ```

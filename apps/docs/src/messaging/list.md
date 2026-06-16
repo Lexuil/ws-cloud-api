@@ -9,55 +9,67 @@ outline: deep
 ![list message](img/list-1.png)
 ![list message](img/list-2.png)
 
-The `sendInteractiveListMessage` and `sendInteractiveSectionListMessage` functions allow you to send a text message with interactive lists to a WhatsApp number. You can use these functions to create single-section lists or multi-section lists.
+The `sendInteractiveListMessage` method sends a text message with an interactive list. Lists can have a single section or multiple sections.
 
-> [!NOTE]
-> Support for **header** and **footer** coming soon.
+```ts
+async sendInteractiveListMessage({
+  to,
+  data
+}: {
+  to: string
+  data:
+    | { type: 'list'; action: { button: string; sections: Array<{ title?: string; rows: Array<{ id: string; title: string; description?: string }> }> }; body: { text: string } }
+    | {
+        text: string
+        buttonText: string
+        list: Array<{ title: string; description?: string }>
+      }
+    | {
+        text: string
+        buttonText: string
+        sections: Array<{ sectionTitle: string; listItems: Array<{ title: string; description?: string }> }>
+      }
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR' }>>>
+```
+
+The three union members: the raw `interactive` payload, the single-section simplified form, and the multi-section simplified form.
 
 > [!IMPORTANT]
-> Max 10 list items for message
+> Max 10 list items per message
 >
-> Max 24 char for item title
+> Max 24 chars per item title
 >
-> Max 72 chars for item description
+> Max 72 chars per item description
 >
 > Max 10 sections
 
-## `sendInteractiveListMessage`
+## Parameters
+
+- `to`: Recipient phone number.
+- `data.text`: The body text.
+- `data.buttonText`: The text on the list button.
+- `data.list`: A single-section list of `{ title, description? }` items.
+- `data.sections`: A multi-section list — each section has `sectionTitle` and `listItems` (a flat array of `{ title, description? }`).
+
+## Return
+
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR'`.
+
+## Example usage
+
+### Single section
 
 ```ts
-async function sendInteractiveListMessage({
-  to,
-  list,
-  config
-}: {
-  to: string
-  list: { text: string; buttonText: string; list: Array<{ title: string; description?: string }> }
-  config?: WsConfig
-}): Promise<SendMessageResponse>
-```
+import { WsApi } from 'ws-cloud-api'
 
-### Parameters:
+const ws = new WsApi()
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `list.text`: The main text message content.
-- `list.buttonText`: The text displayed on the list button.
-- `list.list`: An array of list items, where each item has a title and a description.
-- `config`: Optional configuration settings.
-
-### Return
-
-- **Success**: True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
-
-### Example usage
-
-```ts
-import { sendInteractiveListMessage } from 'ws-cloud-api/messaging'
-
-sendInteractiveListMessage({
+await ws.sendInteractiveListMessage({
   to: '573123456789',
-  list: {
+  data: {
     text: 'Please select an option',
     buttonText: 'Select',
     list: [
@@ -66,66 +78,27 @@ sendInteractiveListMessage({
     ]
   }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Message with interactive list sent')
-    }
-  })
-  .catch(console.error)
 ```
 
-## `sendInteractiveSectionListMessage`
+### Multiple sections
 
 ```ts
-async function sendInteractiveSectionListMessage({
-  to,
-  list,
-  config
-}: {
-  to: string
-  list: {
-    text: string
-    buttonText: string
-    sections: Array<{ sectionTitle: string; list: Array<{ title: string; description?: string }> }>
-  }
-  config?: WsConfig
-}): Promise<SendMessageResponse>
-```
-
-### Parameters:
-
-- to: The WhatsApp phone number recipient, including country code.
-- `list.text`: The main text message content.
-- `list.buttonText`: The text displayed on the section list button.
-- `list.sections`: An array of sections, where each section has a sectionTitle and a list of items with title and optional description.
-- `config`: Optional configuration settings.
-
-### Return
-
-- **Success**: True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
-
-### Example usage
-
-```ts
-import { sendInteractiveSectionListMessage } from 'ws-cloud-api/messaging'
-
-sendInteractiveSectionListMessage({
+await ws.sendInteractiveListMessage({
   to: '573123456789',
-  list: {
+  data: {
     text: 'Select an option from the sectioned list',
     buttonText: 'Choose',
     sections: [
       {
         sectionTitle: 'Section 1',
-        list: [
+        listItems: [
           { title: 'Item 1', description: 'Description 1' },
           { title: 'Item 2', description: 'Description 2' }
         ]
       },
       {
         sectionTitle: 'Section 2',
-        list: [
+        listItems: [
           { title: 'Item 3', description: 'Description 3' },
           { title: 'Item 4', description: 'Description 4' }
         ]
@@ -133,21 +106,15 @@ sendInteractiveSectionListMessage({
     ]
   }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Message with sectioned list sent')
-    }
-  })
-  .catch(console.error)
 ```
 
 ## Limitations
 
-- **Body text**: 4096 characters
-- **Button text**: 20 characters
-- **Row ID**: 200 characters
-- **Row title**: 24 characters
-- **Row description**: 72 characters
-- **Section title**: 24 characters
-- **Max rows**: 10
-- **Max sections**: 10
+- Body text: 4096 chars
+- Button text: 20 chars
+- Row ID: 200 chars
+- Row title: 24 chars
+- Row description: 72 chars
+- Section title: 24 chars
+- Max rows: 10
+- Max sections: 10

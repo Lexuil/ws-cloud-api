@@ -2,50 +2,57 @@
 
 [<Badge type="tip" text="api docs" />](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media)
 
-The `sendFile` function allows you to send various types of files to a WhatsApp number using a Blob (binary data).
+The `sendFile` method takes a `Blob` directly, uploads it to WhatsApp, and then sends it as the appropriate message type (image, video, audio, or document) based on the blob's MIME type. This is a one-call alternative to `uploadMedia` followed by `sendImage` / `sendVideo` / `sendAudio` / `sendDocument`.
 
 ```ts
-async function sendFile({
+async sendFile({
   to,
-  file,
-  config
+  data
 }: {
   to: string
-  file: Blob
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+  data: { file: Blob; caption?: string; filename?: string }
+}): Promise<
+  Result<
+    MessageResponse,
+    ErrorBuilder<{ code: 'UNSUPPORTED_MEDIA_TYPE' | 'UPLOAD_MEDIA_ERROR' | 'SEND_FILE_MESSAGE_ERROR' }>
+  >
+>
 ```
 
-## Parameters:
+## Parameters
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `file`: A Blob object representing the file to send (e.g., images, documents, audio, or video).
-- `config`: Optional configuration settings.
+- `to`: Recipient phone number.
+- `data.file`: A `Blob` representing the file. Its `type` (MIME) determines whether it's sent as image/video/audio/document.
+- `data.caption`: Optional caption (used for image/video/document).
+- `data.filename`: Optional filename (used for document).
 
 ## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code` is one of:
+  - `UNSUPPORTED_MEDIA_TYPE` — the blob's MIME type is not in the supported list.
+  - `UPLOAD_MEDIA_ERROR` — the upload step failed.
+  - `SEND_FILE_MESSAGE_ERROR` — the underlying `sendImage` / `sendVideo` / `sendAudio` / `sendDocument` call failed.
 
 > [!IMPORTANT]
-> You can see the supported files types in [limitations section](../limitations/media.md).
+> See [Supported files](../limitations/media.md) for the MIME types this method accepts.
 
 ## Example usage
 
 ```ts
-import { sendFile } from 'ws-cloud-api/messaging'
-import fs from 'fs'
-import path from 'path'
+import { WsApi } from 'ws-cloud-api'
+import { readFileSync } from 'node:fs'
 
-const file = new Blob([fs.readFileSync(path.join(__dirname, '/file.pdf'))], {
-  type: 'application/pdf'
-})
+const ws = new WsApi()
 
-sendFile({ to: '573123456789', file: file })
-  .then((response) => {
-    if (response.success) {
-      console.log('File sent')
-    }
-  })
-  .catch(console.error)
+const file = new Blob([readFileSync('file.pdf')], { type: 'application/pdf' })
+
+const result = await ws.sendFile({ to: '573123456789', data: { file, filename: 'file.pdf' } })
+
+result.match(
+  (response) => console.log('File sent:', response.messages[0].id),
+  (error) => console.error('Failed:', error.code)
+)
 ```

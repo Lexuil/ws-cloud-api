@@ -4,52 +4,48 @@
 
 ![document message](img/document.png)
 
-The `sendDocument` function allows you to send a document to a WhatsApp number using a direct URL.
+The `sendDocument` method sends a document (PDF, Word, etc.) by media ID or direct URL.
 
 ```ts
-async function sendDocument({
+async sendDocument({
   to,
-  link,
-  filename,
-  caption,
-  config
+  data
 }: {
   to: string
-  link: string
-  filename: string
-  caption?: string
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+  data: { id?: string; link?: string; caption?: string; filename?: string }
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_DOCUMENT_MESSAGE_ERROR' }>>>
 ```
 
-## Parameters:
+Provide exactly one of `id` or `link`. `filename` overrides the display name when sending by link.
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `link`: The URL of the document to send.
-- `filename`: The name of the document to display to the recipient.
-- `caption`: Optional caption for the image.
-- `config`: Optional configuration settings.
+## Parameters
+
+- `to`: Recipient phone number.
+- `data.id`: Media ID returned by `uploadMedia`.
+- `data.link`: Direct URL to the document.
+- `data.caption`: Optional caption.
+- `data.filename`: Display name when sending by `link` (overrides what the URL would imply).
 
 ## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code: 'SEND_DOCUMENT_MESSAGE_ERROR'`.
 
 ## Example usage
 
 ```ts
-import { sendDocument } from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
-sendDocument({
+const ws = new WsApi()
+
+await ws.sendDocument({
   to: '573123456789',
-  link: 'https://example.com/document.pdf',
-  filename: 'document.pdf',
-  caption: 'Example document'
+  data: {
+    link: 'https://example.com/document.pdf',
+    filename: 'document.pdf',
+    caption: 'Example document'
+  }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Document sent')
-    }
-  })
-  .catch(console.error)
 ```

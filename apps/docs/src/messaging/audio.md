@@ -4,41 +4,40 @@
 
 ![audio message](img/audio.png)
 
-The `sendAudio` function allows you to send an audio file to a WhatsApp number using a direct URL.
+The `sendAudio` method sends an audio file by media ID or direct URL.
 
 ```ts
-async function sendAudio({
+async sendAudio({
   to,
-  link,
-  config
+  data
 }: {
   to: string
-  link: string
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+  data: { id?: string; link?: string; voice?: boolean }
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_AUDIO_MESSAGE_ERROR' }>>>
 ```
 
-## Parameters:
+Provide exactly one of `id` or `link`. `voice: true` marks the audio as a voice note in the WhatsApp UI.
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `link`: The URL of the audio file to send.
-- `config`: Optional configuration settings.
+## Parameters
+
+- `to`: Recipient phone number.
+- `data.id`: Media ID returned by `uploadMedia`.
+- `data.link`: Direct URL to the audio file.
+- `data.voice`: `true` to render as a voice note in the recipient's client.
 
 ## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code: 'SEND_AUDIO_MESSAGE_ERROR'`.
 
 ## Example usage
 
 ```ts
-import { sendAudio } from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
-sendAudio({ to: '573123456789', link: 'https://example.com/audio.mp3' })
-  .then((response) => {
-    if (response.success) {
-      console.log('Audio sent')
-    }
-  })
-  .catch(console.error)
+const ws = new WsApi()
+
+await ws.sendAudio({ to: '573123456789', data: { link: 'https://example.com/audio.mp3' } })
 ```

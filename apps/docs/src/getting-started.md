@@ -4,8 +4,6 @@ outline: deep
 
 # Getting Started
 
-This page demonstrates some of the built-in markdown extensions provided by VitePress.
-
 ## Install
 
 ::: code-group
@@ -28,75 +26,102 @@ $ bun add ws-cloud-api
 
 :::
 
-## Usage
+## Set up environment variables
 
-### Send text message
-
-```ts
-import { sendText } from 'ws-cloud-api/messaging'
-
-sendText({ to: process.env.PHONE_NUMBER_RECIPIENT, message: 'This is a test message' })
-  .then((response) => {
-    if (response.success) {
-      console.log('Message sent')
-    }
-  })
-  .catch(console.error)
+```sh [.env]
+WS_PHONE_NUMBER_ID=123456789012345
+WS_TOKEN=EAAJZ...nRZCQZB
 ```
 
-### Send text template
+See [Configuration](./config) for the full list.
+
+## Send a text message
+
+`WsApi` methods return a `Result<T, E>` from `neverthrow`. Always handle both branches.
 
 ```ts
-import { sendTextTemplate } from 'ws-cloud-api/templates'
+import { WsApi } from 'ws-cloud-api'
 
-sendTextTemplate({
-  to: process.env.PHONE_NUMBER_RECIPIENT,
+const ws = new WsApi()
+
+const result = await ws.sendText({ to: '573123456789', message: 'This is a test message' })
+
+result.match(
+  (response) => console.log('Message sent:', response.messages[0].id),
+  (error) => console.error('Failed to send:', error.code, error.data)
+)
+```
+
+The `error.code` is one of a small union per method — see the individual API pages.
+
+## Send a template
+
+```ts
+import { WsApi } from 'ws-cloud-api'
+
+const ws = new WsApi()
+
+const result = await ws.sendTextTemplate({
+  to: '573123456789',
   templateName: 'hello_world',
   language: 'en_US'
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Template sent')
-    }
-  })
-  .catch(console.error)
+
+if (result.isErr()) {
+  console.error('Template send failed:', result.error.code)
+}
 ```
 
-### Handle webhook events
+## Handle webhook events
+
+`handleWebhook` returns a `Result`. The success branch carries a discriminated union of event types; the error branch carries a media-fetch or `INVALID_FLOW_REPLY` error code.
 
 ```ts
-import { handleWebhook } from 'ws-cloud-api/webhook'
 import express from 'express'
+import { WsApi } from 'ws-cloud-api'
 
+const ws = new WsApi()
 const app = express()
-const port = 3000
 
 app.use(express.json())
 
 app.post('/whatsapp-webhook', async (req, res) => {
-  try {
-    const event = handleWebhook(req.body)
+  const result = await ws.handleWebhook(req.body)
 
-    if (event?.type === 'message') {
-      console.log(`New message from ${event.from}: ${event.message}`)
-    }
-
-    if (event?.type === 'voiceAudio') {
-      console.log(`New voice message from ${event.from}: ${event.audio.id}`)
-    }
-
-    if (event?.type === 'flowReply') {
-      console.log(`New flow reply from ${event.from}:\n\n`, JSON.stringify(event.flow, null, 2))
-    }
-
-    res.status(200)
-  } catch (error) {
-    console.error('Error:', error)
-    res.status(500).send('Internal server error')
+  if (result.isErr()) {
+    console.error('Webhook processing failed:', result.error.code)
+    res.status(500).send('Internal error')
+    return
   }
+
+  const event = result.value
+  if (event === undefined) {
+    res.status(200).send('OK')
+    return
+  }
+
+  switch (event.type) {
+    case 'message':
+      console.log(`New message from ${event.from}: ${event.message}`)
+      break
+    case 'media':
+      console.log(`New ${event.mimeType} from ${event.from}, ${event.blob.size} bytes`)
+      break
+    case 'flowReply':
+      console.log(`Flow reply from ${event.from}:`, event.data)
+      break
+    case 'reaction':
+      console.log(`${event.from} reacted with ${event.emoji}`)
+      break
+    case 'statusUpdate':
+      console.log(`Status: ${event.status} (${event.messageId})`)
+      break
+  }
+
+  res.status(200).send('OK')
 })
 
-app.listen(port, () => {
-  console.log(`Server start`)
-})
+app.listen(3000)
 ```
+
+For the webhook verification handshake, see [Webhook Verification](./webhook/verification).

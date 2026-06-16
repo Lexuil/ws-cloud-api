@@ -2,37 +2,38 @@
 
 [<Badge type="tip" text="api docs" />](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#retrieve-media-url)
 
-The `getMediaUrl` function allows you to retrieve the URL of uploaded media using its media ID.
+The `getMediaUrl` method retrieves the download URL of an uploaded media asset using its WhatsApp-side media ID.
 
 ```ts
-async function getMediaUrl({
-  mediaId,
-  config
+async getMediaUrl({
+  mediaId
 }: {
   mediaId: string
-  config?: WsConfig
-}): Promise<string>
+}): Promise<Result<{ mediaUrl: string }, ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' }>>>
 ```
 
-## Parameters:
+## Parameters
 
-- `mediaId`: The ID of the media to retrieve the URL for.
-- `config`: Optional configuration settings.
+- `mediaId`: The media ID returned by `uploadMedia` (or included on an incoming message).
 
 ## Return
 
-- **Success:** Returns the URL of the media as a string on successful retrieval.
+A `Result`.
+
+- **Ok** — `{ mediaUrl: string }`. The URL is short-lived; download with `getMedia` quickly.
+- **Err** — `code: 'GET_MEDIA_URL_ERROR'` if the request fails (network, 401, etc.).
 
 ## Example usage
 
 ```ts
-import { getMediaUrl } from 'ws-cloud-api/media'
+import { WsApi } from 'ws-cloud-api'
 
-getMediaUrl({ mediaId: 'mediaId' })
-  .then((url) => {
-    if (url) {
-      console.log('Media URL: ' + url)
-    }
-  })
-  .catch(console.error)
+const ws = new WsApi()
+
+const result = await ws.getMediaUrl({ mediaId: 'MEDIA_ID' })
+
+result.match(
+  ({ mediaUrl }) => console.log('Media URL:', mediaUrl),
+  (error) => console.error('Lookup failed:', error.code)
+)
 ```

@@ -2,40 +2,51 @@
 
 [<Badge type="tip" text="api docs" />](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media#upload-media)
 
-The `uploadMedia` function allows you to upload media (such as images, videos, or documents) to WhatsApp using a Blob file.
+The `uploadMedia` method uploads a media `Blob` to WhatsApp and returns the media ID for use in subsequent messages.
 
 ```ts
-async function uploadMedia({ media, config }: { media: Blob; config?: WsConfig }): Promise<string>
+async uploadMedia({
+  media
+}: {
+  media: Blob
+}): Promise<
+  Result<
+    { mediaId: string },
+    ErrorBuilder<{ code: 'UNSUPPORTED_MEDIA_TYPE' | 'UPLOAD_MEDIA_ERROR' }>
+  >
+>
 ```
 
-## Parameters:
+## Parameters
 
-- `media`: The Blob file to upload.
-- `config`: Optional configuration settings.
+- `media`: The `Blob` to upload. The blob's `type` must be one of the [supported MIME types](../limitations/media.md).
 
 ## Return
 
-- **Success:** Returns the media ID as a string on successful upload.
+A `Result`.
+
+- **Ok** — `{ mediaId: string }`. The returned ID is the value to use in `image.id`, `video.id`, etc. when sending a media message.
+- **Err** — `code` is one of:
+  - `UNSUPPORTED_MEDIA_TYPE` — the `Blob.type` is not in the supported list.
+  - `UPLOAD_MEDIA_ERROR` — the underlying HTTP request failed.
 
 > [!IMPORTANT]
-> You can see the supported files types in [limitations section](../limitations/media.md).
+> See the [limitations](../limitations/media.md) page for the supported MIME types.
 
 ## Example usage
 
 ```ts
-import { uploadMedia } from 'ws-cloud-api/media'
-import fs from 'fs'
-import path from 'path'
+import { WsApi } from 'ws-cloud-api'
+import { readFileSync } from 'node:fs'
 
-const mediaBlob = new Blob([fs.readFileSync(path.join(__dirname, '/image.jpg'))], {
-  type: 'image/jpeg'
-})
+const ws = new WsApi()
 
-uploadMedia({ media: mediaBlob })
-  .then((mediaId) => {
-    if (mediaId) {
-      console.log('Media uploaded successfully, ID: ' + mediaId)
-    }
-  })
-  .catch(console.error)
+const mediaBlob = new Blob([readFileSync('image.jpg')], { type: 'image/jpeg' })
+
+const result = await ws.uploadMedia({ media: mediaBlob })
+
+result.match(
+  ({ mediaId }) => console.log('Uploaded, ID:', mediaId),
+  (error) => console.error('Upload failed:', error.code)
+)
 ```

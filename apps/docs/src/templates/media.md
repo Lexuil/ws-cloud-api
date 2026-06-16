@@ -2,81 +2,88 @@
 
 [<Badge type="tip" text="api docs" />](https://developers.facebook.com/docs/whatsapp/cloud-api/guides/send-message-templates)
 
-The `sendMediaTemplate` function allows you to send a template with media on header to WhatsApp number.
+The `sendMediaTemplate` method sends a template whose header carries an image, video, or document.
 
 ```ts
-async function sendMediaTemplate({
+async sendMediaTemplate({
   to,
-  templateName,
-  language,
-  headerParameters,
-  bodyParameters,
-  config
+  data
 }: {
   to: string
-  templateName: string
-  language: string
-  headerParameters: TemplateHeaderParameter
-  bodyParameters?: TemplateBodyParameter[]
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+  data: {
+    name: string
+    language: { code: string; policy?: 'deterministic' }
+    components: [HeaderComponent, BodyComponent]
+  }
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_MEDIA_TEMPLATE_ERROR' }>>>
 ```
 
-## Parameters:
+`HeaderComponent` is `{ type: 'header', parameters: Array<{ type: 'image' | 'video' | 'document', ... }> }`. `BodyComponent` is `{ type: 'body', parameters?: TemplateParameter[] }`.
 
-- `to`: The WhatsApp phone number recipient, including country code.
-- `templateName`: The name of the pre-configured template to send.
-- `language`: The language code for the template (e.g., en_US).
-- `headerParameters`: Parameters for the header of the template.
-- `bodyParameters`: Optional parameters to customize the body of the template.
-- `config`: Optional configuration settings.
+## Parameters
+
+- `to`: Recipient phone number.
+- `data.name`: The pre-configured template name.
+- `data.language`: Template language code (e.g. `{ code: 'en_US' }`).
+- `data.components`: A two-element tuple: a header component (with image/video/document parameters) and an optional body component (with text parameters).
 
 ## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
+
+- **Ok** — `MessageResponse`.
+- **Err** — `code: 'SEND_MEDIA_TEMPLATE_ERROR'`.
 
 ## Example usage
 
-### Send a media template
+### Image header, no body parameters
 
 ```ts
-import { sendMediaTemplate } from 'ws-cloud-api/templates'
+import { WsApi } from 'ws-cloud-api'
 
-sendMediaTemplate({
+const ws = new WsApi()
+
+const result = await ws.sendMediaTemplate({
   to: '573123456789',
-  templateName: 'media_template',
-  language: 'en_US',
-  headerParameters: { type: 'image', image: { link: 'https://example.com/image.jpg' } }
+  data: {
+    name: 'media_template',
+    language: { code: 'en_US' },
+    components: [
+      {
+        type: 'header',
+        parameters: [{ type: 'image', image: { link: 'https://example.com/image.jpg' } }]
+      },
+      { type: 'body' }
+    ]
+  }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Template message sent')
-    }
-  })
-  .catch(console.error)
+
+if (result.isErr()) {
+  console.error('Template send failed:', result.error.code)
+}
 ```
 
-### Send a media template with body parameters
+### Image header plus body parameters
 
 ```ts
-import { sendMediaTemplate } from 'ws-cloud-api/templates'
-import { ParametersTypes } from 'ws-cloud-api'
-
-sendMediaTemplate({
+const result = await ws.sendMediaTemplate({
   to: '573123456789',
-  templateName: 'media_template_with_body',
-  language: 'en_US',
-  headerParameters: { type: 'image', image: { link: 'https://example.com/image.jpg' } },
-  bodyParameters: [
-    { type: ParametersTypes.Text, text: 'John Doe' },
-    { type: ParametersTypes.Text, text: '123456' }
-  ]
+  data: {
+    name: 'media_template_with_body',
+    language: { code: 'en_US' },
+    components: [
+      {
+        type: 'header',
+        parameters: [{ type: 'image', image: { link: 'https://example.com/image.jpg' } }]
+      },
+      {
+        type: 'body',
+        parameters: [
+          { type: 'text', text: 'John Doe' },
+          { type: 'text', text: '123456' }
+        ]
+      }
+    ]
+  }
 })
-  .then((response) => {
-    if (response.success) {
-      console.log('Template message sent')
-    }
-  })
-  .catch(console.error)
 ```

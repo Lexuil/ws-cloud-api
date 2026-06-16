@@ -2,88 +2,84 @@
 
 [<Badge type="tip" text="api docs" />](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates)
 
-The `getTemplates` function allows you to retrieve a list of message templates from the WhatsApp Cloud API.
+The `getTemplates` method retrieves a paginated list of message templates from the WhatsApp Cloud API.
 
 ```ts
-async function getTemplates({
+async getTemplates({
   fields,
   limit,
   after,
-  before,
-  config
-}: {
-  fields?: templateFields[]
+  before
+}?: {
+  fields?: TemplateFields[]
   limit?: number
   after?: string
   before?: string
-  config?: WsConfig
-} = {}): Promise<SendTemplateRequestResponse>
+}): Promise<Result<{ response: GetTemplatesResponse }, ErrorBuilder<{ code: 'GET_TEMPLATE_ERROR' }>>>
 ```
 
-## Parameters:
+`TemplateFields` accepts any subset of: `id`, `category`, `components`, `correct_category`, `cta_url_link_tracking_opted_out`, `language`, `library_template_name`, `message_send_ttl_seconds`, `name`, `previous_category`, `quality_score`, `rejected_reason`, `status`, `sub_category`.
 
-- `fields`: Optional array of fields to include in the response.
-- `limit`: Optional limit on the number of templates to retrieve.
-- `after`: Optional cursor for pagination to retrieve templates after a specific point.
-- `before`: Optional cursor for pagination to retrieve templates before a specific point.
-- `config`: Optional configuration settings.
+## Parameters
+
+- `fields`: Optional array of fields to include in each template object.
+- `limit`: Optional page size.
+- `after`: Cursor from a previous response — returns templates after that point.
+- `before`: Cursor from a previous response — returns templates before that point.
 
 ## Return
 
-- **Success**: True for success, false for fail.
-- **Templates**: An array of message templates.
+A `Result`.
+
+- **Ok** — `{ response: GetTemplatesResponse }`. The response carries the templates array and the `paging.cursors` for the next/previous page.
+- **Err** — `code: 'GET_TEMPLATE_ERROR'` if the request fails.
 
 ## Example usage
 
 ### Retrieve all templates
 
 ```ts
-import { getTemplates } from 'ws-cloud-api/templates'
+import { WsApi } from 'ws-cloud-api'
 
-getTemplates()
-  .then((response) => {
-    if (!response.success) {
-      console.error('Failed to retrieve templates')
-      return
-    }
-    console.log('Templates retrieved:', response.templates)
-  })
-  .catch(console.error)
+const ws = new WsApi()
+
+const result = await ws.getTemplates()
+if (result.isErr()) {
+  console.error('Failed to retrieve templates:', result.error.code)
+  return
+}
+
+console.log('Templates:', result.value.response.data)
 ```
 
 ### Retrieve templates with specific fields and limit
 
 ```ts
-import { getTemplates } from 'ws-cloud-api/templates'
-
-getTemplates({ fields: ['name', 'language'], limit: 10 })
-  .then((response) => {
-    if (!response.success) {
-      console.error('Failed to retrieve templates')
-      return
-    }
-    console.log('Templates retrieved:', response.templates)
-  })
-  .catch(console.error)
+const result = await ws.getTemplates({ fields: ['name', 'language'], limit: 10 })
+if (result.isOk()) {
+  console.log('Templates:', result.value.response.data)
+}
 ```
 
 ### Retrieve templates with pagination
 
 ```ts
-import { getTemplates } from 'ws-cloud-api/templates'
+import type { Result } from 'neverthrow'
 
-const page1 = await getTemplates({ limit: 2 })
-if (!page1.success) {
-  Throw new Error('Failed to retrieve templates')
-}
-console.log('page1', page1.templates)
+async function paginate() {
+  const ws = new WsApi()
 
-const page2 = await getTemplates({
-  limit: 2,
-  after: page1.paging.cursors.after
-})
-if (!page2.success) {
-  Throw new Error('Failed to retrieve templates')
+  const page1 = await ws.getTemplates({ limit: 2 })
+  if (page1.isErr()) return
+  console.log('page1:', page1.value.response.data)
+
+  if (page1.value.response.paging?.cursors?.after) {
+    const page2 = await ws.getTemplates({
+      limit: 2,
+      after: page1.value.response.paging.cursors.after
+    })
+    if (page2.isErr()) return
+    console.log('page2:', page2.value.response.data)
+  }
 }
-console.log('page2', page2.templates)
 ```

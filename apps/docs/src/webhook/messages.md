@@ -1,112 +1,150 @@
 # Webhook messages
 
-The `handleWebhook` function processes the incoming messages from WhatsApp and returns the message type.
+The `handleWebhook` method on `WsApi` processes incoming messages from WhatsApp and returns a discriminated union describing the event.
 
 ```ts
-function handleWebhook(
+async handleWebhook(
   input: WsRequest
-):
-  | {
-      type: 'statusUpdate'
-      messageId: string
-      userId: string
-      status:
-        | MessageStatus.Read
-        | MessageStatus.Delivered
-        | MessageStatus.Sent
-        | MessageStatus.Failed
-    }
-  | { type: 'message'; from: string; message: string; source: Source }
-  | { type: 'voiceAudio'; from: string; audio: { id: string; mimeType: string } }
-  | { type: 'flowReply'; from: string; data: Record<string, unknown> }
-  | undefined
+): Promise<
+  Result<
+    | {
+        type: 'statusUpdate'
+        messageId: string
+        userId: string
+        status: MessageStatus.Read | MessageStatus.Delivered | MessageStatus.Sent | MessageStatus.Failed
+      }
+    | { type: 'message'; from: string; id: string; message: string; source: Source }
+    | {
+        type: 'media'
+        from: string
+        id: string
+        blob: Blob
+        mimeType: string
+        message: string // caption, or '' if no caption
+        source: 'user'
+      }
+    | { type: 'flowReply'; from: string; id: string; data: Record<string, unknown> }
+    | { type: 'reaction'; from: string; id: string; emoji: string }
+    | undefined,
+    ErrorBuilder<{ code: 'GET_MEDIA_URL_ERROR' | 'GET_MEDIA_ERROR' | 'INVALID_FLOW_REPLY' }>
+  >
+>
 ```
 
 ## Parameters
 
-- `input`: The incoming message from WhatsApp.
+- `input`: The incoming message from WhatsApp. Must satisfy the `WsRequest` shape — see the `WhatsApp Webhooks` payload format.
 
 ## Return
 
+A `Result` from `neverthrow`. Always check `isErr()` first.
+
+- **Err branch** carries an `ErrorBuilder` with one of:
+  - `GET_MEDIA_URL_ERROR` — failed to look up the media URL for an incoming image/video/document/sticker/audio message.
+  - `GET_MEDIA_ERROR` — failed to download the media bytes.
+  - `INVALID_FLOW_REPLY` — the `nfm_reply.response_json` field was not a valid JSON object.
+
+- **Ok branch** carries one of these event shapes (or `undefined` if the event didn't match the configured `phoneNumberId`):
+
 ### `statusUpdate`
 
-- `type`: statusUpdate
-- `messageId`: The message ID.
-- `userId`: The user ID.
-- `status`: The status of the message.
+- `type`: `'statusUpdate'`
+- `messageId`: The message ID whose status changed.
+- `userId`: The recipient's WhatsApp ID.
+- `status`: `'read' | 'delivered' | 'sent' | 'failed'`.
 
 ### `message`
 
-- `type`: message
-- `from`: The phone number of the sender.
-- `message`: The text message.
-- `source`: The source of the message.
+Text, button reply, or list reply. Source distinguishes them.
 
-### `voiceAudio`
+- `type`: `'message'`
+- `from`: The sender's phone number.
+- `id`: The message ID.
+- `message`: The body (text), or the button/list reply ID.
+- `source`: `'user' | 'button' | 'list' | 'flow'`.
 
-- `type`: voiceAudio
-- `from`: The phone number of the sender.
-- `audio`: The audio message.
-- `mimeType`: The MIME type of the audio.
+### `media`
+
+- `type`: `'media'`
+- `from`: The sender's phone number.
+- `id`: The media ID on the WhatsApp side.
+- `blob`: The downloaded binary content as a `Blob`.
+- `mimeType`: The MIME type as reported by WhatsApp (e.g. `image/jpeg`, `audio/ogg; codecs=opus`).
+- `message`: The caption if any, or `''`.
+- `source`: always `'user'`.
 
 ### `flowReply`
 
-- `type`: flowReply
-- `from`: The phone number of the sender.
-- `data`: The data of the flow reply.
+- `type`: `'flowReply'`
+- `from`: The sender's phone number.
+- `id`: The message ID.
+- `data`: The flow's response payload, parsed from the `response_json` field. Validated as a non-null JSON object — anything else returns `INVALID_FLOW_REPLY`.
+
+### `reaction`
+
+- `type`: `'reaction'`
+- `from`: The sender's phone number.
+- `id`: The ID of the message that was reacted to.
+- `emoji`: The emoji used in the reaction.
 
 ## Example usage
 
 ```ts
-import { handleWebhook } from 'ws-cloud-api/webhook'
+import express from 'express'
+import { WsApi } from 'ws-cloud-api'
 
-app.post('/whatsapp-webhook', (req, res) => {
-  const message = handleWebhook(req.body)
+const ws = new WsApi()
+const app = express()
 
-  if (message === undefined) {
+app.use(express.json())
+
+app.post('/whatsapp-webhook', async (req, res) => {
+  const result = await ws.handleWebhook(req.body)
+
+  if (result.isErr()) {
+    console.error('Webhook processing failed:', result.error.code)
+    res.status(500).send('Internal error')
+    return
+  }
+
+  const event = result.value
+  if (event === undefined) {
     res.status(200).send('OK')
     return
   }
 
-  if (message.type === 'statusUpdate') {
-    console.log('Status update from WhatsApp:', message.messageId, ' --- ', message.status)
-  }
-
-  if (message.type === 'message') {
-    console.log('New message from WhatsApp:', message.from, ' --- ', message.message)
-  }
-
-  if (message.type === 'voiceAudio') {
-    console.log('New voice audio from WhatsApp:', message.from, ' --- ', message.audio.id)
-  }
-
-  if (message.type === 'flowReply') {
-    console.log('Flow reply from WhatsApp:', message.from, ' --- ', message.data)
+  switch (event.type) {
+    case 'statusUpdate':
+      console.log('Status update:', event.messageId, event.status)
+      break
+    case 'message':
+      console.log(`New message from ${event.from}: ${event.message}`)
+      break
+    case 'media':
+      console.log(`New ${event.mimeType} from ${event.from}, ${event.blob.size} bytes`)
+      break
+    case 'flowReply':
+      console.log('Flow reply from', event.from, 'data:', event.data)
+      break
+    case 'reaction':
+      console.log(`${event.from} reacted with ${event.emoji}`)
+      break
   }
 
   res.status(200).send('OK')
 })
 ```
 
-## Voice audio full example
+## Voice audio — handling media on the receive side
+
+The `media` event has already downloaded the blob for you. If you need the original URL or want to re-download separately, use `getMediaUrl` and `getMedia` on the same `WsApi` instance.
 
 ```ts
-import { handleWebhook } from 'ws-cloud-api/webhook'
-
 app.post('/whatsapp-webhook', async (req, res) => {
-  const message = handleWebhook(req.body)
+  const result = await ws.handleWebhook(req.body)
 
-  if (message === undefined) {
-    res.status(200).send('OK')
-    return
-  }
-
-  if (message.type === 'voiceAudio') {
-    const audioUrl = await getMediaUrl({ mediaId: message.audio.id })
-
-    const audioFile = await getMedia({ mediaUrl: audioUrl })
-
-    console.log('New voice message', message.from, ' --- ', audioFile)
+  if (result.isOk() && result.value?.type === 'media') {
+    console.log('Got media:', result.value.mimeType, result.value.blob)
   }
 
   res.status(200).send('OK')

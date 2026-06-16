@@ -4,59 +4,50 @@
 
 ![text message](img/text.png)
 
-The `sendText` function allows you to send a simple text message to a WhatsApp number.
+The `sendText` method sends a plain text message.
 
 ```ts
-async function sendText({
+async sendText({
   to,
   message,
-  previewUrl,
-  config
+  previewUrl
 }: {
   to: string
   message: string
   previewUrl?: boolean
-  config?: WsConfig
-}): Promise<SendMessageResponse>
+}): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_TEXT_MESSAGE_ERROR' }>>>
 ```
 
-## Parameters:
+## Parameters
 
-- `to:` The WhatsApp phone number recipient, including country code.
-- `message:` The text message to send.
-- `previewUrl:` Set to true if the message contains a link and you want to include a link preview.
+- `to`: Recipient phone number, including country code.
+- `message`: The text to send.
+- `previewUrl`: Set to `true` if `message` contains a URL and you want a link preview rendered.
 
-## Return:
+## Return
 
-- **Success:** True for success, false for fail.
-- **Response:** Information about the message sent, like the message ID, delivery status, and more.
+A `Result`.
 
-## Example Usage:
+- **Ok** — `MessageResponse` containing the sent message's `id` and metadata.
+- **Err** — `code: 'SEND_TEXT_MESSAGE_ERROR'`.
+
+## Example usage
 
 ```ts
-import { sendText } from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
-sendText({
-  to: '573123456789,
-  message: 'This is a test message'
-})
-  .then((sentSuccess) => {
-    if (sentSuccess) {
-      console.log("Message sent")
-    }
-  })
-  .catch(console.error)
+const ws = new WsApi()
 
-// Preview URL
-sendText({
-  to: '573123456789,
-  message: 'https://www.youtube.com/watch?v=L9jpMYn8q0g&pp=ygUjeW91IHRvIHlvdSBhc2lhbiBrdW5nIGZ1IGdlbmVyYXRpb24%3D',
-  previewUrl: true
-})
-  .then((response) => {
-    if (response.success) {
-      console.log('Message with preview sent')
-    }
-  })
-  .catch(console.error)
+const result = await ws.sendText({ to: '573123456789', message: 'This is a test message' })
+
+result.match(
+  (response) => console.log('Sent:', response.messages[0].id),
+  (error) => console.error('Failed:', error.code)
+)
+```
+
+### With link preview
+
+```ts
+await ws.sendText({ to: '573123456789', message: 'https://example.com/article', previewUrl: true })
 ```

@@ -25,7 +25,7 @@ outline: deep
 
 ## Webhooks
 
-- **Verify Tokens**: Verify webhook tokens to ensure secure communication.
-- **Handle Notifications**: Process incoming message events including text messages, button replies, list replies, voice messages, and flow replies.
+- **Verify Tokens**: Verify webhook tokens to ensure secure communication. The handshake is yours to implement — see [Webhook Verification](./webhook/verification).
+- **Handle Notifications**: Process incoming message events including text messages, button replies, list replies, voice messages, image/video/sticker/document media, reactions, flow replies, and delivery status updates.
 
 By leveraging these features, `ws-cloud-api` helps streamline the integration with WhatsApp Cloud, making it easier to build interactive and media-rich messaging solutions.
