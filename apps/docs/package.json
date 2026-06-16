@@ -2,9 +2,9 @@
   "name": "docs",
   "private": true,
   "dependencies": {
-    "oxc-minify": "^0.120.0"
+    "oxc-minify": "0.136.0"
   },
   "devDependencies": {
-    "vitepress": "2.0.0-alpha.16"
+    "vitepress": "2.0.0-alpha.17"
   }
 }
