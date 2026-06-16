@@ -1,4 +1,4 @@
-export type templateFields =
+type templateFields =
   | 'id'
   | 'category'
   | 'components'
@@ -14,12 +14,12 @@ export type templateFields =
   | 'status'
   | 'sub_category'
 
-export interface Templates {
+interface Templates {
   data: Template[]
   paging: Paging
 }
 
-export interface Template {
+interface Template {
   id: string
   name: string
   status: TemplateStatus
@@ -33,25 +33,25 @@ export interface Template {
   // TODO: Add library templates types
 }
 
-export type CreateTemplate = Omit<
+type CreateTemplate = Omit<
   Template,
   'id' | 'status' | 'sub_category' | 'previous_category' | 'allow_category_change'
 >
 
-export type CreateTemplateResponse = Pick<Template, 'id' | 'status' | 'category'>
+type CreateTemplateResponse = Pick<Template, 'id' | 'status' | 'category'>
 
-export type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
+type Category = 'MARKETING' | 'UTILITY' | 'AUTHENTICATION'
 
-export type PreviousCategory = 'ISSUE_RESOLUTION' | 'APPOINTMENT_UPDATE' | 'MARKETING'
+type PreviousCategory = 'ISSUE_RESOLUTION' | 'APPOINTMENT_UPDATE' | 'MARKETING'
 
-export type TemplateStatus = 'APPROVED' | 'PENDING' | 'REJECTED'
+type TemplateStatus = 'APPROVED' | 'PENDING' | 'REJECTED'
 
-export interface Paging {
+interface Paging {
   cursors: Cursors
   next: string
 }
 
-export interface Cursors {
+interface Cursors {
   before: string
   after: string
 }
@@ -59,16 +59,16 @@ export interface Cursors {
 // -----------------------------------------------------------------------------
 // Components
 
-export type Component = TextHeader | MediaHeader | LocationHeader | Body | Footer | Buttons
+type Component = TextHeader | MediaHeader | LocationHeader | Body | Footer | Buttons
 
-export type ExamplePositionalParams = string[]
+type ExamplePositionalParams = string[]
 
-export type ExampleNamedParams = { param_name: string; example: string }[]
+type ExampleNamedParams = { param_name: string; example: string }[]
 
 // -----------------------------------------------------------------------------
 // TextHeader
 
-export interface TextHeader {
+interface TextHeader {
   type: 'HEADER'
   format: 'TEXT'
   text: string
@@ -80,7 +80,7 @@ export interface TextHeader {
 // -----------------------------------------------------------------------------
 // MediaHeader
 
-export interface MediaHeader {
+interface MediaHeader {
   type: 'HEADER'
   format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'
   example: { header_handle: string }
@@ -89,7 +89,7 @@ export interface MediaHeader {
 // -----------------------------------------------------------------------------
 // Location Header
 
-export interface LocationHeader {
+interface LocationHeader {
   type: 'HEADER'
   format: 'LOCATION'
 }
@@ -97,7 +97,7 @@ export interface LocationHeader {
 // -----------------------------------------------------------------------------
 // Body
 
-export interface Body {
+interface Body {
   type: 'BODY'
   text: string
   example?: { body_text: ExamplePositionalParams | ExampleNamedParams }
@@ -106,7 +106,7 @@ export interface Body {
 // -----------------------------------------------------------------------------
 // Footer
 
-export interface Footer {
+interface Footer {
   type: 'FOOTER'
   text: string
 }
@@ -114,12 +114,12 @@ export interface Footer {
 // -----------------------------------------------------------------------------
 // Buttons
 
-export interface CopyCodeButton {
+interface CopyCodeButton {
   type: 'COPY_CODE'
   example: string
 }
 
-export interface FlowButton {
+interface FlowButton {
   type: 'FLOW'
   text: string
   flow_id: string
@@ -129,32 +129,55 @@ export interface FlowButton {
   navigate_screen?: string
 }
 
-export interface PhoneNumberButton {
+interface PhoneNumberButton {
   type: 'PHONE_NUMBER'
   text: string
   phone_number: string
 }
 
-export interface QuickReplyButton {
+interface QuickReplyButton {
   type: 'QUICK_REPLY'
   text: string
 }
 
-export interface UrlButton {
+interface UrlButton {
   type: 'URL'
   text: string
   url: string
   example?: string[]
 }
 
-export type TemplateButton =
-  | CopyCodeButton
-  | FlowButton
-  | PhoneNumberButton
-  | QuickReplyButton
-  | UrlButton
+type TemplateButton = CopyCodeButton | FlowButton | PhoneNumberButton | QuickReplyButton | UrlButton
 
-export interface Buttons {
+interface Buttons {
   type: 'BUTTONS'
   buttons: TemplateButton[]
+}
+
+export {
+  type Body,
+  type Buttons,
+  type Category,
+  type Component,
+  type CopyCodeButton,
+  type CreateTemplate,
+  type CreateTemplateResponse,
+  type Cursors,
+  type ExampleNamedParams,
+  type ExamplePositionalParams,
+  type FlowButton,
+  type Footer,
+  type LocationHeader,
+  type MediaHeader,
+  type Paging,
+  type PhoneNumberButton,
+  type PreviousCategory,
+  type QuickReplyButton,
+  type templateFields,
+  type Template,
+  type TemplateButton,
+  type Templates,
+  type TemplateStatus,
+  type TextHeader,
+  type UrlButton
 }

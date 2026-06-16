@@ -224,14 +224,14 @@ const messageFunctions: Record<string, () => Promise<boolean>> = {
 }
 
 if (messageType in messageFunctions) {
-  messageFunctions[messageType]()
-    .then((success) => {
-      if (success) {
-        console.log('Message sent')
-      }
-      return
-    })
-    .catch(console.error)
+  try {
+    const success = await messageFunctions[messageType]()
+    if (success) {
+      console.log('Message sent')
+    }
+  } catch (error) {
+    console.error(error)
+  }
 } else {
   console.error(
     `Message type not provided\n\nAvailable types:\n -${Object.keys(messageFunctions).join('\n -')}`

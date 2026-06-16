@@ -4,12 +4,7 @@ import { type } from 'arktype'
 import { err, ok } from 'neverthrow'
 
 import type { ErrorBuilder } from '@/core/error-handler'
-import type {
-  TemplateBody,
-  TemplateFlowButton,
-  TemplateFields,
-  TemplateLanguageCode
-} from '@/types/entities/template'
+import type { TemplateFields, TemplateLanguageCode } from '@/types/entities/template'
 import type {
   Request,
   Contact,
@@ -108,7 +103,7 @@ class WsApi {
     body: Request
   }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_REQUEST_ERROR' }>>> {
     const requestResponse = await this.sendRequest<MessageResponse>({
-      body: body,
+      body,
       id: 'phoneNumberId',
       method: 'POST',
       path: 'messages'
@@ -750,6 +745,7 @@ class WsApi {
     return ok(response.value)
   }
 
+  // oxlint-disable-next-line typescript/no-unnecessary-type-parameters
   async sendTemplateRequest<T>({
     query,
     body,
@@ -916,6 +912,7 @@ class WsApi {
 
     if (messageObject.type === 'interactive' && messageObject.interactive.type === 'nfm_reply') {
       return ok({
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         data: JSON.parse(messageObject.interactive.nfm_reply.response_json) as Record<
           string,
           unknown
@@ -984,11 +981,7 @@ class WsApi {
       })
     }
 
-    return ok({
-      from: messageObject.from,
-      type: 'message',
-      ...this.getMessageText(messageObject)
-    })
+    return ok({ from: messageObject.from, type: 'message', ...this.getMessageText(messageObject) })
   }
 
   private getMessageText(message: Message): { id: string; message: string; source: Source } {

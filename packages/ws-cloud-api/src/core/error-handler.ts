@@ -168,11 +168,14 @@ export function errorHandlerResult<
 
 // Decorators ==========================================================================================================
 
-export class ErrorException<T extends GenericHandledError = GenericHandledError> extends Error {
+export class ErrorExceptionError<
+  T extends GenericHandledError = GenericHandledError
+> extends Error {
   private readonly error: T
 
   constructor(error: T) {
     super(error.code)
+    this.name = 'ErrorExceptionError'
     this.error = error
   }
   getError(): T {
@@ -195,7 +198,7 @@ export function ThrowIfError(): MethodDecorator {
       const [res] = args
       if (res instanceof Err && res.isErr()) {
         const error = res.error as GenericHandledError
-        throw new ErrorException(error)
+        throw new ErrorExceptionError(error)
       }
       return args
     }
@@ -220,7 +223,7 @@ export function ExceptionToError(): MethodDecorator {
     }
 
     function handleError(error: unknown): unknown {
-      if (error instanceof ErrorException) {
+      if (error instanceof ErrorExceptionError) {
         return err(error.getError())
       }
       return err({ code: 'UNEXPECTED_ERROR', data: { error } })

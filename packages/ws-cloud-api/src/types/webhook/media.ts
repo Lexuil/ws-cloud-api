@@ -1,20 +1,15 @@
 import type { MessageBase } from './messages'
 
-export type MediaMessage =
-  | ImageMessage
-  | VideoMessage
-  | AudioMessage
-  | DocumentMessage
-  | StickerMessage
+type MediaMessage = ImageMessage | VideoMessage | AudioMessage | DocumentMessage | StickerMessage
 
 // ----------------------
 // Image
-export interface ImageMessage extends MessageBase {
+interface ImageMessage extends MessageBase {
   type: 'image'
   image: ImageMedia
 }
 
-export interface ImageMedia {
+interface ImageMedia {
   id: string
   caption: string
   mime_type: string
@@ -23,12 +18,12 @@ export interface ImageMedia {
 
 // ----------------------
 // Video
-export interface VideoMessage extends MessageBase {
+interface VideoMessage extends MessageBase {
   type: 'video'
   video: VideoMedia
 }
 
-export interface VideoMedia {
+interface VideoMedia {
   id: string
   caption: string
   filename: string
@@ -38,12 +33,12 @@ export interface VideoMedia {
 
 // ----------------------
 // Audio
-export interface AudioMessage extends MessageBase {
+interface AudioMessage extends MessageBase {
   type: 'audio'
   audio: AudioMedia
 }
 
-export interface AudioMedia {
+interface AudioMedia {
   id: string
   mime_type: string
   sha256: string
@@ -52,12 +47,12 @@ export interface AudioMedia {
 
 // ----------------------
 // Document
-export interface DocumentMessage extends MessageBase {
+interface DocumentMessage extends MessageBase {
   type: 'document'
   document: DocumentMedia
 }
 
-export interface DocumentMedia {
+interface DocumentMedia {
   id: string
   caption: string
   filename: string
@@ -67,14 +62,28 @@ export interface DocumentMedia {
 
 // ----------------------
 // Sticker
-export interface StickerMessage extends MessageBase {
+interface StickerMessage extends MessageBase {
   type: 'sticker'
   sticker: StickerMedia
 }
 
-export interface StickerMedia {
+interface StickerMedia {
   id: string
   mime_type: string
   sha256: string
   animated: boolean
+}
+
+export {
+  type AudioMedia,
+  type AudioMessage,
+  type DocumentMedia,
+  type DocumentMessage,
+  type ImageMedia,
+  type ImageMessage,
+  type MediaMessage,
+  type StickerMedia,
+  type StickerMessage,
+  type VideoMedia,
+  type VideoMessage
 }

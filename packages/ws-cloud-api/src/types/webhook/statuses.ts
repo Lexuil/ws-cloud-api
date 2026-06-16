@@ -1,56 +1,70 @@
 import type { MessageStatus } from '../enums'
 
-export interface StatusValue {
+interface StatusValue {
   statuses: Status[]
 }
 
-export type Status = SentStatus | DeliveredStatus | ReadStatus | FailedStatus
+type Status = SentStatus | DeliveredStatus | ReadStatus | FailedStatus
 
-export interface StatusBase {
+interface StatusBase {
   id: string
   timestamp: string
   recipient_id: string
 }
 
-export interface SentStatus extends StatusBase {
+interface SentStatus extends StatusBase {
   status: MessageStatus.Sent
   conversation: Conversation
   pricing: Pricing
 }
 
-export interface DeliveredStatus extends StatusBase {
+interface DeliveredStatus extends StatusBase {
   status: MessageStatus.Delivered
   conversation: Conversation
   pricing: Pricing
 }
 
-export interface ReadStatus extends StatusBase {
+interface ReadStatus extends StatusBase {
   status: MessageStatus.Read
 }
 
-export interface FailedStatus extends StatusBase {
+interface FailedStatus extends StatusBase {
   status: MessageStatus.Failed
   errors: Error[]
 }
 
-export interface Conversation {
+interface Conversation {
   id: string
   expiration_timestamp: string
   origin: ConversationOrigin
 }
 
-export type ConversationCategory =
+type ConversationCategory =
   | 'authentication'
   | 'marketing'
   | 'utility'
   | 'service'
   | 'referral_conversion'
 
-export interface ConversationOrigin {
+interface ConversationOrigin {
   type: ConversationCategory
 }
 
-export interface Pricing {
+interface Pricing {
   pricing_model: 'CBP'
   category: ConversationCategory
+}
+
+export {
+  type Conversation,
+  type ConversationCategory,
+  type ConversationOrigin,
+  type DeliveredStatus,
+  type FailedStatus,
+  type Pricing,
+  type ReadStatus,
+  type SentStatus,
+  type Status,
+  type StatusBase,
+  type StatusValue
 }

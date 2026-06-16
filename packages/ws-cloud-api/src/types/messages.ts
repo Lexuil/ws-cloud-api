@@ -18,7 +18,7 @@ interface HostedDocumentMedia {
   filename?: string
 }
 
-export type HeaderDocumentMedia = MetaDocumentMedia | HostedDocumentMedia
+type HeaderDocumentMedia = MetaDocumentMedia | HostedDocumentMedia
 
 interface MetaImageMedia {
   id: string
@@ -32,7 +32,7 @@ interface HostedImageMedia {
   caption?: string
 }
 
-export type HeaderImageMedia = MetaImageMedia | HostedImageMedia
+type HeaderImageMedia = MetaImageMedia | HostedImageMedia
 
 interface MetaHostedVideoMedia {
   id: string
@@ -46,7 +46,7 @@ interface SelfHostedVideoMedia {
   caption?: string
 }
 
-export type HeaderVideoMedia = MetaHostedVideoMedia | SelfHostedVideoMedia
+type HeaderVideoMedia = MetaHostedVideoMedia | SelfHostedVideoMedia
 
 interface Header {
   type: 'document' | 'image' | 'text' | 'video'
@@ -70,28 +70,28 @@ interface ListSection {
 
 type Section = ListSection
 
-export interface Button {
+interface Button {
   title: string
   id: string
 }
 
-export interface ReplyButton {
+interface ReplyButton {
   type: 'reply'
   reply: Button
 }
 
-export interface Action {
+interface Action {
   button: string
   buttons: ReplyButton[]
   sections: Section[]
 }
 
-export interface FlowAction {
+interface FlowAction {
   name: 'flow'
   parameters: FlowActionsParameters
 }
 
-export interface FlowActionsParameters {
+interface FlowActionsParameters {
   mode?: 'draft' | 'published'
   flow_message_version: '3'
   flow_action?: 'navigate' | 'data_exchange'
@@ -101,18 +101,14 @@ export interface FlowActionsParameters {
   flow_action_payload?: FlowActionPayload
 }
 
-export interface FlowActionPayload {
+interface FlowActionPayload {
   screen: string
   data?: Record<string, string>
 }
 
-export type Interactive =
-  | ButtonInteractive
-  | ListInteractive
-  | CTAButtonInteractive
-  | FlowInteractive
+type Interactive = ButtonInteractive | ListInteractive | CTAButtonInteractive | FlowInteractive
 
-export interface ButtonInteractive {
+interface ButtonInteractive {
   type: InteractiveTypes.Button
   body: SimpleText
   footer?: SimpleText
@@ -120,7 +116,7 @@ export interface ButtonInteractive {
   action: Pick<Action, 'buttons'>
 }
 
-export interface CTAButtonInteractive {
+interface CTAButtonInteractive {
   type: InteractiveTypes.CTAButton
   body: SimpleText
   footer?: SimpleText
@@ -128,7 +124,7 @@ export interface CTAButtonInteractive {
   action: { name: InteractiveTypes.CTAButton; parameters: { display_text: string; url: string } }
 }
 
-export interface ListInteractive {
+interface ListInteractive {
   type: InteractiveTypes.List
   body: SimpleText
   footer?: SimpleText
@@ -136,7 +132,7 @@ export interface ListInteractive {
   action: Pick<Action, 'button' | 'sections'>
 }
 
-export interface FlowInteractive {
+interface FlowInteractive {
   type: InteractiveTypes.Flow
   body: SimpleText
   footer?: SimpleText
@@ -144,83 +140,80 @@ export interface FlowInteractive {
   action: FlowAction
 }
 
-export interface TemplateLanguage {
+interface TemplateLanguage {
   code: string
   policy: 'deterministic'
 }
 
-export type TemplateComponent = TemplateComponentBase | TemplateComponentButton
+type TemplateComponent = TemplateComponentBase | TemplateComponentButton
 
-export interface TemplateComponentBase {
+interface TemplateComponentBase {
   type: 'body' | 'header' | 'button'
   parameters?: TemplateParameter[]
 }
 
-export interface TemplateComponentButton extends TemplateComponentBase {
+interface TemplateComponentButton extends TemplateComponentBase {
   type: 'button'
   sub_type: 'quick_reply' | 'url' | 'catalog' | 'flow'
   parameters: TemplateParameter[]
   index: `${number}`
 }
 
-export interface TemplateFlowParameter {
+interface TemplateFlowParameter {
   type: 'action'
   action: { flow_token?: string; flow_action_data?: object }
 }
 
-export type TemplateHeaderParameter =
+type TemplateHeaderParameter =
   | TemplateParameterImage
   | TemplateParameterDocument
   | TemplateParameterVideo
 
-export type TemplateBodyParameter =
+type TemplateBodyParameter =
   | TemplateParameterText
   | TemplateParameterCurrency
   | TemplateParameterDateTime
   | TemplateNamedParameter
 
-export type TemplateParameter =
-  | TemplateBodyParameter
-  | TemplateHeaderParameter
-  | TemplateFlowParameter
+type TemplateParameter = TemplateBodyParameter | TemplateHeaderParameter | TemplateFlowParameter
 
-export interface TemplateNamedParameter {
+interface TemplateNamedParameter {
   type: 'text'
   parameter_name: string
   text: string
 }
 
-export interface TemplateParameterText {
+interface TemplateParameterText {
   type: 'text'
   text: string
 }
 
-export interface TemplateParameterCurrency {
+interface TemplateParameterCurrency {
   type: 'currency'
   currency: { code: string; amount_1000: number; fallback_value: string }
 }
 
-export interface TemplateParameterDateTime {
+interface TemplateParameterDateTime {
   type: 'date_time'
   date_time: { fallback_value: string }
 }
 
-export interface TemplateParameterImage {
+interface TemplateParameterImage {
   type: 'image'
   image: HeaderImageMedia
 }
 
-export interface TemplateParameterDocument {
+interface TemplateParameterDocument {
   type: 'document'
   document: HeaderDocumentMedia
 }
 
-export interface TemplateParameterVideo {
+interface TemplateParameterVideo {
   type: 'video'
   video: HeaderVideoMedia
 }
 
-export interface TemplateBody {
+interface TemplateBody {
   type: MessageTypes.Template
   [MessageTypes.Template]: {
     name: string
@@ -229,12 +222,12 @@ export interface TemplateBody {
   }
 }
 
-export interface TextBody {
+interface TextBody {
   type: MessageTypes.Text
   [MessageTypes.Text]: { body: string; preview_url?: boolean | undefined }
 }
 
-export interface ContactAddress {
+interface ContactAddress {
   street?: string
   city?: string
   state?: string
@@ -244,12 +237,12 @@ export interface ContactAddress {
   type?: string
 }
 
-export interface ContactEmail {
+interface ContactEmail {
   email: string
   type?: string
 }
 
-export interface ContactName {
+interface ContactName {
   formatted_name: string
   first_name: string
   last_name: string
@@ -258,24 +251,24 @@ export interface ContactName {
   prefix?: string
 }
 
-export interface ContactOrg {
+interface ContactOrg {
   company?: string
   department?: string
   title?: string
 }
 
-export interface ContactPhone {
+interface ContactPhone {
   phone?: `+${string}`
   type?: string
   wa_id?: string
 }
 
-export interface ContactUrl {
+interface ContactUrl {
   url: string
   type?: string
 }
 
-export interface Contact {
+interface Contact {
   addresses?: ContactAddress[]
   birthday?: string
   emails?: ContactEmail[]
@@ -285,51 +278,113 @@ export interface Contact {
   urls?: ContactUrl[]
 }
 
-export interface ContactsBody {
+interface ContactsBody {
   type: MessageTypes.Contacts
   [MessageTypes.Contacts]: Contact[]
 }
 
-export interface ImageBody {
+interface ImageBody {
   type: MessageTypes.Image
   [MessageTypes.Image]: { link: string }
 }
 
-export interface VideoBody {
+interface VideoBody {
   type: MessageTypes.Video
   [MessageTypes.Video]: { link: string }
 }
 
-export interface AudioBody {
+interface AudioBody {
   type: MessageTypes.Audio
   [MessageTypes.Audio]: { link: string }
 }
 
-export interface DocumentBody {
+interface DocumentBody {
   type: MessageTypes.Document
   [MessageTypes.Document]: { link: string }
 }
 
-export type MediaBody = ImageBody | VideoBody | AudioBody | DocumentBody
+type MediaBody = ImageBody | VideoBody | AudioBody | DocumentBody
 
-export interface InteractiveBody {
+interface InteractiveBody {
   type: MessageTypes.Interactive
   [MessageTypes.Interactive]: Interactive
 }
 
-export type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody | ContactsBody
+type WSBody = InteractiveBody | TextBody | MediaBody | TemplateBody | ContactsBody
 
-export interface MessageResponse {
+interface MessageResponse {
   messaging_product: 'whatsapp'
   contacts: MessageContact[]
   messages: MessageInfo[]
 }
 
-export interface MessageContact {
+interface MessageContact {
   input: string
   wa_id: string
 }
 
-export interface MessageInfo {
+interface MessageInfo {
   id: string
+}
+
+export {
+  type Action,
+  type AudioBody,
+  type Button,
+  type ButtonInteractive,
+  type Contact,
+  type ContactAddress,
+  type ContactEmail,
+  type ContactName,
+  type ContactOrg,
+  type ContactPhone,
+  type ContactsBody,
+  type ContactUrl,
+  type CTAButtonInteractive,
+  type DocumentBody,
+  type FlowAction,
+  type FlowActionPayload,
+  type FlowActionsParameters,
+  type FlowInteractive,
+  type Header,
+  type HeaderDocumentMedia,
+  type HeaderImageMedia,
+  type HeaderVideoMedia,
+  type HostedDocumentMedia,
+  type HostedImageMedia,
+  type ImageBody,
+  type Interactive,
+  type InteractiveBody,
+  type ListInteractive,
+  type ListSection,
+  type MediaBody,
+  type MessageContact,
+  type MessageInfo,
+  type MessageResponse,
+  type MetaDocumentMedia,
+  type MetaHostedVideoMedia,
+  type MetaImageMedia,
+  type ReplyButton,
+  type Row,
+  type Section,
+  type SelfHostedVideoMedia,
+  type TemplateBody,
+  type TemplateComponent,
+  type TemplateComponentBase,
+  type TemplateComponentButton,
+  type TemplateFlowParameter,
+  type TemplateHeaderParameter,
+  type TemplateBodyParameter,
+  type TemplateLanguage,
+  type TemplateNamedParameter,
+  type TemplateParameter,
+  type TemplateParameterCurrency,
+  type TemplateParameterDateTime,
+  type TemplateParameterDocument,
+  type TemplateParameterImage,
+  type TemplateParameterText,
+  type TemplateParameterVideo,
+  type TextBody,
+  type VideoBody,
+  type WSBody
 }
