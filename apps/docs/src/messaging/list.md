@@ -9,7 +9,7 @@ outline: deep
 ![list message](img/list-1.png)
 ![list message](img/list-2.png)
 
-The `sendInteractiveListMessage` method sends a text message with an interactive list. Lists can have a single section or multiple sections.
+The `sendInteractiveListMessage` method sends a text message with an interactive list. Pass either the raw WhatsApp `interactive` payload, or a simplified `{ text, buttonText, list }` form that is internally expanded into one or more sections.
 
 ```ts
 async sendInteractiveListMessage({
@@ -22,17 +22,12 @@ async sendInteractiveListMessage({
     | {
         text: string
         buttonText: string
-        list: Array<{ title: string; description?: string }>
-      }
-    | {
-        text: string
-        buttonText: string
-        sections: Array<{ sectionTitle: string; listItems: Array<{ title: string; description?: string }> }>
+        list: Array<{ sectionTitle: string; listItems: Array<{ title: string; description?: string }> }>
       }
 }): Promise<Result<MessageResponse, ErrorBuilder<{ code: 'SEND_INTERACTIVE_LIST_MESSAGE_ERROR' }>>>
 ```
 
-The three union members: the raw `interactive` payload, the single-section simplified form, and the multi-section simplified form.
+The simplified form takes an array of sections (each with `sectionTitle` and `listItems`). To send a single-section list, pass a one-element array with an empty `sectionTitle` — WhatsApp treats that as "no section heading."
 
 > [!IMPORTANT]
 > Max 10 list items per message
@@ -48,8 +43,7 @@ The three union members: the raw `interactive` payload, the single-section simpl
 - `to`: Recipient phone number.
 - `data.text`: The body text.
 - `data.buttonText`: The text on the list button.
-- `data.list`: A single-section list of `{ title, description? }` items.
-- `data.sections`: A multi-section list — each section has `sectionTitle` and `listItems` (a flat array of `{ title, description? }`).
+- `data.list`: An array of sections. Each section has `sectionTitle` (use `''` to render no heading) and `listItems` (an array of `{ title, description? }`).
 
 ## Return
 
@@ -73,8 +67,13 @@ await ws.sendInteractiveListMessage({
     text: 'Please select an option',
     buttonText: 'Select',
     list: [
-      { title: 'Option 1', description: 'Description 1' },
-      { title: 'Option 2', description: 'Description 2' }
+      {
+        sectionTitle: '',
+        listItems: [
+          { title: 'Option 1', description: 'Description 1' },
+          { title: 'Option 2', description: 'Description 2' }
+        ]
+      }
     ]
   }
 })
@@ -88,7 +87,7 @@ await ws.sendInteractiveListMessage({
   data: {
     text: 'Select an option from the sectioned list',
     buttonText: 'Choose',
-    sections: [
+    list: [
       {
         sectionTitle: 'Section 1',
         listItems: [

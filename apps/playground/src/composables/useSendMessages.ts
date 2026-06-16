@@ -2,20 +2,13 @@ import { computed, ref } from 'vue'
 import type { Ref, ComputedRef } from 'vue'
 
 import { toast } from 'vue-sonner'
-import {
-  sendButtonMessage,
-  sendFile,
-  sendImage,
-  sendInteractiveListMessage,
-  sendText,
-  sendVideo
-} from 'ws-cloud-api/messaging'
+import { WsApi } from 'ws-cloud-api'
 
 import type { Message } from '@/stores/messagesStore'
 
 import { useConfigStore } from '@/stores/configStore'
 
-export default function (): {
+export default function useSendMessages(): {
   sendingMessages: Ref<boolean>
   availableToSend: ComputedRef<boolean>
   sendMessages: (messages: Message[]) => Promise<void>
@@ -32,6 +25,7 @@ export default function (): {
       sendingMessages.value
   )
 
+  // oxlint-disable-next-line max-statements
   async function sendMessages(messages: Message[]): Promise<void> {
     if (sendingMessages.value) {
       return
@@ -40,13 +34,14 @@ export default function (): {
     sendingMessages.value = true
     const paymentToast = toast.loading('Sending messages...')
 
-    const wsConfig = { phoneNumberId: config.phoneNumberId, token: config.token }
+    const ws = new WsApi({ phoneNumberId: config.phoneNumberId, token: config.token })
 
     for (const message of messages) {
+      let result
+
       switch (message.type) {
         case 'text': {
-          await sendText({
-            config: wsConfig,
+          result = await ws.sendText({
             message: message.text,
             previewUrl: true,
             to: config.phoneNumberTo
@@ -54,41 +49,52 @@ export default function (): {
           break
         }
         case 'image': {
-          await sendImage({ config: wsConfig, link: message.link, to: config.phoneNumberTo })
+          result = await ws.sendImage({ data: { link: message.link }, to: config.phoneNumberTo })
           await new Promise((resolve) => setTimeout(resolve, 1000))
           break
         }
         case 'video': {
-          await sendVideo({ config: wsConfig, link: message.link, to: config.phoneNumberTo })
+          result = await ws.sendVideo({ data: { link: message.link }, to: config.phoneNumberTo })
           await new Promise((resolve) => setTimeout(resolve, 3000))
           break
         }
         case 'file': {
-          await sendFile({ config: wsConfig, file: message.file, to: config.phoneNumberTo })
+          result = await ws.sendFile({ data: { file: message.file }, to: config.phoneNumberTo })
           await new Promise((resolve) => setTimeout(resolve, 1000))
           break
         }
         case 'button': {
-          await sendButtonMessage({
-            config: wsConfig,
-            message: {
-              text: message.text,
+          result = await ws.sendButtonMessage({
+            data: {
               buttons: message.buttons
                 .filter((button) => button !== '')
-                .map((button) => ({ id: button, title: button }))
+                .map((button) => ({ id: button, title: button })),
+              text: message.text
             },
             to: config.phoneNumberTo
           })
           break
         }
         case 'list': {
-          await sendInteractiveListMessage({
-            config: wsConfig,
-            list: { ...message, list: message.list.filter((item) => item.title !== '') },
+          result = await ws.sendInteractiveListMessage({
+            data: {
+              buttonText: message.buttonText,
+              list: [
+                { listItems: message.list.filter((item) => item.title !== ''), sectionTitle: '' }
+              ],
+              text: message.text
+            },
             to: config.phoneNumberTo
           })
           break
         }
+      }
+
+      if (result && result.isErr()) {
+        toast.error(`Failed: ${result.error.code}`)
+        toast.success('Messages sent!', { id: paymentToast })
+        sendingMessages.value = false
+        return
       }
     }
 
